@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# Peptide-specific:
+
+# sid seq     col char hbg scnpg gptg len tex_seq   order natoms faa laa
+@ sq1 (GVPGV)7 b ^ 65 50 0.4    35 (GVPGV)_7 0 429
+@ sq2 (GGVGV)7 g o 72 29 0.6    35 (GGVGV)_7 4 380
+@ sq3 (PGV)12  r v 62 61 0.3333 36 (PGV)_1_2 1 453
+@ sq4 (GVGVA)7 c < 72 36 0.4    35 (GVGVA)_7 2 501
+@ sq5 (G)35    m * 72 36 1      35 (G)_3_5   5 254
+@ sq6 (GV)18   y > 74 37 0.5    36 (GV)_1_8  3 423
+
+# sid: sequence id
+# seq: sequence
+# col: color in plotting
+# char: character in plotting
+# hbg: number of hydrogen-bonding groups: Calculated by N(aa) - N(PRO) + 2(modified ends)
+# scnpg: number of nonpolar groups during the calculation of nonpolar interactions
+# gptg: Gly pecentage
+# len: length of the peptide
+# tex_seq: sequence formatted in latex
+# order: the order of output
+# natoms: number of atoms per molecule including hydrogen
+# faa: first amino acid
+# laa: last amino acid
+
+# Solvent-specific:
+# cid name col
+& m methonl   b
+& w water     r
+& e ethanol   g
+& p propanol  m
+& o octane    c
+& v vacuo     k
+
+# nsol: full name of solvent
+# b: black 
+# r: red   
+# g: green 
+# m: magenta
+# c: cyan  
+# k: black
