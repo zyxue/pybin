@@ -11,20 +11,19 @@ import numpy as np
 from xvg2png import xvg2array
 from Mysys import read_mysys_dat
 
+TYPE_OF_AVERAGES = __all__ = ['cal_wtr_average', 'connect_all_points', 
+                              'average_along_x', 'connect_dihedrals']
+TYPE_OF_PROPERTIES = ['upvp', 'upvn', 'unvp', 'unvn', 'upup', 'upun', 'unun',
+                      'rg', 'rg_CA']
 
-mysys = read_mysys_dat()
-__all__ = ['cal_wtr_average', 'connect_all_points', 'average_along_x', 'connect_dihedrals']
-
-def cal_wtr_average(infiles, outputfile, norm):                         # norm is the value as the denominator
+def cal_wtr_average(infiles, outputfile, norm):
     with open(outputfile, 'w') as opf:
-        aves = []
         for k, infile in enumerate(infiles):
-            _x, _y = xvg2array(infile)
-            _y /= norm
-            ave_y = np.average(_y)
+            x, y = xvg2array(infile)
+            y /= norm
+            ave_y = np.average(y)
             opf.write('# %s\n' % infile)
-            opf.write('%10.2f %10.5f\n' % (k, ave_y))
-            aves.append(ave_y)
+            opf.write('%10d %10.5f\n' % (k, ave_y))
     return "%s is done" % outputfile
 
 def connect_all_points(infiles, outputfile, norm):
@@ -37,7 +36,6 @@ def connect_all_points(infiles, outputfile, norm):
             opf.write("%s\n" % (" ".join([str(i) for i in _y])))
     return "%s is done" % outputfile
 
-
 def average_along_x(infiles,outputfile,norm):
     with open(outputfile, 'w') as opf:
         mx = {}                                                       # map x
@@ -45,12 +43,12 @@ def average_along_x(infiles,outputfile,norm):
         k0 = infiles[0]
         for inf in infiles:
             mx[inf],my[inf] = xvg2array(inf)
-            my[inf] /= float(norm)                     # while would this be a tuple?!
+            my[inf] /= float(norm)              # while would this be a tuple?!
         l = len(mx[k0])
         assert mx.keys() == my.keys(); keys = mx.keys(); keys.remove(k0)
         for k in keys:
             assert len(mx[k]) == len(my[k]), "invalid data, x & y doesn't match: %s" % k
-            if len(mx[k]) < l:                     # get the minimus length of x
+            if len(mx[k]) < l:                    # get the minimus length of x
                 l = len(mx[k])
             assert (mx[k0][:l] == mx[k][:l]).all(),"x axes are not the same in %s & %s" % (k0,k)
         ave_x = mx[k0][:l]
@@ -58,7 +56,7 @@ def average_along_x(infiles,outputfile,norm):
         std_y = []
         ys = [my[k0][:l]]
         for k in keys:
-            ys.append(my[k][:l])                                      # multi-dimensional array, collecting all data
+            ys.append(my[k][:l]) # multi-dimensional array, collecting all data
         ys = np.array(ys)
         for i in range(len(ys[0])):
             sum_y.append(ys[:,i].sum())
@@ -87,21 +85,29 @@ def connect_dihedrals(infiles, outputfile='output.xvg', norm=1, aa=None):
                         opf.write(line)
     print "%s is done" % outputfile
 
-def determine_norm(type_of_property):
+def determine_norm(type_of_property, obj):
+    """
+    This function needs to be modified if you need specific normalization other
+    than 1
+    """
+    mysys = read_mysys_dat()
     tp = type_of_property
-    if tp in ['unvp','unvn']:
-        norm = mysys[seq].scnpg
-    elif tp in ['upvp','upvn']:
-        norm = mysys[seq].hbg
-    elif tp in ['upup']:
-        norm = mysys[seq].hbg / 2.
-    elif tp in ['upun']:
-        norm = mysys[seq].scnpg * mysys[seq].hbg
-    elif tp in ['unun']:
-        n = mysys[seq].scnpg
-        norm = n**2 - n
-    elif tp in ["turns","pp2"]:
-        norm = mysys[seq].len
+    if tp == 'unvn':
+        norm = mysys[obj].nm_unvn
+    elif tp == 'unvp':
+        norm = mysys[obj].nm_unvp
+    elif tp == 'upvn':
+        norm = mysys[obj].nm_upvn
+    elif tp == 'upvp':
+        norm = mysys[obj].nm_upvp
+    elif tp == 'unun':
+        norm = mysys[obj].nm_unun
+    elif tp == 'unvp':
+        norm = mysys[obj].nm_unvp
+    elif tp == 'upup':
+        norm = mysys[obj].nm_upup
+    elif tp in ['turns', 'pp2']:
+        norm = mysys[obj[:3]].len
     else:
         norm = 1
     return float(norm)
@@ -112,30 +118,37 @@ def outline():
     average
     """
     parser = OptionParser()
-    parser.add_option('-f', '--infile', type='str', dest='infs', 
-                      help='You must specifly at least one file')
-    parser.add_option('-p', '--type-of-property', type='str', dest='property', 
-                      help='specify the type of property you are dealing with')
-    parser.add_option('-t', '--type-of-average', type='str', dest='type_of_ave',
-                      help='which kind of average do you want: \n %r' % __all__)
+    parser.add_option('-f', '--infiles', type='str', dest='infiles', 
+                      default=None, help='You must specifly at least one file')
+    parser.add_option('-p', '--type-of-property', type='str', dest='tp', 
+                      help='Specify the type of property dealt with:\n%r' %
+                      TYPE_OF_PROPERTIES)
+    parser.add_option('-t', '--type-of-average', type='str', dest='ta',
+                      help='Specify the type of average calculated:\n%r' % 
+                      TYPE_OF_AVERAGES)
     parser.add_option('-o', '--output_file', type='str', dest='opf',
-                      default="output.xvg")
-    parser.add_option('--aa', type='str', dest='aa', default=None)
+                      default="output.xvg", help="the name of output file")
+    parser.add_option('--aa', type='str', dest='aa', default=None, 
+                      help='Type of amino acid needed with connect_dihedrals')
     options, args = parser.parse_args()
 
     type_of_aves = __all__
 
     options, args = parser.parse_args()
-    infiles = sorted(glob.glob(options.infs))
 
-    if len(infiles) <= 1:
-        raise ValueError('the number of input files should be more than 1')
-    pprint.pprint(infiles)
+    # Verify the options specified
+    if not options.infiles:
+        raise ValueError("You must specify -f") 
 
-    if options.type_of_ave is None:
-        raise ValueError('You must specify the value for -t option')
-    elif not options.type_of_ave in type_of_aves:
-        raise ValueError('k must be in %r' % type_of_aves)
+    if not options.tp in TYPE_OF_PROPERTIES:
+        raise ValueError(
+            """You must specify the value for -p --type-of-property option,
+            and its value must be one of \n %r""" % TYPE_OF_PROPERTIES)
+
+    if not options.ta in TYPE_OF_AVERAGES:
+        raise ValueError(
+            """You must specify the value for -t --type-of-average option,
+            and its value must be one of \n %r""" % TYPE_OF_AVERAGES)
 
     if options.opf is None:
         ans = raw_input("Are you sure with no specified output name? [y/n]")
@@ -146,26 +159,30 @@ def outline():
     else:
         output = options.opf
 
-    id_template = re.compile('sq[1-6][wm]')
-    id_s = [id_template.search(inf).group() for inf in infiles]
-    if len(set(id_s)) == 1:
-        id_ = id_s[0]
-        seq = id_[:3]
-        cdt = id_[3]
-        print id_, seq, cdt
+    infiles = sorted(glob.glob(options.infiles))
+    if len(infiles) < 1:
+        raise ValueError('the number of input files should > 1')
+    pprint.pprint(infiles)
+
+    # Check if those infiles belong to the same type of system
+    objid_template = re.compile('sq[1-6][wm]')
+    objids = [objid_template.search(inf).group() for inf in infiles]
+    if len(set(objids)) == 1:
+        objid = objids[0]
+        seq = objid[:3]
+        cdt = objid[3]
+        print "objid: %s\t seq: %s\t  cdt: %s" % (objid, seq, cdt)
     else:
-        raise ValueError('input files have different id_')
+        raise ValueError('input files might belong to different objs')
         
-    tp = options.property
-    norm = determine_norm(tp)
-    print type(norm)
+    type_of_property= options.tp
+    norm = determine_norm(type_of_property, objid)
     print 'the denominator for normalization is {0:.2f}'.format(norm)
 
-    # __all__ = ['cal_wtr_average', 'connect_all_points', 'average_along_x',
-    #            'connect_dihedrals']
-
-    if options.type_of_ave == 'connect_dihedrals':
+    if options.ta == 'connect_dihedrals':
         connect_dihedrals(infiles, output, aa=options.aa)
+    elif options.ta == 'cal_wtr_average':
+        cal_wtr_average(infiles, output, norm)
 
 if __name__ == "__main__":
     """Usage: e.g.

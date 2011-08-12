@@ -13,7 +13,7 @@ import q_acc
 def ax_plot(inf, ax, options):
     id_ = inf
     if options.eb:
-        x, y, e = xvg2array_eb(inf,options.xcol,options.ycol)
+        x, y, e = xvg2array_eb(inf, options.xcol, options.ycol)
         x = x/1000. if options.nm else x
         ax.errorbar(x,y,yerr=e, label=id_)
     else:

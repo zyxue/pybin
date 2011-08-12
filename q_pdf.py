@@ -3,15 +3,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-from xvg2png import xvg2array_nt
+from xvg2png import xvg2array
 import q_acc
 
-def ax_distri(inf,ax,bins):
-    y = xvg2array_nt(inf)
-    id = inf
-    n,b,patches = ax.hist(y,bins,normed=True,label=inf,histtype='step')
+def ax_distri(inf, ax, bins):
+    y = xvg2array(inf)[1]
+    id_ = inf
+    n, b, patches = ax.hist(y, bins, normed=True, label=inf, histtype='step')
     ax.legend()
-    return id, n, b, patches
+    return id_, n, b, patches
 
 def outline():
     infs = sorted(glob.glob(options.fs))
@@ -19,22 +19,23 @@ def outline():
 
     if options.overlap:
         olp = options.overlap
-        assert l % olp== 0, "the num of infiles are not even to do overlap"
-        row,col = q_acc.det_row_col(l/olp, options.morer)
+        assert l % olp== 0, (
+            "the num of infiles (%d) cannot be divided exactly by overlap (%d)" % (l, olp))
+        row, col = q_acc.det_row_col(l/olp, options.morer)
     else:
         olp = 1
-        row,col = q_acc.det_row_col(l,options.morer)
+        row, col = q_acc.det_row_col(l, options.morer)
 
-    fig = plt.figure(figsize=(24,11.6625))
-    ns, bs, ids, axes = {}, {}, [], []
+    fig = plt.figure(figsize=(24, 11.6625))
+    ns, bs, id_s, axes = {}, {}, [], []
     for k, inf in enumerate(infs):
         if k % olp == 0:
-            ax = fig.add_subplot(row,col,k/olp+1)
-        id, n, b ,patches = ax_distri(inf,ax,options.bins)
+            ax = fig.add_subplot(row, col, k/olp+1)
+        id_, n, b ,patches = ax_distri(inf, ax, options.bins)
         axes.append(ax)
-        ids.append(id)
-        ns[id], bs[id] = n, b
-    q_acc.decorate(ids,bs,ns,axes,options)
+        id_s.append(id_)
+        ns[id_], bs[id_] = n, b
+    q_acc.decorate(id_s, bs, ns, axes, options)
     q_acc.show_or_save(options.of)
 
 if __name__ == '__main__':

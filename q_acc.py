@@ -8,6 +8,7 @@ or decoration of the final plot
 import glob
 import optparse
 import sys
+import re
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -61,18 +62,21 @@ def det_row_col(len_of_infiles, more_rows_flag=True):
     return row_col
 
 def get_id(infiles=[]):
-    """ ONLY works for systems like sq1w300 at present 2011-05-19 """
-    l = len(infiles)
-    assert l > 0, " at least one file must be provided!!!"
-    pids, sids = [], []                               # peptide_ids; solvent_ids
-    if l > 1:
-        for f in infiles[1:]:
-            b = f.find('sq'); pids.append(f[b:b+3]); sids.append(f[b+3])
-    assert len(pids) == len(sids)
-    for i in range(1,len(pids)):
-        assert pids[i] == pids[0]
-        assert sids[i] == sids[0]
-    return pids[0], sids[0]
+    """ Get the common id from multiples input files, but ONLY works for
+    systems like sq1w300 at present (2011-05-19)"""
+
+    if len(infiles) == 0:
+        raise ValueError(
+            "More than one file must be provided!!!")
+    ids = []
+    template = re.compile('sq[1-9][wm]')
+    for f in infiles:
+        ids.append(template.search(f).group())
+    if len(set(ids)) == 1:
+        return ids[0]
+    else:
+        raise ValueError(
+            "infiles may have different ids, please check:\n %r" % infiles)
 
 
 def show_or_save(outputfile):
@@ -155,10 +159,12 @@ def parse_cmd(cmd=None):
     group.add_option('--ycol',type='int',default=2,dest='ycol',help='specifly the num of the column on the y axis ')
 
     parser.add_option_group(group)
-    if cmd:
-        options,args = parser.parse_args(cmd)
-    else:
-        options,args = parser.parse_args(cmd)
+    # if cmd:
+    #     options,args = parser.parse_args(cmd)
+    # else:
+    #     options,args = parser.parse_args(cmd)
+
+    options,args = parser.parse_args(cmd)
     return options
 
 if __name__ == '__main__':
