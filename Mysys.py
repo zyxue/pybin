@@ -14,7 +14,6 @@ class Peptide(object):
          self.tex_seq,
          self.order,
          self.natom) = peptide_specific_properties
-        
 
 class Solvent(object):
     def __init__(self, solvent_specific_properties):
@@ -31,7 +30,9 @@ class System(object):
          self.nm_upvp,
          self.nm_unun,
          self.nm_unup,
-         self.nm_upup) = system_specific_properties
+         self.nm_upup,
+         self.nm_upv,
+         self.nm_unv) = system_specific_properties
 
 def read_mysys_dat():
     mysys = {}

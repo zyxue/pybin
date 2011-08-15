@@ -13,28 +13,25 @@ from Mysys import read_mysys_dat
 
 TYPE_OF_AVERAGES = __all__ = ['cal_wtr_average', 'connect_all_points', 
                               'average_along_x', 'connect_dihedrals']
+
 TYPE_OF_PROPERTIES = ['upvp', 'upvn', 'unvp', 'unvn', 'upup', 'upun', 'unun',
-                      'rg', 'rg_CA']
+                      'rg', 'rg_CA', 'upv', 'unv']
 
-def cal_wtr_average(infiles, outputfile, norm):
+def connect_dihedrals(infiles, outputfile='output.xvg', norm=1, aa=None):
+    """aa could only be 1 amino acid"""
+    if aa:
+        template = re.compile('{0}(?!^[@#])'.format(aa)) 
+    else:
+        template = re.compile('^(\-?\d')
+
     with open(outputfile, 'w') as opf:
-        for k, infile in enumerate(infiles):
-            x, y = xvg2array(infile)
-            y /= norm
-            ave_y = np.average(y)
+        for infile in infiles:
             opf.write('# %s\n' % infile)
-            opf.write('%10d %10.5f\n' % (k, ave_y))
-    return "%s is done" % outputfile
-
-def connect_all_points(infiles, outputfile, norm):
-    """connecting all points, but the time dependence will be ignored"""
-    with open(outputfile, 'w') as opf:
-        for k, infile in enumerate(infiles):
-            _x, _y = xvg2array(infile)
-            _y /= norm
-            opf.write("# %s\n" % infile)
-            opf.write("%s\n" % (" ".join([str(i) for i in _y])))
-    return "%s is done" % outputfile
+            with open(infile, 'r') as inf:
+                for line in inf:
+                    if template.search(line):
+                        opf.write(line)
+    print "%s is done" % outputfile
 
 def average_along_x(infiles,outputfile,norm):
     with open(outputfile, 'w') as opf:
@@ -47,11 +44,13 @@ def average_along_x(infiles,outputfile,norm):
         l = len(mx[k0])
         assert mx.keys() == my.keys(); keys = mx.keys(); keys.remove(k0)
         for k in keys:
-            assert len(mx[k]) == len(my[k]), "invalid data, x & y doesn't match: %s" % k
+            assert len(mx[k]) == len(my[k]), (
+                "invalid data, x & y doesn't match: %s" % k)
             if len(mx[k]) < l:                    # get the minimus length of x
                 l = len(mx[k])
-            assert (mx[k0][:l] == mx[k][:l]).all(),"x axes are not the same in %s & %s" % (k0,k)
-        ave_x = mx[k0][:l]
+            assert (mx[k0][:l] == mx[k][:l]).all(), (
+                "x axes are not the same in %s & %s" % (k0,k))
+            ave_x = mx[k0][:l]
         sum_y = []
         std_y = []
         ys = [my[k0][:l]]
@@ -69,21 +68,25 @@ def average_along_x(infiles,outputfile,norm):
     print "%s is done" % outputfile
     return ave_x, ave_y, std_y
 
-def connect_dihedrals(infiles, outputfile='output.xvg', norm=1, aa=None):
-    """aa could only be 1 amino acid"""
-    if aa:
-        template = re.compile('{0}(?!^[@#])'.format(aa)) 
-    else:
-        template = re.compile('^(\-?\d')
-
+def connect_all_points(infiles, outputfile, norm):
+    """connecting all points, but the time dependence will be ignored"""
     with open(outputfile, 'w') as opf:
-        for infile in infiles:
+        for k, infile in enumerate(infiles):
+            _x, _y = xvg2array(infile)
+            _y /= norm
+            opf.write("# %s\n" % infile)
+            opf.write("%s\n" % (" ".join([str(i) for i in _y])))
+    return "%s is done" % outputfile
+
+def cal_wtr_average(infiles, outputfile, norm):
+    with open(outputfile, 'w') as opf:
+        for k, infile in enumerate(infiles):
+            x, y = xvg2array(infile)
+            y /= norm
+            ave_y = np.average(y)
             opf.write('# %s\n' % infile)
-            with open(infile, 'r') as inf:
-                for line in inf:
-                    if template.search(line):
-                        opf.write(line)
-    print "%s is done" % outputfile
+            opf.write('%10d %10.5f\n' % (k, ave_y))
+    return "%s is done" % outputfile
 
 def determine_norm(type_of_property, obj):
     """
@@ -106,6 +109,10 @@ def determine_norm(type_of_property, obj):
         norm = mysys[obj].nm_unvp
     elif tp == 'upup':
         norm = mysys[obj].nm_upup
+    elif tp == 'upv':
+        norm = mysys[obj].nm_upv
+    elif tp == 'unv':
+        norm = mysys[obj].nm_unv
     elif tp in ['turns', 'pp2']:
         norm = mysys[obj[:3]].len
     else:

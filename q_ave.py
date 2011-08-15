@@ -22,7 +22,7 @@ def ax_ave(xyf, ax):
     cid = tid[3]
     ax.errorbar(ave_xp, ave_yp, xerr=std_xp, yerr=std_yp,
                 c=mysys[cid].col, marker=mysys[sid].char,
-                label=mysys[sid].seq+sid, markersize=10)
+                label=mysys[sid].seq, markersize=10)
     # ax.text(p1[0]*1.01,p2[0]*1.01,p1_file[5:12])
     return tid, ave_xp, std_xp, ave_yp, std_yp
 
@@ -42,7 +42,7 @@ def outline(options):
         tids.append(tid)
         xps[tid] = [ave_xp-std_xp, ave_xp+std_xp]
         yps[tid] = [ave_yp-std_yp, ave_yp+std_yp]
-    ax.legend()
+    ax.legend(loc='best')
     q_acc.decorate(tids,xps,yps,axes,options)
     q_acc.show_or_save(options.of)
     
