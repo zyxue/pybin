@@ -40,17 +40,35 @@ def run_showq():
 def collect_data(output, cores_usage):
     ll= output.readline()
     sl = ll.split()
-    if len(sl) >= 9:
+    if len(sl) == 9:
         user = sl[1]
         if user in accounts:
-            if user in cores_usage:
-                cores_usage[user] += int(sl[3])
+            ncore = int(sl[3])
+            check1 = (not OPTIONS.ib) and (not OPTIONS.gg)
+            check2 = OPTIONS.gg and ncore == 8
+            check3 = OPTIONS.ib and ncore > 8
+            if check1 or check2 or check3:
+                n = ncore
             else:
-                cores_usage[user] = int(sl[3])
+                n = 0
+            if user in cores_usage:
+                cores_usage[user] += n
+            else:
+                cores_usage[user] = n
     return ll, cores_usage
 
+def parse_cmd():
+    parser = OptionParser()
+    parser.add_option('--gg', action='store_true', dest='gg', default=False,
+                      help='show the number of GigE cores only')
+    parser.add_option('--ib', action='store_true', dest='ib', default=False,
+                      help='show the number of ib cores only') 
+    global OPTIONS
+    OPTIONS, args = parser.parse_args()
+    return OPTIONS
 
 if __name__ == "__main__":
+    parse_cmd()
     accounts = os.listdir('/project/pomes')
     stdoutdata, stderrdata, returncode = run_showq()
     acu, ecu, bcu = main(stdoutdata, stderrdata, returncode)
