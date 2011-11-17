@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import os
 import shutil
 
@@ -31,7 +30,7 @@ class Solvent(object):
 
 def read_mysys_dat():
     mysys = {}
-    pwd = '/project/pomes/zyxue/pyfiles_scinet'
+    pwd = os.getenv('PWD', None)
     with open(os.path.join(pwd, 'mysys.dat'), 'r') as inf:
         for line in inf:
             if line.strip():
@@ -44,8 +43,11 @@ def read_mysys_dat():
                 else:
                     pass
     source = os.path.join(pwd, 'mysys.dat')
-    target = os.path.join(pwd, 'mysys.dat.bk')
-    shutil.copy(source, target)
+    target1 = os.path.join(pwd, 'mysys.dat.bk')
+    target2 = os.path.join(os.getenv('PROJECT', os.getenv('HOME', None)), 'mysys.dat.bk')
+
+    shutil.copy(source, target1)
+    shutil.copy(source, target2)
     return mysys
 
 if __name__ == "__main__":

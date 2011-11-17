@@ -1,0 +1,49 @@
+id seq cdt  tmpr  scol pcol  char hbg scnpg g len
+sq1m (GVPGV)7 m 300 b b ^ 65 63 0.4     35  
+sq1w (GVPGV)7 w 300 r b ^ 65 63 0.4     35 
+sq1e (GVPGV)7 e 300 g b ^ 65 63 0.4     35 
+sq1p (GVPGV)7 p 300 m b ^ 65 63 0.4     35
+sq1o (GVPGV)7 o 300 c b ^ 65 63 0.4     35
+sq1v (GVPGV)7 v 300 k b ^ 65 63 0.4     35
+
+sq2m (GGVGV)7 m 300 b r o 72 42 0.6     35
+sq2w (GGVGV)7 w 300 r r o 72 42 0.6     35
+sq2e (GGVGV)7 e 300 g r o 72 42 0.6     35
+sq2p (GGVGV)7 p 300 m r o 72 42 0.6     35
+sq2o (GGVGV)7 o 300 c r o 72 42 0.6     35
+sq2v (GGVGV)7 v 300 k r o 72 42 0.6     35
+
+sq3m (PGV)12  m 300 b g v 62 72 0.33333 36
+sq3w (PGV)12  w 300 r g v 62 72 0.33333 36
+sq3e (PGV)12  e 300 g g v 62 72 0.33333 36
+sq3p (PGV)12  p 300 m g v 62 72 0.33333 36
+sq3o (PGV)12  o 300 c g v 62 72 0.33333 36
+sq3v (PGV)12  v 300 k g v 62 72 0.33333 36
+
+sq4m (GVGVA)7 m 300 b m < 72 49 0.4     35
+sq4w (GVGVA)7 w 300 r m < 72 49 0.4     35
+sq4e (GVGVA)7 e 300 g m < 72 49 0.4     35
+sq4p (GVGVA)7 p 300 m m < 72 49 0.4     35
+sq4o (GVGVA)7 o 300 c m < 72 49 0.4     35
+sq4v (GVGVA)7 v 300 k m < 72 49 0.4     35
+
+sq5m (G)35    m 300 b k * 72 35 1       35
+sq5w (G)35    w 300 r k * 72 35 1       35
+sq5e (G)35    e 300 g k * 72 35 1       35
+sq5p (G)35    p 300 m k * 72 35 1       35
+sq5o (G)35    o 300 c k * 72 35 1       35
+sq5v (G)35    v 300 k k * 72 35 1       35
+
+sq6m (GV)18   m 300 b c > 74 54 0.5     36
+sq6w (GV)18   w 300 r c > 74 54 0.5     36
+sq6e (GV)18   e 300 g c > 74 54 0.5     36
+sq6p (GV)18   p 300 m c > 74 54 0.5     36
+sq6o (GV)18   o 300 c c > 74 54 0.5     36
+sq6v (GV)18   v 300 k c > 74 54 0.5     36
+
+# hbg: number of hydrogen bonding groups
+# scnpg: number of sidechain nonpolar groups
+# g: percentage of Gly
+
+# The problem is that some properties are sequence-specific while others are
+# solvents-specific.
