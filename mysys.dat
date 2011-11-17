@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+# Peptide-specific:
+
+# sid seq     col char hbg scnpg gptg len tex_seq order natoms seqitp
+@ sq1 (GVPGV)7 b ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
+@ sq2 (GGVGV)7 g o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
+@ sq3 (PGV)12  r v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
+@ sq4 (GVGVA)7 c < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp
+@ sq5 (G)35    m * 72 36 1      35 (G)_3_5   5 254 sq5.itp
+@ sq6 (GV)18   y > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp
+@ sq7 (Q)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq7.itp
+@ sq8 (A)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq8.itp
+@ sq9 (P)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq9.itp
+
+# sid: sequence id
+# seq: sequence
+# col: color in plotting
+# char: character in plotting
+# hbg: number of hydrogen-bonding groups: Calculated by N(aa) - N(PRO) + 2(modified ends)
+# scnpg: number of nonpolar groups during the calculation of nonpolar interactions
+# gptg: Gly pecentage
+# len: length of the peptide
+# te0_seq: sequence formatted in latex
+# order: the order of output
+# natoms: number of atoms per molecule including hydrogen
+# faa: first amino acid
+# laa: last amino acid
+
+# Solvent-specific:
+# cid name col  solgro solitp maxsol box solname
+& w water     r tip4p_216.gro tip4p.itp 3700 5.8 SOL
+& m methonl   b meo_1728.gro  meo.itp   3300 7.3 MEO
+& e ethanol   g eth_1000.gro  eth.itp   2200 7.3 ETH
+& p propanol  m pol_512.gro   pol.itp   2000 7.8 POL
+& o octane    c oct_512.gro   oct.itp   350  5.8 OCT
+& v vacuo     k None          None      None None None
+
+# nsol: full name of solvent
+# b: black 
+# r: red   
+# g: green 
+# m: magenta
+# c: cyan  
+# k: black

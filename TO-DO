@@ -1,0 +1,1 @@
+rewrite g_ana.py use yield to loop through target directories

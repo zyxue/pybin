@@ -5,12 +5,11 @@ import subprocess
 import StringIO
 from optparse import OptionParser
 
-def main(stdoutdata, stderrdata, returncode):
+def main(stdoutdata, stderrdata, returncode, accounts):
     if returncode != 0 or stderrdata != '':
         raise IOError('Check the returncode: {0:d}\n and stderrdata: {1!s}\n'.format(
                 returncode, stderrdata))
 
-    accounts = os.listdir('/project/pomes')
     output = StringIO.StringIO(stdoutdata)
 
     ll = output.readline()
@@ -29,6 +28,10 @@ def main(stdoutdata, stderrdata, returncode):
     while ll:
         ll, bcu = collect_data(output, bcu)
 
+    if OPTIONS.bn:
+        for cores_usage in [acu, ecu, bcu]:
+            for k in cores_usage:
+                cores_usage[k] /= 8
     return acu, ecu, bcu
 
 def run_showq():
@@ -38,7 +41,7 @@ def run_showq():
     return stdoutdata, stderrdata, p.returncode
 
 def collect_data(output, cores_usage):
-    ll= output.readline()
+    ll = output.readline()
     sl = ll.split()
     if len(sl) == 9:
         user = sl[1]
@@ -63,15 +66,16 @@ def parse_cmd():
                       help='show the number of GigE cores only')
     parser.add_option('--ib', action='store_true', dest='ib', default=False,
                       help='show the number of ib cores only') 
+    parser.add_option('-n', '--by-node', action='store_true', dest='bn', default=False,
+                      help='show the number of nodes instead of cores') 
     global OPTIONS
     OPTIONS, args = parser.parse_args()
-    return OPTIONS
 
 if __name__ == "__main__":
     parse_cmd()
-    accounts = os.listdir('/project/pomes')
+    accounts = os.listdir('/scratch/p/pomes')
     stdoutdata, stderrdata, returncode = run_showq()
-    acu, ecu, bcu = main(stdoutdata, stderrdata, returncode)
+    acu, ecu, bcu = main(stdoutdata, stderrdata, returncode, accounts)
     total_usage = {}
     for a in accounts:
         total_usage[a] = acu.get(a, 0) + ecu.get(a, 0) + bcu.get(a, 0)
