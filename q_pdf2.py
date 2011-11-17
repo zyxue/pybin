@@ -1,17 +1,32 @@
 #!/usr/bin/env python
 
-import numpy as np
-import matplotlib.pyplot as plt
 import glob
-from xvg2png import xvg2array
+import numpy as np
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.path as path
+
+from xvg2png import xvg2array_data_points
 import q_acc
 
+"""adjusted for long line with numerous data points"""
+
+
 def ax_distri(inf, ax, bins):
-    y = xvg2array(inf)[1]
     id_ = inf
-    n, b, patches = ax.hist(y, bins, normed=True, label=inf, histtype='step')
+    y = xvg2array_data_points(inf) # only this line has been changed compared with q_pdf.py
+    len_y = float(len(y))
+    print len_y, inf
+
+    n, b = np.histogram(y, bins, normed=False)
+
+    b = (b[:-1] + b[1:]) / 2.                               # to gain the same length as n
+    n = n / len_y                                           # normalized by len_y
+
+    p = ax.plot(b, n, label=inf)
     ax.legend()
-    return id_, n, b, patches
+    return id_, n, b
 
 def outline():
     infs = sorted(glob.glob(options.fs))
@@ -31,7 +46,7 @@ def outline():
     for k, inf in enumerate(infs):
         if k % olp == 0:
             ax = fig.add_subplot(row, col, k/olp+1)
-        id_, n, b , patches = ax_distri(inf, ax, options.bins)
+        id_, n, b = ax_distri(inf, ax, options.bins)
         axes.append(ax)
         id_s.append(id_)
         ns[id_], bs[id_] = n, b

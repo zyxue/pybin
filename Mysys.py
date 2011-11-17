@@ -48,7 +48,10 @@ def read_mysys_dat():
                     mysys[sl[1]] = System(sl[1:])
                 else:
                     pass
-    subprocess.call('cp ~/pyfiles_desktop/mysys.dat ~/pyfiles_desktop/mysys.dat.bk',shell=True)
+    subprocess.call('cp ~/pyfiles_desktop/mysys.dat ~/pyfiles_desktop/mysys.dat.bk',
+                    shell=True)
+    subprocess.call('cp ~/pyfiles_desktop/mysys.dat ~/bin/mysys.dat.bk',
+                    shell=True)
     return mysys
 
 if __name__ == "__main__":
