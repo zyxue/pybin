@@ -1,6 +1,9 @@
 import numpy as np
 
+"""this is a xvg2png module"""
+
 def xvg2array(xvgf):
+    """This turns a xvg file into two array""" 
     f1 = open(xvgf, 'r')
     xlist = []
     ylist = []
@@ -27,9 +30,6 @@ def xvg2array_data_points(xvgf):
             if not line.startswith('#') or line.startswith('@'):
                 data_points.extend([float(i) for i in line.split()])
     return data_points
-
-def xvg2array_eb(xvgf, xvol, ycol):
-    pass
 
 if __name__ == "__main__":
     xvg2array_data_points('/home/zyxue/labwork/mono_su_as/r_connected_rg_equtrj/sq1e_connected_equtrj.xvg')
