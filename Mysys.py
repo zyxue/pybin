@@ -46,8 +46,6 @@ def read_mysys_dat():
     target1 = os.path.join(pwd, 'mysys.dat.bk')
     target2 = os.path.join(os.getenv('PROJECT', os.getenv('HOME', None)), 'mysys.dat.bk')
 
-    shutil.copy(source, target1)
-    shutil.copy(source, target2)
     return mysys
 
 if __name__ == "__main__":

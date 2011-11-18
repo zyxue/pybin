@@ -17,10 +17,9 @@ def xvg2array(xvgf):
     f1.close()
     return xarray, yarray
 
-<<<<<<< HEAD:xvg2png.py
 def xvg2array_eb(xvgf, xvol, ycol):
     pass
-=======
+
 def xvg2array_data_points(xvgf):
     data_points = []
     with open(xvgf, 'r') as inf:
@@ -34,4 +33,3 @@ def xvg2array_eb(xvgf, xvol, ycol):
 
 if __name__ == "__main__":
     xvg2array_data_points('/home/zyxue/labwork/mono_su_as/r_connected_rg_equtrj/sq1e_connected_equtrj.xvg')
->>>>>>> 1b784c3d5268155ea0e3692ac288c74ae0d247af:xvg2png.py
