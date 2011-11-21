@@ -16,7 +16,7 @@ TYPE_OF_AVERAGES = __all__ = ['cal_wtr_average', 'connect_all_points',
                               'average_along_x', 'connect_dihedrals']
 
 TYPE_OF_PROPERTIES = ['upvp', 'upvn', 'unvp', 'unvn', 'upup', 'upun', 'unun',
-                      'rg', 'rg_CA', 'upv', 'unv']
+                      'rg', 'upv', 'unv', 'e2ed']
 
 def connect_dihedrals(infiles, outputfile='output.xvg', norm=1, aa=None):
     """aa could only be 1 amino acid"""

@@ -25,23 +25,24 @@ def ax_plot(inf, ax, options):
     # ax.set_title(inf)
     return id_, x, y
 
-def outline(options):
+def main(options):
     infs = options.fs
     l = len(infs)
+    print options.overlap
 
     if options.overlap:
-        olp = options.overlap
-        assert l % olp== 0, "the num of infiles are not even to do overlap"
-        row,col = q_acc.det_row_col(l/olp, options.morer)
+        overlap = options.overlap
+        assert l % overlap== 0, "the num of infiles are not even to do overlap"
+        row,col = q_acc.det_row_col(l/overlap, options.morer)
     else:
-        olp = 1
-        row,col = q_acc.det_row_col(l,options.morer)
+        overlap = 1
+        row,col = q_acc.det_row_col(l, options.morer)
 
-    fig = plt.figure(figsize=(24,11))
+    fig = plt.figure(figsize=(24, 11))
     xs, ys, id_s, axes = {}, {}, [], []
     for k, inf in enumerate(infs):
-        if k % olp == 0:
-            ax = fig.add_subplot(row,col,k/olp+1)
+        if k % overlap == 0:
+            ax = fig.add_subplot(row, col, k / overlap + 1)
 
         id_, x, y = ax_plot(inf, ax, options)
         axes.append(ax)
@@ -53,6 +54,6 @@ def outline(options):
 if __name__ == '__main__':
     import time; b=time.time()
     options = q_acc.parse_cmd()
-    outline(options)
+    main(options)
     e = time.time()
     print e - b

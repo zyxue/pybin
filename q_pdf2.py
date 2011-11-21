@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import glob
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -10,7 +9,7 @@ import matplotlib.path as path
 from xvg2png import xvg2array_data_points
 import q_acc
 
-"""adjusted for long line with numerous data points"""
+"""adjusted for long line with numerous data points, plotting distributions"""
 
 
 def ax_distri(inf, ax, bins):
@@ -29,7 +28,7 @@ def ax_distri(inf, ax, bins):
     return id_, n, b
 
 def outline():
-    infs = sorted(glob.glob(options.fs))
+    infs = options.fs
     l = len(infs)
 
     if options.overlap:
