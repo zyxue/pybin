@@ -30,8 +30,8 @@ class Solvent(object):
 
 def read_mysys_dat():
     mysys = {}
-    pwd = os.getenv('PWD', None)
-    with open(os.path.join(pwd, 'mysys.dat'), 'r') as inf:
+    home = os.getenv('HOME', None)
+    with open(os.path.join(home, 'pybin', 'mysys.dat'), 'r') as inf:
         for line in inf:
             if line.strip():
                 if line.startswith('@'):
@@ -42,10 +42,6 @@ def read_mysys_dat():
                     mysys[sl[1]] = Solvent(sl[1:])
                 else:
                     pass
-    source = os.path.join(pwd, 'mysys.dat')
-    target1 = os.path.join(pwd, 'mysys.dat.bk')
-    target2 = os.path.join(os.getenv('PROJECT', os.getenv('HOME', None)), 'mysys.dat.bk')
-
     return mysys
 
 if __name__ == "__main__":

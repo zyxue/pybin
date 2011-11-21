@@ -26,7 +26,7 @@ def ax_plot(inf, ax, options):
     return id_, x, y
 
 def outline(options):
-    infs = sorted(glob.glob(options.fs))
+    infs = options.fs
     l = len(infs)
 
     if options.overlap:

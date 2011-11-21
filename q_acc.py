@@ -130,42 +130,69 @@ def decorate(keys,xps,yps,axes,options):
         # ax.grid(b=True, which='minor')
         ax.grid(b=True)
 
+def convert_bins(option, opt_str, value, parser):
+    v = value.split(',')
+    if len(v) == 1:
+        parser.values.bins = int(v[0])
+    elif len(v) == 3:
+        min_, max_, interval = [float(i) for i in v]
+        parser.values.bins = np.arange(min_, max_, interval)
+
+def find_the_files(option, opt_str, value, parser):
+    infiles = []
+    infs = value.split()
+    print infs
+    for f in infs:
+        infiles.extend(glob.glob(f))
+    del parser.rargs[:len(value)]
+    setattr(parser.values, option.dest, infiles)
+
 def parse_cmd(cmd=None):
     parser = optparse.OptionParser('usage: %prog [options] **args')
-    parser.add_option('-f',type='str',dest='fs',help='specify this option if plotting only one property')
-    parser.add_option('--xlb',type='str',default='x',dest='xlb',help='bottom label')
-    parser.add_option('--ylb',type='str',default='y',dest='ylb',help='left label')
-    parser.add_option('--xb',type='float',default=None,dest='xb',help='specifly x beginning')
-    parser.add_option('--xe',type='float',default=None,dest='xe',help='specifly x ending')
-    parser.add_option('--yb',type='float',default=None,dest='yb',help='specifly y beginning')
-    parser.add_option('--ye',type='float',default=None,dest='ye',help='specifly y ending')
-    parser.add_option('--title',type='str',default=None,dest='title',help='specifly the title when plot on a single subplot')
-    parser.add_option('--bins',type='int',default=10,dest='bins',help='specify this options if plotting histogram')
-    parser.add_option('-o',type='str',default=None,dest='of',help='specifly output file OPT.')
-    parser.add_option('--ap',action="store_true",default=None,dest='ap',help='plot_all_properties?')
-    parser.add_option('--overlap',type="int",default=None,dest='overlap',help='put multiple subplots together.')
-    parser.add_option('--nm',action="store_true",default=None,dest='nm',help='x axis normalized by 1000 or not? usefule when x values are large, OPT.')
-    parser.add_option('--eb',action="store_true",default=None,dest='eb',help='plot error bar or not, OPT.')
-    parser.add_option('--scol',action="store_true",default=None,dest='scol',help='use scol or not, otherwise, use scol, OPT.')
-    parser.add_option('--ndx',type='str',dest='ndx',help='ndx file when calculating turns.')
-    parser.add_option('--gro',type='str',dest='gro',help='gro file when calculating turns.')
-    parser.add_option('--xpm',type='str',dest='xpm',help='xpm file when calculating turns.')
-    parser.add_option('--morer',action='store_true',dest='morer',default=False,help='when multiple subplots are needed, more rows or more columns, default is more rows.')
-    group = optparse.OptionGroup(parser, "xy", "use these options when the x & y data are from different files")
+    # parser.add_option('-f', type='str', dest='fs', help='specify this option if plotting only one property'
+    parser.add_option('-f', type='str', dest='fs', default=None, action="callback", callback=find_the_files,
+                      help='specify this option if plotting only one property')
+    parser.add_option('--xlb', type='str', default='x', dest='xlb', help='bottom label')
+    parser.add_option('--ylb', type='str', default='y', dest='ylb', help='left label')
+    parser.add_option('--xb', type='float', default=None, dest='xb', help='specifly x beginning')
+    parser.add_option('--xe', type='float', default=None, dest='xe', help='specifly x ending')
+    parser.add_option('--yb', type='float', default=None, dest='yb', help='specifly y beginning')
+    parser.add_option('--ye', type='float', default=None, dest='ye', help='specifly y ending')
+    parser.add_option('--title', type='str', default=None, dest='title', 
+                      help='specifly the title when plot on a single subplot')
+    parser.add_option('--bins', type='str', default="100", dest='bins', action='callback', callback=convert_bins,
+                      help='specify this options if plotting histogram, could be a number of bins or a string containing 3 values (i.e min, max, interval, e.g. "0.6, 2.0, 0.02"')
+    parser.add_option('-o', type='str', default=None, dest='of', help='specifly output file OPT.')
+    parser.add_option('--ap', action="store_true", default=None, dest='ap', help='plot_all_properties?')
+    parser.add_option('--overlap', type="int", default=None, dest='overlap', help='put multiple subplots together.')
+    parser.add_option('--nm', action="store_true", default=None, dest='nm', 
+                      help='x axis normalized by 1000 or not? usefule when x values are large,  OPT.')
+    parser.add_option('--eb', action="store_true", default=None, dest='eb', help='plot error bar or not,  OPT.')
+    parser.add_option('--scol', action="store_true", default=None, dest='scol', 
+                      help='use scol or not,  otherwise,  use scol,  OPT.')
+    parser.add_option('--ndx', type='str', dest='ndx', help='ndx file when calculating turns.')
+    parser.add_option('--gro', type='str', dest='gro', help='gro file when calculating turns.')
+    parser.add_option('--xpm', type='str', dest='xpm', help='xpm file when calculating turns.')
+    parser.add_option('--morer', action='store_true', dest='morer', default=False, 
+                      help='when multiple subplots are needed,  more rows or more columns,  default is more rows.')
+    group = optparse.OptionGroup(parser,  "xy",  "use these options when the x & y data are from different files")
 
-    group.add_option('--xf',type='str',dest='xf',help='file containing the property along the x axis')
-    group.add_option('--yf',type='str',dest='yf',help='file containing the property along the y axis')
-    group.add_option('--xcol',type='int',default=1,dest='xcol',help='specifly the num of the column on the x axis')
-    group.add_option('--ycol',type='int',default=2,dest='ycol',help='specifly the num of the column on the y axis ')
+    group.add_option('--xf', type='str', dest='xf', help='file containing the property along the x axis')
+    group.add_option('--yf', type='str', dest='yf', help='file containing the property along the y axis')
+    group.add_option('--xcol', type='int', default=1, dest='xcol', 
+                     help='specifly the num of the column on the x axis')
+    group.add_option('--ycol', type='int', default=2, dest='ycol', 
+                     help='specifly the num of the column on the y axis ')
 
     parser.add_option_group(group)
     # if cmd:
-    #     options,args = parser.parse_args(cmd)
+    #     options, args = parser.parse_args(cmd)
     # else:
-    #     options,args = parser.parse_args(cmd)
+    #     options, args = parser.parse_args(cmd)
 
-    options,args = parser.parse_args(cmd)
+    options, args = parser.parse_args(cmd)
     return options
 
 if __name__ == '__main__':
-    pass
+    options = parse_cmd()
+
