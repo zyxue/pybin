@@ -49,7 +49,7 @@ def gen_nbs(infs,bins):         # nbs: collections of n and bins
         bs[id] = b
     return ids, ns, bs
 
-def outline(infs,options):
+def outline(infs, options):
     fig = plt.figure(figsize=(24,11.6625))
     l = len(infs)
     row,col = det_row_col(l)
