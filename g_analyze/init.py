@@ -22,7 +22,7 @@ AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + ['python']
 
 def gen_input_files(target_dir, pf):
     """
-    Generalizing input files specific for gromacs tools
+    Generalizing input files specific for gromacs tools, default naming
     """
 
     input_files = dict(
@@ -75,28 +75,44 @@ def runit(cmd_logf_generator):
     
     q.join()
 
-def convert_seq_or_cdt_or_num(option, opt_str, value, parser):
-    if opt_str in ['-c', '--cdt']:
-        parser.values.CDTS = value.split()
-    elif opt_str in ['-s', '--seq', '-n', '--num']:
-        if '-' in value:                   # process args like "-s 1-9"
-            mi, ma = [int(i) for i in value.split('-')]
-            range_ =  range(mi, ma + 1)
-        else:
-            range_ =  [int(i) for i in value.split()]
-        if opt_str in ['-s', '--seq']:
-            parser.values.SEQS = [ 'sq' + str(i) for i in range_]
-        elif opt_str in ['-n', '--num']:
-            parser.values.NUMS = [ '{0:02d}'.format(i) for i in range_]
+def convert_seq(option, opt_str, value, parser):
+    if '-' in value:
+        mi, ma = value.split('-')                   # process args like "-s 1-9"
+        range_ = [str(i) for i in range(int(mi), int(ma) + 1)]
+    else:
+        range_ = [i for i in value.split()]
+    parser.values.SEQS = [ 'sq' + str(i) for i in range_]
+
+def convert_cdt(option, opt_str, value, parser):
+    # water, methanol, ethanol, propanol, octane, vacuo
+    valid_cdts = ['w', 'm', 'e', 'p', 'o', 'v']
+    split_v = value.split()
+    for v in split_v:
+        if v not in valid_cdts:
+            raise ValueError('cdt must be in selected from {0!r}'.format(valid_cdts))
+    parser.values.CDTS = split_v
+
+def convert_tmp(option, opt_str, value, parser):
+    parser.values.tmp = value.split()
+
+def convert_num(option, opt_str, value, parser):
+    if '-' in value:                   
+        mi, ma = value.split('-')
+        range_ = range(int(mi), int(ma) + 1)
+    else:
+        range_ = [int(i) for i in value.split()]
+    parser.values.NUMS = [ '{0:02d}'.format(i) for i in range_]
 
 def parse_cmd():
     """parse_cmd"""
-    parser = OptionParser(usage='loop_dir.py -s "sq[1-2]" -c "[mw]" -n "[01][0-9]" -a="check_target_dirs"')
-    parser.add_option('-s', '--seq', type='str', dest='SEQS', default=None, action='callback', callback=convert_seq_or_cdt_or_num,
-                      help='specify it this way, i.e. "1 3 4" or "1-9"'  )
-    parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=None, action='callback', callback=convert_seq_or_cdt_or_num,
+    parser = OptionParser(usage='-s, -c, -t, -n may not function according to your .g_ana.cfg"')
+    parser.add_option('-s', '--seq', type='str', dest='SEQS', default=['1'], action='callback', callback=convert_seq,
+                      help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\''  )
+    parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=['w'], action='callback', callback=convert_cdt,
                       help='specify it this way, i.e. "w m o p e"')
-    parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_seq_or_cdt_or_num,
+    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=['300'], action='callback', callback=convert_cdt,
+                      help='specify it this way, i.e "300 700", maybe improved later')
+    parser.add_option('-n', '--num', type='str', dest='NUMS', default=['00'], action='callback', callback=convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )
@@ -151,13 +167,6 @@ def target_the_type_of_analysis():
     elif OPTIONS.toa == 'e2ed_v':
         g_tool = basic.e2ed_v
         g_tool_name = basic.e2ed_v.func_name
-    elif OPTIONS.toa == 'python':
-        g_tool = python_code                                          # pass function
-        g_tool_name = python_code.func_name
     else:
-        g_tool = 'NO_G_TOOL'
-        g_tool_name = 'NO_G_TOOL_NAME'
+        raise ValueError('You must specify -a option, \n to see what command is gonna be parsed, use --test')
     return g_tool, g_tool_name, OPTIONS
-
-def python_code():
-    pass
