@@ -11,13 +11,14 @@ import os
 import glob
 import subprocess
 import Queue
+import logging
 from optparse import OptionParser
 from threading import Thread
 
 import organize
 import basic
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__
+AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + ['python']
 
 def gen_input_files(target_dir, pf):
     """
@@ -47,6 +48,7 @@ def runit(cmd_logf_generator):
             if OPTIONS.test:
                 print cmd
             else:
+                logging.info('working on {0:s}'.format(cmd))
                 if logf is None:
                     p = subprocess.call(cmd, shell=True)
                 else:
@@ -98,8 +100,14 @@ def parse_cmd():
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )
+    parser.add_option('--config_file', type='str', dest='config_file', default='./.g_ana.cfg',
+                      help='specify the configuration file')
+    parser.add_option('--outputdir', type='str', dest='outputdir', default=None,
+                      help='specify the output directory, which will overwrite .g_ana.cfg')
     parser.add_option('--test', dest='test', action='store_true', default=False)
     parser.add_option('--nolog', dest='nolog', action='store_true', default=False)
+    parser.add_option('--cdb', dest='cdb', action='store_true', default=False,
+                      help='if you need different b values for different trjectory, and they are stored in a database specified in your .g_ana.cfg')
 
     global OPTIONS
     (OPTIONS, args) = parser.parse_args()
@@ -128,16 +136,28 @@ def target_the_type_of_analysis():
     elif OPTIONS.toa == "g_make_ndx":
         g_tool = organize.g_make_ndx
         g_tool_name = organize.g_make_ndx.func_name
-    elif OPTIONS.toa == 'rg_alltrj':
-        g_tool = basic.rg_alltrj
-        g_tool_name = basic.rg_alltrj.func_name
+    elif OPTIONS.toa == 'rg':
+        g_tool = basic.rg
+        g_tool_name = basic.rg.func_name
     elif OPTIONS.toa == 'rg_backbone':
         g_tool = basic.rg_backbone
         g_tool_name = basic.rg_backbone.func_name
     elif OPTIONS.toa == 'e2ed':
         g_tool = basic.e2ed
         g_tool_name = basic.e2ed.func_name
+    elif OPTIONS.toa == 'rg_backbone_v':
+        g_tool = basic.rg_backbone_v
+        g_tool_name = basic.rg_backbone_v.func_name
+    elif OPTIONS.toa == 'e2ed_v':
+        g_tool = basic.e2ed_v
+        g_tool_name = basic.e2ed_v.func_name
+    elif OPTIONS.toa == 'python':
+        g_tool = python_code                                          # pass function
+        g_tool_name = python_code.func_name
     else:
         g_tool = 'NO_G_TOOL'
         g_tool_name = 'NO_G_TOOL_NAME'
     return g_tool, g_tool_name, OPTIONS
+
+def python_code():
+    pass

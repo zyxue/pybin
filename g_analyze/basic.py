@@ -14,7 +14,7 @@ When you add a new function, add the function name to __all__, too.
 
 """
 
-__all__ = ['g_energy_tmpr', 'rg_alltrj', 'rg', 'rg_backbone', 'e2ed']
+__all__ = ['g_energy_tmpr', 'rg_alltrj', 'rg', 'rg_backbone', 'e2ed', 'rg_backbone_v', 'e2ed_v']
 
 def g_energy_tmpr(kwargs):
     return 'printf "14" | g_energy -f {edrf} -o {anadir}/{pf}_tmpr_md.xvg'.format(**kwargs)
@@ -35,3 +35,12 @@ def rg_backbone(kwargs):
 def e2ed(kwargs):
     """end to end distance"""
     return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
+
+def rg_backbone_v(kwargs):
+    """for in vacuo"""
+    return 'printf "Backbone" | g_gyrate -f {xtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg'.format(**kwargs)
+
+def e2ed_v(kwargs):
+    """end to end distance for simulations in vacuo since no proxtcf will be produced"""
+    return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {xtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
+

@@ -1,4 +1,4 @@
-#!/scinet/gpc/tools/Python/Python262/bin/python
+#! /usr/bin/env python
 
 import os
 import StringIO
@@ -16,6 +16,9 @@ def parse_cmd():
     parser.add_option('--tmpf', action='store_true', 
                       dest='tmp_cpt_check', default=False, 
                       help='signal that argument is a tmp_cpt_checkfile')
+    parser.add_option('--v4_5', action='store_true',
+                      dest='v4_5', default=False,
+                      help='using the 4_5 version instead')
     global options
     options, args = parser.parse_args()
 
@@ -25,7 +28,11 @@ def gmxcheck_batch():
     else:
         infs = sorted(glob.glob(options.fs))
     for inf in infs:
-        p = subprocess.Popen(['gmxcheck','-f', inf], 
+        if options.v4_5:
+            gmxcheck = 'gmxcheck4.5'
+        else:
+            gmxcheck = 'gmxcheck'
+        p = subprocess.Popen([gmxcheck,'-f', inf], 
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdoutdata, stderrdata) = p.communicate()
         if p.returncode == 0:
