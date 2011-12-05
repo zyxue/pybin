@@ -1,0 +1,63 @@
+outputdir = '/scratch/p/pomes/zyxue/mono_vac/v700_su/r_ana_results'
+database = '/scratch/p/pomes/zyxue/mono_su_as/mono_su_as.db'
+
+[dirchy]
+    dirchy_d1 = '{seq}v700'
+    dirchy_d2 = '{seq}v700s{num}'
+    dirchy_d3 = ''		  # empty dirchy_dx should be be removed since loop_dir.py will still use it
+    dirchy_d4 = ''		  # I think 4 level is enough for now 2011-11-29
+    prefix = '{seq}v700s{num}'
+
+[ndx_format]
+    # will all be added up in order
+    ndxf1 = 'ndx_{seq}'
+    ndxf2 = 'ndx_end1'
+    ndxf3 = 'ndx_end2'
+    ndxf4 = 'ndx_q'			     # the last one will always be ndx_q
+
+[ndx_input]
+    # Up: backbone, N, O, and (OE1 & NE2 if GLN exists)
+    # Un: CG1 & CG2 for VAL, CB & CG & CD for PRO, CB for ALA, CA for GLY, CB & CD for GLN
+    # Vp: O, C[1-8] for o
+    # Vn: C for meo, eth, pro
+    
+    # 1 [ Protein ], 9 [SideChain-H] default 13 groups	
+    
+    # (GVPGV)7 ENDs not included, CB of VAL not included. Useless groups have to be deleted separately due to gromacs set.
+    ndx_sq1 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n r VAL & a CG1 CG2\n r PRO & a CB CG CD\n 15|16|17\n del 15\n del 15\n del 15\n'
+    # (GGVGV)7
+    ndx_sq2 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n r VAL & a CG1 CG2\n 15|16\n del 15\n del 15\n'
+    # (PGV)7
+    ndx_sq3 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n r VAL & a CG1 CG2\n r PRO & a CB CG CD\n 15|16|17\n del 15\n del 15\n del 15\n'
+    # (GVGVA)7
+    ndx_sq4 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n r VAL & a CG1 CG2\n r ALA & a CB\n 15|16|17\n del 15\n del 15\n del 15\n'
+    # (G)35 # in order to be consistent
+    ndx_sq5 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n'
+    # (GV)18
+    ndx_sq6 = '1 & !r ACE NH2 & a O N\n r GLY & a CA\n r VAL & a CG1 CG2\n 15|16\n del 15\n del 15\n'
+    # (Q)35
+    ndx_sq7 = '1 & !r ACE NH2 & a O N OE1 NE2\n r GLN & a CB CG\n'
+    # (A)35
+    ndx_sq8 = '1 & !r ACE NH2 & a O N\n r ALA & a CB\n'
+    # (P)35
+    ndx_sq9 = '1 & !r ACE NH2 & a O N\n r PRO & a CB CG CD\n'
+    
+    ndx_end1 = 'r ACE & a CH3\n'
+    ndx_end2 = 'r NH2 & a N  \n'					      # used to calculate end2end distance
+
+    ndx_q = 'q\n'
+
+# FYI:
+ #  0 System              :   429 atoms
+ #  1 Protein             :   429 atoms
+ #  2 Protein-H           :   207 atoms
+ #  3 C-alpha             :    35 atoms
+ #  4 Backbone            :   107 atoms
+ #  5 MainChain           :   143 atoms
+ #  6 MainChain+Cb        :   164 atoms
+ #  7 MainChain+H         :   173 atoms
+ #  8 SideChain           :   256 atoms
+ #  9 SideChain-H         :    64 atoms
+ # 10 ACE_&_CH3           :     1 atoms
+ # 11 NH2_&_N             :     1 atoms
+

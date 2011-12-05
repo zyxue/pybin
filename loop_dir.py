@@ -106,6 +106,11 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
             # pp(locals())
             input_args['ndx_input'] = ' '.join([ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd])
 
+        if OPTIONS.toa == 'sequence_spacing':
+            from Mysys import read_mysys_dat
+            mysys = read_mysys_dat()
+            input_args['peptide_length'] = mysys[seq].len
+
         cmd = g_tool(input_args)
         if logd:
             logf = os.path.join(logd, '{0}.log'.format(input_args['pf']))
