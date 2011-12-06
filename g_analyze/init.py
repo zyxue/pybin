@@ -76,43 +76,46 @@ def runit(cmd_logf_generator):
     q.join()
 
 def convert_seq(option, opt_str, value, parser):
-    if '-' in value:
-        mi, ma = value.split('-')                   # process args like "-s 1-9"
-        range_ = [str(i) for i in range(int(mi), int(ma) + 1)]
-    else:
-        range_ = [i for i in value.split()]
-    parser.values.SEQS = [ 'sq' + str(i) for i in range_]
+    if not value is None:
+        if '-' in value:
+            mi, ma = value.split('-')                   # process args like "-s 1-9"
+            range_ = [str(i) for i in range(int(mi), int(ma) + 1)]
+        else:
+            range_ = [i for i in value.split()]
+        parser.values.SEQS = [ 'sq' + str(i) for i in range_]
 
 def convert_cdt(option, opt_str, value, parser):
-    # water, methanol, ethanol, propanol, octane, vacuo
-    valid_cdts = ['w', 'm', 'e', 'p', 'o', 'v']
-    split_v = value.split()
-    for v in split_v:
-        if v not in valid_cdts:
-            raise ValueError('cdt must be in selected from {0!r}'.format(valid_cdts))
-    parser.values.CDTS = split_v
+    if not value is None:
+        # water, methanol, ethanol, propanol, octane, vacuo
+        valid_cdts = ['w', 'm', 'e', 'p', 'o', 'v']
+        split_v = value.split()
+        for v in split_v:
+            if v not in valid_cdts:
+                raise ValueError('cdt must be in selected from {0!r}'.format(valid_cdts))
+        parser.values.CDTS = split_v
 
 def convert_tmp(option, opt_str, value, parser):
     parser.values.tmp = value.split()
 
 def convert_num(option, opt_str, value, parser):
-    if '-' in value:                   
-        mi, ma = value.split('-')
-        range_ = range(int(mi), int(ma) + 1)
-    else:
-        range_ = [int(i) for i in value.split()]
-    parser.values.NUMS = [ '{0:02d}'.format(i) for i in range_]
+    if not value is None:
+        if '-' in value:                   
+            mi, ma = value.split('-')
+            range_ = range(int(mi), int(ma) + 1)
+        else:
+            range_ = [int(i) for i in value.split()]
+        parser.values.NUMS = [ '{0:02d}'.format(i) for i in range_]
 
 def parse_cmd():
     """parse_cmd"""
     parser = OptionParser(usage='-s, -c, -t, -n may not function according to your .g_ana.cfg"')
-    parser.add_option('-s', '--seq', type='str', dest='SEQS', default=['1'], action='callback', callback=convert_seq,
+    parser.add_option('-s', '--seq', type='str', dest='SEQS', default=None, action='callback', callback=convert_seq,
                       help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\''  )
-    parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=['w'], action='callback', callback=convert_cdt,
+    parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=None, action='callback', callback=convert_cdt,
                       help='specify it this way, i.e. "w m o p e"')
-    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=['300'], action='callback', callback=convert_cdt,
+    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=None, action='callback', callback=convert_cdt,
                       help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_option('-n', '--num', type='str', dest='NUMS', default=['00'], action='callback', callback=convert_num,
+    parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )

@@ -61,6 +61,13 @@ def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
     
     return outputdir, logd
 
+def init_seqs_cdts_tmps_nums(options, config_dict):
+    seqs = options.SEQS if options.SEQS else config_dict['SEQS']
+    cdts = options.CDTS if options.CDTS else config_dict['CDTS']
+    tmps = options.TMPS if options.TMPS else config_dict['TMPS']
+    nums = options.NUMS if options.NUMS else config_dict['NUMS']
+    print seqs, cdts, tmps, nums
+    return seqs, cdts, tmps, nums
 
 def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
     """
@@ -69,7 +76,7 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
     """
     outputdir, logd = init_dirs(g_tool_name, OPTIONS, CONFIG_DICT)
 
-    SEQS, CDTS, TMPS, NUMS = OPTIONS.SEQS, OPTIONS.CDTS, OPTIONS.TMPS, OPTIONS.NUMS
+    SEQS, CDTS, TMPS, NUMS = init_seqs_cdts_tmps_nums(OPTIONS, CONFIG_DICT)
 
     # more will be appended in the future
     non_organize_modules = ['g_analyze.basic']
@@ -82,7 +89,7 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
                 inputdir, input_args['pf']))
 
         # gen outputdir, etc. if any output files are produced
-        if g_tool.__module__ in non_organize_modules:
+        if g_tool.__module__ in non_organize_modules: # if in organize module, no new dir needs to be created
             anadir = os.path.join(outputdir, 'r_' + g_tool_name) # anadir should be a subfolder under outputdir
             input_args['anadir'] = anadir
             if not os.path.exists(anadir):
@@ -105,6 +112,11 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
             from pprint import pprint as pp
             # pp(locals())
             input_args['ndx_input'] = ' '.join([ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd])
+
+        if OPTIONS.toa == 'sequence_spacing':
+            from Mysys import read_mysys_dat
+            mysys = read_mysys_dat()
+            input_args['peptide_length'] = mysys[seq].len
 
         cmd = g_tool(input_args)
         if logd:
