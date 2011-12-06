@@ -1,15 +1,15 @@
 # PEPTIDE-SPECIFIC:
 
 # sid seq     col char hbg scnpg gptg len tex_seq order natoms seqitp
-@ sq1 (GVPGV)7 b ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
-@ sq2 (GGVGV)7 g o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
-@ sq3 (PGV)12  r v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
-@ sq4 (GVGVA)7 c < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp
-@ sq5 (G)35    m * 72 36 1      35 (G)_3_5   5 254 sq5.itp
-@ sq6 (GV)18   y > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp
-@ sq7 (Q)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq7.itp
-@ sq8 (A)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq8.itp
-@ sq9 (P)35    x x 00 00 000000 00 xxxxxxxxx 0 000 sq9.itp
+@ sq1 (GVPGV)7 blue    ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
+@ sq2 (GGVGV)7 green   o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
+@ sq3 (PGV)12  red     v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
+@ sq4 (GVGVA)7 cyan    < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp
+@ sq5 (G)35    black   * 72 36 1      35 (G)_3_5   5 254 sq5.itp
+@ sq6 (GV)18   yellow  > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp
+@ sq7 (Q)35    magenta p 00 00 000000 00 xxxxxxxxx 0 000 sq7.itp
+@ sq8 (A)35    orange  + 00 00 000000 00 xxxxxxxxx 0 000 sq8.itp
+@ sq9 (P)35    grey    8 00 00 000000 00 xxxxxxxxx 0 000 sq9.itp
 
 # sid: sequence id
 # seq: sequence

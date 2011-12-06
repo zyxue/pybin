@@ -2,7 +2,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import glob
 from xvg2png import xvg2array
 import q_acc
 
@@ -14,12 +13,12 @@ def ax_distri(inf, ax, bins):
     return id_, n, b, patches
 
 def outline():
-    infs = sorted(glob.glob(options.fs))
+    infs = sorted(options.fs)
     l = len(infs)
 
     if options.overlap:
         olp = options.overlap
-        assert l % olp== 0, (
+        assert l % olp == 0, (
             "the num of infiles (%d) cannot be divided exactly by overlap (%d)" % (l, olp))
         row, col = q_acc.det_row_col(l/olp, options.morer)
     else:

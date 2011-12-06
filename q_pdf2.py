@@ -11,24 +11,25 @@ import q_acc
 
 """adjusted for long line with numerous data points, plotting distributions"""
 
-
 def ax_distri(inf, ax, bins):
     id_ = inf
-    y = xvg2array_data_points(inf) # only this line has been changed compared with q_pdf.py
+    y = xvg2array_data_points(inf)
     len_y = float(len(y))
     print len_y, inf
 
-    n, b = np.histogram(y, bins, normed=False)
+    # bins must be assigned in options
+    n, b = np.histogram(y, bins, normed=True)
 
     b = (b[:-1] + b[1:]) / 2.                               # to gain the same length as n
     n = n / len_y                                           # normalized by len_y
 
-    p = ax.plot(b, n, label=inf)
+    p = ax.plot(b, n, linewidth=4, label=inf)
     ax.legend()
     return id_, n, b
 
 def outline():
     infs = options.fs
+    print infs
     l = len(infs)
 
     if options.overlap:

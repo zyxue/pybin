@@ -141,10 +141,10 @@ def convert_bins(option, opt_str, value, parser):
 def find_the_files(option, opt_str, value, parser):
     infiles = []
     infs = value.split()
-    print infs
     for f in infs:
         infiles.extend(glob.glob(f))
-    setattr(parser.values, option.dest, infiles)
+    setattr(parser.values, option.dest, sorted(infiles))
+
 
 def parse_cmd(cmd=None):
     parser = optparse.OptionParser('usage: %prog [options] **args')
@@ -165,6 +165,10 @@ def parse_cmd(cmd=None):
                       help='specifly y ending')
     parser.add_option('--title', type='str', default=None, dest='title', 
                       help='specifly the title when plot on a single subplot')
+    parser.add_option('--legend', type='str', default=None, dest='legend', 
+                      help='specifly the legend, otherwise, no legends will show up for q_subplots.py')
+    parser.add_option('--template_for_legend', type='str', default=None, dest='template_for_legend', 
+                      help='find the legend from the file name useing regex')
     parser.add_option('--bins', type='str', default="100", dest='bins', action='callback', callback=convert_bins,
                       help='specify this options if plotting histogram, could be a number of bins or a string containing 3 values (i.e min, max, interval, e.g. "0.6, 2.0, 0.02"')
     parser.add_option('-o', type='str', default=None, dest='of', 
@@ -209,4 +213,5 @@ def parse_cmd(cmd=None):
 
 if __name__ == '__main__':
     options = parse_cmd()
+    print options.fs
     print options.overlap

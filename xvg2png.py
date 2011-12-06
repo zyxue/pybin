@@ -27,9 +27,9 @@ def xvg2array_data_points(xvgf):
     data_points = []
     with open(xvgf, 'r') as inf:
         for line in inf:
-            if not line.startswith('#') or line.startswith('@'):
+            if not line.startswith('#') and not line.startswith('@'):
                 data_points.extend([float(i) for i in line.split()])
-    return data_points
+    return np.array(data_points)
 
 if __name__ == "__main__":
     xvg2array_data_points('/home/zyxue/labwork/mono_su_as/r_connected_rg_equtrj/sq1e_connected_equtrj.xvg')
