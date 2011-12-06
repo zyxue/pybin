@@ -91,11 +91,11 @@ def convert_cdt(option, opt_str, value, parser):
         split_v = value.split()
         for v in split_v:
             if v not in valid_cdts:
-                raise ValueError('cdt must be in selected from {0!r}'.format(valid_cdts))
+                raise ValueError('cdt {0:s} is not one of {1!r}'.format(v, valid_cdts))
         parser.values.CDTS = split_v
 
 def convert_tmp(option, opt_str, value, parser):
-    parser.values.tmp = value.split()
+    parser.values.TMPS = value.split()
 
 def convert_num(option, opt_str, value, parser):
     if not value is None:
@@ -113,7 +113,7 @@ def parse_cmd():
                       help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\''  )
     parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=None, action='callback', callback=convert_cdt,
                       help='specify it this way, i.e. "w m o p e"')
-    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=None, action='callback', callback=convert_cdt,
+    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=None, action='callback', callback=convert_tmp,
                       help='specify it this way, i.e "300 700", maybe improved later')
     parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
