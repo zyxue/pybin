@@ -18,7 +18,7 @@ from threading import Thread
 import organize
 import basic
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + ['python']
+AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__
 
 def gen_input_files(target_dir, pf):
     """
@@ -65,7 +65,7 @@ def runit(cmd_logf_generator):
 
     q = Queue.Queue()
 
-    for i in range(16):
+    for i in range(32):
         t = Thread(target=worker)
         t.daemon = True
         t.start()
@@ -170,6 +170,12 @@ def target_the_type_of_analysis():
     elif OPTIONS.toa == 'e2ed_v':
         g_tool = basic.e2ed_v
         g_tool_name = basic.e2ed_v.func_name
+    elif OPTIONS.toa == 'sequence_spacing':
+        g_tool = basic.sequence_spacing
+        g_tool_name = basic.sequence_spacing.func_name
+    elif OPTIONS.toa == 'do_dssp_E':
+        g_tool = basic.do_dssp_E
+        g_tool_name = basic.do_dssp_E.func_name
     else:
         raise ValueError('You must specify -a option, \n to see what command is gonna be parsed, use --test')
     return g_tool, g_tool_name, OPTIONS
