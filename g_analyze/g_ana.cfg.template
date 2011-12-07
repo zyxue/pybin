@@ -4,7 +4,7 @@ database = '/scratch/p/pomes/zyxue/mono_su_as/mono_su_as.db'
 [dirchy]
     dirchy_d1 = '{seq}v700'
     dirchy_d2 = '{seq}v700s{num}'
-    dirchy_d3 = ''		  # empty dirchy_dx should be be removed since loop_dir.py will still use it
+    dirchy_d3 = ''		  # empty dirchy_dx should not be be removed since loop_dir.py will still use it
     dirchy_d4 = ''		  # I think 4 level is enough for now 2011-11-29
     prefix = '{seq}v700s{num}'
 
