@@ -14,14 +14,11 @@ When you add a new function, add the function name to __all__, too.
 
 """
 
-__all__ = ['g_energy_tmpr', 'rg_alltrj', 'rg', 'rg_backbone', 'e2ed', 'rg_backbone_v', 'e2ed_v',
+__all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'e2ed', 'rg_backbone_v', 'e2ed_v',
            'sequence_spacing', 'do_dssp_E']
 
 def g_energy_tmpr(kwargs):
     return 'printf "14" | g_energy -f {edrf} -o {anadir}/{pf}_tmpr_md.xvg'.format(**kwargs)
-
-def rg_alltrj(kwargs):
-    return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -o {anadir}/{pf}_rg_alltrj.xvg'.format(**kwargs)
 
 def rg(kwargs):
     return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg.xvg'.format(**kwargs)
@@ -33,17 +30,16 @@ def rg_backbone(kwargs):
     """
     return 'printf "Backbone" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg'.format(**kwargs)
 
+def rg_c_alpha(kwargs):
+    """
+    Radius of Gyration: backbone heavy atoms only. e.g. for (GVPGV)7, there would be 107 atoms,
+    which is 35 * 3 + 2 (modified ends)
+    """
+    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg".format(**kwargs)
+
 def e2ed(kwargs):
     """end to end distance"""
     return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
-
-def rg_backbone_v(kwargs):
-    """for in vacuo"""
-    return 'printf "Backbone" | g_gyrate -f {xtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg'.format(**kwargs)
-
-def e2ed_v(kwargs):
-    """end to end distance for simulations in vacuo since no proxtcf will be produced"""
-    return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {xtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
 
 def sequence_spacing(kwargs):
     """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""

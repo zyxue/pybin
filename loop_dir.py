@@ -47,7 +47,7 @@ def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
     # parent_logd holds all the logs which will keep the output of the
     # analysis tools you use
     parent_logd = os.path.join(outputdir, 'LOGS') 
-    if not os.path.exists(parent_logd):
+    if not os.path.exists(parent_logd) and not OPTIONS.test: # if your testing, no point to mkdir
         os.mkdir(parent_logd)
                            
     if OPTIONS.nolog:
@@ -105,7 +105,7 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
         if g_tool.__module__ in non_organize_modules: # if in organize module, no new dir needs to be created
             anadir = os.path.join(outputdir, 'r_' + g_tool_name) # anadir should be a subfolder under outputdir
             input_args['anadir'] = anadir
-            if not os.path.exists(anadir):
+            if not os.path.exists(anadir) and not OPTIONS.test:
                 os.mkdir(anadir)
         
         # this part will be improved later, particular when using a database
