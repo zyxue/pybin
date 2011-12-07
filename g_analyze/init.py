@@ -133,7 +133,7 @@ def parse_cmd():
     return OPTIONS
 
 def target_the_type_of_analysis():
-    OPTIONS = parse_cmd()
+    options = parse_cmd()
     analysis_methods = {                                    # this dict will keep increasing
         'check_inputdirs': [organize.check_inputdirs, 
                             organize.check_inputdirs.func_name],
@@ -143,7 +143,7 @@ def target_the_type_of_analysis():
                       organize.g_eneconv.func_name],
         "g_trjconv_pro_xtc": [organize.g_trjconv_pro_xtc,
                               organize.g_trjconv_pro_xtc.func_name],
-        "g_trjconv_gro": [organize.g_trjconv_grom
+        "g_trjconv_gro": [organize.g_trjconv_gro,
                           organize.g_trjconv_gro.func_name],
         "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
                               organize.g_trjconv_pro_gro.func_name],
@@ -165,7 +165,7 @@ def target_the_type_of_analysis():
                       basic.do_dssp_E.func_name]
         }
     if options.toa in analysis_methods:
-        g_tool, g_tool_name = analysis[options.toa]
+        g_tool, g_tool_name = analysis_methods[options.toa]
     else:
         raise ValueError('You must specify -a option, \n to see what command is gonna be parsed, use --test')
     return g_tool, g_tool_name, OPTIONS
