@@ -78,6 +78,19 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
 
     SEQS, CDTS, TMPS, NUMS = init_seqs_cdts_tmps_nums(OPTIONS, CONFIG_DICT)
 
+    # if any of SEQS, CDTS, TMPS, NUMS is None, read from .g_ana.cfg
+    if not SEQS:
+        SEQS = config_dict['SEQS'] 
+
+    if not CDTS:
+        CDTS = config_dict['CDTS']
+
+    if not TMPS:
+        TMPS = config_dict['TMPS']
+
+    if not NUMS:
+        NUMS = config_dict['NUMS']
+
     # more will be appended in the future
     non_organize_modules = ['g_analyze.basic']
 
