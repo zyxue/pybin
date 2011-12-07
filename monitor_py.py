@@ -2,6 +2,7 @@
 
 import time
 import subprocess
+import logging
 from optparse import OptionParser
 
 from watchdog.observers import Observer
@@ -23,6 +24,8 @@ class ModifyingEventHandler(FileSystemEventHandler):
             subprocess.call(['python', options.pyfile])
         elif options.cmd:
             subprocess.call(options.cmd, shell=True)
+        else:
+            logging.warning('specify a option!')
 
 def parse_cmd():
     parser = OptionParser('usage: %prog [options] **args')

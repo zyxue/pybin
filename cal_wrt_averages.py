@@ -177,7 +177,9 @@ def main():
     # Check if those infiles belong to the same type of system
     objid_template = re.compile(options.tmpl)
     objids = [objid_template.search(inf).group() for inf in infiles]
-    if len(set(objids)) == 1:
+    objids_set = set(objids)
+    print objids_set
+    if len(objids_set) == 1:
         objid = objids[0]
         seq = objid[:3]
         cdt = objid[3]

@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-import matplotlib.pyplot as plt
-import numpy as np
 import sys
 import glob
+import re
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
+
 from xvg2png import xvg2array, xvg2array_eb
 import q_acc
-
-# from Mysys import read_mysys_dat
-
-# MYSYS = read_mysys_dat()
 
 def ax_plot(inf, ax, options):
     id_ = inf
@@ -21,14 +21,27 @@ def ax_plot(inf, ax, options):
         x, y = xvg2array(inf)
         x = x/1000. if options.nm else x
         p = ax.plot(x,y, label = inf) 
-    ax.legend()
-    # ax.set_title(inf)
+
+    if options.legend:
+        at = AnchoredText(options.legend,
+                          prop=dict(size=24), frameon=True,
+                          loc=1,)
+
+    # template must be specified
+    elif options.template_for_legend:
+        at = AnchoredText(
+            re.compile(options.template_for_legend).search(inf).group(),
+            prop=dict(size=24), frameon=True, loc=1,)
+    at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(at)
+
+    if options.title:
+        ax.set_title(title)
     return id_, x, y
 
 def main(options):
     infs = options.fs
     l = len(infs)
-    print options.overlap
 
     if options.overlap:
         overlap = options.overlap
