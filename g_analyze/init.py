@@ -134,48 +134,38 @@ def parse_cmd():
 
 def target_the_type_of_analysis():
     OPTIONS = parse_cmd()
-    if OPTIONS.toa == "check_inputdirs":
-        g_tool = organize.check_inputdirs
-        g_tool_name = organize.check_inputdirs.func_name
-    elif OPTIONS.toa == "g_trjcat":
-        g_tool = organize.g_trjcat
-        g_tool_name = organize.g_trjcat.func_name
-    elif OPTIONS.toa == "g_eneconv":
-        g_tool = organize.g_eneconv
-        g_tool_name = organize.g_eneconv.func_name
-    elif OPTIONS.toa == "g_trjconv_pro_xtc":
-        g_tool = organize.g_trjconv_pro_xtc
-        g_tool_name = organize.g_trjconv_pro_xtc.func_name
-    elif OPTIONS.toa == "g_trjconv_gro":
-        g_tool = organize.g_trjconv_gro
-        g_tool_name = organize.g_trjconv_gro.func_name
-    elif OPTIONS.toa == "g_trjconv_pro_gro":
-        g_tool = organize.g_trjconv_pro_gro
-        g_tool_name = organize.g_trjconv_pro_gro.func_name
-    elif OPTIONS.toa == "g_make_ndx":
-        g_tool = organize.g_make_ndx
-        g_tool_name = organize.g_make_ndx.func_name
-    elif OPTIONS.toa == 'rg':
-        g_tool = basic.rg
-        g_tool_name = basic.rg.func_name
-    elif OPTIONS.toa == 'rg_backbone':
-        g_tool = basic.rg_backbone
-        g_tool_name = basic.rg_backbone.func_name
-    elif OPTIONS.toa == 'e2ed':
-        g_tool = basic.e2ed
-        g_tool_name = basic.e2ed.func_name
-    elif OPTIONS.toa == 'rg_backbone_v':
-        g_tool = basic.rg_backbone_v
-        g_tool_name = basic.rg_backbone_v.func_name
-    elif OPTIONS.toa == 'e2ed_v':
-        g_tool = basic.e2ed_v
-        g_tool_name = basic.e2ed_v.func_name
-    elif OPTIONS.toa == 'sequence_spacing':
-        g_tool = basic.sequence_spacing
-        g_tool_name = basic.sequence_spacing.func_name
-    elif OPTIONS.toa == 'do_dssp_E':
-        g_tool = basic.do_dssp_E
-        g_tool_name = basic.do_dssp_E.func_name
+    analysis_methods = {                                    # this dict will keep increasing
+        'check_inputdirs': [organize.check_inputdirs, 
+                            organize.check_inputdirs.func_name],
+        "g_trjcat" : [organize.g_trjcat,
+                      organize.g_trjcat.func_name],
+        "g_eneconv": [organize.g_eneconv,
+                      organize.g_eneconv.func_name],
+        "g_trjconv_pro_xtc": [organize.g_trjconv_pro_xtc,
+                              organize.g_trjconv_pro_xtc.func_name],
+        "g_trjconv_gro": [organize.g_trjconv_grom
+                          organize.g_trjconv_gro.func_name],
+        "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
+                              organize.g_trjconv_pro_gro.func_name],
+        "g_make_ndx": [organize.g_make_ndx,
+                       organize.g_make_ndx.func_name],
+        'rg': [basic.rg,
+               basic.rg.func_name],
+        'rg_backbone': [basic.rg_backbone,
+                        basic.rg_backbone.func_name],
+        'e2ed': [basic.e2ed,
+                 basic.e2ed.func_name],
+        'rg_backbone_v': [basic.rg_backbone_v,
+                          basic.rg_backbone_v.func_name],
+        'e2ed_v': [basic.e2ed_v,
+                   basic.e2ed_v.func_name],
+        'sequence_spacing': [basic.sequence_spacing,
+                             basic.sequence_spacing.func_name],
+        'do_dssp_E': [basic.do_dssp_E,
+                      basic.do_dssp_E.func_name]
+        }
+    if options.toa in analysis_methods:
+        g_tool, g_tool_name = analysis[options.toa]
     else:
         raise ValueError('You must specify -a option, \n to see what command is gonna be parsed, use --test')
     return g_tool, g_tool_name, OPTIONS
