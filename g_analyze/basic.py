@@ -14,7 +14,7 @@ When you add a new function, add the function name to __all__, too.
 
 """
 
-__all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'e2ed', 'rg_backbone_v', 'e2ed_v',
+__all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'e2ed',
            'sequence_spacing', 'do_dssp_E']
 
 def g_energy_tmpr(kwargs):
@@ -43,7 +43,7 @@ def e2ed(kwargs):
 
 def sequence_spacing(kwargs):
     """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""
-    return 'sequence_spacing.py --pf {pf} -f {xtcf} -s {grof} -l {peptide_length} -o {anadir}/{pf}_sequence_spacing.xvg'.format(**kwargs)
+    return "sequence_spacing.py --pf {pf} -f {xtcf} -s {grof} -l {peptide_length} --atom-sel \'resid {{0}} and not type H\' -o {anadir}/{pf}_sequence_spacing.xvg".format(**kwargs)
 
 def do_dssp_E(kwargs):
     return 'printf "Protein" | do_dssp -f {xtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg -o {anadir}/{pf}_dssp_E.xpm'.format(**kwargs)

@@ -38,7 +38,7 @@ def gen_input_files(target_dir, pf):
         input_files.update(dict(hb_tprf=hb_tprf))
     return input_files
 
-def runit(cmd_logf_generator):
+def runit(cmd_logf_generator, numthread):
     """
     Putting each analyzing codes in a queue to use the 8 cores simutaneously.
     """
@@ -65,7 +65,7 @@ def runit(cmd_logf_generator):
 
     q = Queue.Queue()
 
-    for i in range(32):
+    for i in range(numthread):
         t = Thread(target=worker)
         t.daemon = True
         t.start()
@@ -117,6 +117,8 @@ def parse_cmd():
                       help='specify it this way, i.e "300 700", maybe improved later')
     parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
+    parser.add_option('--nt', type='int', dest='numthread', default=16,
+                      help='specify the number of threads')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )
     parser.add_option('--config_file', type='str', dest='config_file', default='./.g_ana.cfg',
@@ -145,18 +147,18 @@ def target_the_type_of_analysis():
                               organize.g_trjconv_pro_xtc.func_name],
         "g_trjconv_gro": [organize.g_trjconv_gro,
                           organize.g_trjconv_gro.func_name],
-        "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
-                              organize.g_trjconv_pro_gro.func_name],
+        # "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
+        #                       organize.g_trjconv_pro_gro.func_name],
         "g_make_ndx": [organize.g_make_ndx,
                        organize.g_make_ndx.func_name],
         'rg': [basic.rg,
                basic.rg.func_name],
         'rg_backbone': [basic.rg_backbone,
                         basic.rg_backbone.func_name],
+        'rg_c_alpha': [basic.rg_c_alpha,
+                          basic.rg_c_alpha.func_name],
         'e2ed': [basic.e2ed,
                  basic.e2ed.func_name],
-#         'rg_backbone_v': [basic.rg_backbone_v,
-#                           basic.rg_backbone_v.func_name],
 #         'e2ed_v': [basic.e2ed_v,
 #                    basic.e2ed_v.func_name],
         'sequence_spacing': [basic.sequence_spacing,

@@ -37,8 +37,9 @@ def g_trjconv_gro(input_args):          # used to extract the last frame
 def g_trjconv_pro_xtc(input_args):
     return "echo 'Protein' | trjconv -f {xtcf} -s {tprf} -pbc whole -o  {inputdir}/{pf}_pro.xtc".format(**input_args)
 
-def g_trjconv_pro_gro(input_args):
-    return "echo '1' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {0} -dump 0 -o {inputdir}/{pf}_pro.gro".format(**input_args)
+# def g_trjconv_pro_gro(input_args):
+# USELESS
+#     return "echo '1' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {0} -dump 0 -o {inputdir}/{pf}_pro.gro".format(**input_args)
 
 def g_make_ndx(input_args):
     return "printf '{ndx_input}' | make_ndx -f {grof} -o {ndxf}".format(**input_args)

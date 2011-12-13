@@ -147,7 +147,7 @@ if __name__ == "__main__":
     CONFIG_DICT = ConfigObj(config_file)
 
     x = gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT)
-    gai.runit(x)
+    gai.runit(x, OPTIONS.numthread)
 
     print "#" * 20
     from pprint import pprint as pp
