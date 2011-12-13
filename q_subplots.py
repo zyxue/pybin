@@ -32,8 +32,10 @@ def ax_plot(inf, ax, options):
         at = AnchoredText(
             re.compile(options.template_for_legend).search(inf).group(),
             prop=dict(size=24), frameon=True, loc=1,)
-    at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
-    ax.add_artist(at)
+        at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+        ax.add_artist(at)
+    else:
+        ax.legend()
 
     if options.title:
         ax.set_title(title)
@@ -41,15 +43,15 @@ def ax_plot(inf, ax, options):
 
 def main(options):
     infs = options.fs
-    l = len(infs)
+    len_infs = len(infs)
 
     if options.overlap:
         overlap = options.overlap
-        assert l % overlap== 0, "the num of infiles are not even to do overlap"
-        row,col = q_acc.det_row_col(l/overlap, options.morer)
+        assert len_infs % overlap== 0, "the num of infiles are not even to do overlap"
+        row, col = q_acc.det_row_col(len_infs / overlap, options.morer)
     else:
         overlap = 1
-        row,col = q_acc.det_row_col(l, options.morer)
+        row, col = q_acc.det_row_col(l, options.morer)
 
     fig = plt.figure(figsize=(24, 11))
     xs, ys, id_s, axes = {}, {}, [], []

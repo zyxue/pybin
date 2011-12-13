@@ -96,38 +96,38 @@ def det_raw_lim(keys,ps):
     lim = [min(min_ps)*0.9, max(max_ps)*1.1]
     return lim
 
-def det_final_lim(keys,ps,b=None,e=None):
+def det_final_lim(keys, ps, b=None, e=None):
     if b is None or e is None:
-        lim = det_raw_lim(keys, ps)
+        lim = det_raw_lim(keys,  ps)
         if b is None and e is not None:
             lim[1] = e
         elif b is not None and e is None:
             lim[0] = b
     else: 
-        lim = [b,e]
+        lim = [b, e]
     return lim
 
-def decorate(keys,xps,yps,axes,options):
-    """keys is a list, xps, yps are dictionaries"""
-    xlim = det_final_lim(keys,xps,options.xb,options.xe)
-    ylim = det_final_lim(keys,yps,options.yb,options.ye)
+def decorate(keys, xps, yps, axes, options):
+    """keys is a list,  xps,  yps are dictionaries"""
+    xlim = det_final_lim(keys, xps, options.xb, options.xe)
+    ylim = det_final_lim(keys, yps, options.yb, options.ye)
     for ax in axes:
-        ax.set_xlabel(options.xlb,fontsize=20)
-        ax.set_ylabel(options.ylb,fontsize=20)
+        ax.set_xlabel(options.xlb, fontsize=20)
+        ax.set_ylabel(options.ylb, fontsize=20)
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         if options.title:
-            ax.set_title(options.title,fontsize=30)
-        # from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+            ax.set_title(options.title, fontsize=30)
+        # from matplotlib.ticker import MultipleLocator,  FormatStrFormatter
         # dx = (xlim[1]-xlim[0])/5.
-        # xmajorlocator = round(dx, np.ceil(abs(np.log10(dx))))
+        # xmajorlocator = round(dx,  np.ceil(abs(np.log10(dx))))
         # ax.xaxis.set_major_locator(MultipleLocator(xmajorlocator))
         # ax.xaxis.set_minor_locator(MultipleLocator(xmajorlocator/10.))
         # dy = (ylim[1]-ylim[0])/5.
-        # ymajorlocator = round(dy, np.ceil(abs(np.log10(dy))))
+        # ymajorlocator = round(dy,  np.ceil(abs(np.log10(dy))))
         # ax.yaxis.set_major_locator(MultipleLocator(ymajorlocator))
         # ax.yaxis.set_minor_locator(MultipleLocator(ymajorlocator/10.))
-        # ax.grid(b=True, which='minor')
+        # ax.grid(b=True,  which='minor')
         ax.grid(b=True)
 
 def convert_bins(option, opt_str, value, parser):
@@ -144,7 +144,6 @@ def find_the_files(option, opt_str, value, parser):
     for f in infs:
         infiles.extend(glob.glob(f))
     setattr(parser.values, option.dest, sorted(infiles))
-
 
 def parse_cmd(cmd=None):
     parser = optparse.OptionParser('usage: %prog [options] **args')
@@ -175,7 +174,7 @@ def parse_cmd(cmd=None):
                       help='specifly output file OPT.')
     parser.add_option('--ap', action="store_true", default=None, dest='ap', 
                       help='plot_all_properties?')
-    parser.add_option('--overlap', type="int", default=None, dest='overlap', 
+    parser.add_option('--overlap', type="int", default=None, dest='overlap',
                       help='put multiple subplots together.')
     parser.add_option('--nm', action="store_true", default=None, dest='nm', 
                       help='x axis normalized by 1000 or not? usefule when x values are large,  OPT.')
