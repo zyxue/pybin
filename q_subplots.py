@@ -32,8 +32,10 @@ def ax_plot(inf, ax, options):
         at = AnchoredText(
             re.compile(options.template_for_legend).search(inf).group(),
             prop=dict(size=24), frameon=True, loc=1,)
-    at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
-    ax.add_artist(at)
+        at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+        ax.add_artist(at)
+    else:
+        ax.legend()
 
     if options.title:
         ax.set_title(title)
