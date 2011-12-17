@@ -14,7 +14,7 @@ When you add a new function, add the function name to __all__, too.
 
 """
 
-__all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'e2ed',
+__all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'rg_c_alpha', 'e2ed',
            'sequence_spacing', 'do_dssp_E']
 
 def g_energy_tmpr(kwargs):
@@ -35,7 +35,7 @@ def rg_c_alpha(kwargs):
     Radius of Gyration: backbone heavy atoms only. e.g. for (GVPGV)7, there would be 107 atoms,
     which is 35 * 3 + 2 (modified ends)
     """
-    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg".format(**kwargs)
+    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_c_alpha.xvg".format(**kwargs)
 
 def e2ed(kwargs):
     """end to end distance"""
