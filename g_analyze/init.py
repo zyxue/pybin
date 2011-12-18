@@ -121,6 +121,8 @@ def parse_cmd():
                       help='specify the number of threads')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )
+    parser.add_option('-b', type='int', dest='btime', default=0,
+                      help='specify the beginning time, corresponding to the -b option in gromacs')
     parser.add_option('--config_file', type='str', dest='config_file', default='./.g_ana.cfg',
                       help='specify the configuration file')
     parser.add_option('--outputdir', type='str', dest='outputdir', default=None,
@@ -151,6 +153,8 @@ def target_the_type_of_analysis():
         #                       organize.g_trjconv_pro_gro.func_name],
         "g_make_ndx": [organize.g_make_ndx,
                        organize.g_make_ndx.func_name],
+        "copy_0_mdrun_sh": [organize.copy_0_mdrun_sh,
+                            organize.copy_0_mdrun_sh.func_name],
         'rg': [basic.rg,
                basic.rg.func_name],
         'rg_backbone': [basic.rg_backbone,

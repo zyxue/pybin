@@ -8,7 +8,7 @@ from threading import Thread
 
 __all__ = ['check_inputdirs', 'g_eneconv', 'g_make_ndx', 'g_trjcat',
            'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
-           'g_make_ndx']
+           'g_make_ndx', 'copy_0_mdrun_sh']
 
 def check_inputdirs(input_args):
     d = input_args['inputdir']
@@ -43,3 +43,6 @@ def g_trjconv_pro_xtc(input_args):
 
 def g_make_ndx(input_args):
     return "printf '{ndx_input}' | make_ndx -f {grof} -o {ndxf}".format(**input_args)
+
+def copy_0_mdrun_sh(input_args):
+    return "sed -e 's/SEQ/{seq}/g' -e 's/CDT/{cdt}/g' -e 's/NUM/{num}/g' /scratch/p/pomes/zyxue/mono_su_as/repository/smp_0_mdrun.sh > {inputdir}/0_mdrun.sh".format(**input_args)
