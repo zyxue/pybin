@@ -131,6 +131,9 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
             mysys = read_mysys_dat()
             input_args['peptide_length'] = mysys[seq].len
 
+        if OPTIONS.btime:
+            input_args['b'] = OPTIONS.btime
+
         cmd = g_tool(input_args)
         if logd:
             logf = os.path.join(logd, '{0}.log'.format(input_args['pf']))
