@@ -1,5 +1,13 @@
-outputdir = '/scratch/p/pomes/zyxue/mono_vac/v700_su/r_ana_results'
-database = '/scratch/p/pomes/zyxue/mono_su_as/mono_su_as.db'
+[system]
+    outputdir = '/scratch/p/pomes/zyxue/mono_vac/v700_su/r_ana_results'
+    database = '/scratch/p/pomes/zyxue/mono_su_as/mono_su_as.db'
+
+[keywords]
+    SEQS = 
+    CDTS =
+    TMPS =
+    NUMS =
+    AGGS =
 
 [dirchy]
     dirchy_d1 = '{seq}v700'

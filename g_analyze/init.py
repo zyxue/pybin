@@ -20,6 +20,13 @@ import basic
 
 AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__
 
+def parse_cmd():
+    """rewrite with argparse module"""
+    pass
+
+def targe_analysis_type():
+    pass
+
 def gen_input_files(target_dir, pf):
     """
     Generalizing input files specific for gromacs tools, default naming
