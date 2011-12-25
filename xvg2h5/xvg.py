@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-def parse_xvg(xvgf):
+def parse_xvg(xvgf, col=None):
     """
     This function parses a xvg file, and returns a string of descripition & an
     multi dimensional matrix of data
@@ -20,7 +20,12 @@ def parse_xvg(xvgf):
         else:
             split_line = line.split()
             if len(split_line) >= 2:                        # Why do I need this line? I forgot
-                data.append(tuple(split_line))              # tuple() necessary for table.append
+                if col:
+                    # added col before the number of results for some property
+                    # like do_dssp_E varies for different trajectories, headache!
+                    data.append(tuple(split_line[:col])) # tuple() necessary for table.append
+                else:
+                    data.append(tuple(split_line))
     f1.close()
     desc = ''.join(desc)
     return desc, data
@@ -28,7 +33,10 @@ def parse_xvg(xvgf):
 class Xvg(object):
     def __init__(self, xvgf):
         self.xvgf = xvgf
-        desc, data = parse_xvg(xvgf)
+        if 'dssp_E' in xvgf:
+            desc, data = parse_xvg(xvgf, col=2)
+        else:
+            desc, data = parse_xvg(xvgf)
         self.desc = desc
         self.data = data
 

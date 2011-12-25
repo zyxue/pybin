@@ -11,7 +11,7 @@ than modify the h5.conf in the directory you are working on
 
 import tables
 
-__tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing',
+__tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing', 'dssp_E',
               'upup', 'upun', 'unun', 'upvp', 'upvn', 'unvn', 'unvp',
               'upv', 'unv',
               'rdf_upup', 'rdf_upun', 'rdf_unun',
@@ -45,6 +45,24 @@ class rg_c_alpha(tables.IsDescription):
     rg_c_alpha_x = tables.Float32Col(pos=2)
     rg_c_alpha_y = tables.Float32Col(pos=3)
     rg_c_alpha_z = tables.Float32Col(pos=4)
+
+class dssp_E(tables.IsDescription):
+    """
+    dssp analysis, 
+    E: extended conformation
+    H: alpha helix
+    T: turn
+    B: isolated bridge
+    G: 3-10 helix
+    I: pi helix
+    C: coil
+    """
+    time = tables.Float32Col(pos=0)
+    Structure = tables.UInt32Col(pos=1)
+    # number of structure types vary, which is a headache!
+    # Coil = tables.UInt32Col(pos=2)
+    # b-sheet = tables.Float32Col(pos=3)
+    # rg_c_alpha_z = tables.Float32Col(pos=4)
 
 class sequence_spacing(tables.IsDescription):
     """
@@ -152,10 +170,12 @@ class rdf_unvn(tables.IsDescription):
 
 class Property(object):
     def __init__(self, property_name):
+        """values of d contain two parts: the table class & its description"""
         d = {
             'e2ed' : (e2ed, "end-to-end distance data along the time trjectory"),
             'rg_c_alpha': (rg_c_alpha, "Radius of gyration of C alpha along the time trjectory"),
             'sequence_spacing': (sequence_spacing, 'sequence_spacing'),
+            'dssp_E': (dssp_E, 'dssp_E (b-sheet)'),
             'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
             'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
             'upun': (upun, 'upun along the time trajectory'),

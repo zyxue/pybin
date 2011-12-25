@@ -25,7 +25,9 @@ def main(options):
     h5filename = conf_dict['data']['h5filename']
     title=conf_dict['data']['title']
     properties = conf_dict['properties']
-    backup_file(h5filename) # later when this script matures, this step may not be necessary
+    
+    if not options.nobk:
+        backup_file(h5filename) # later when this script matures, this step may not be necessary
 
     # Get the property name first, then based on it get the 
     # table description, table format
@@ -148,6 +150,9 @@ def parse_cmd():
     parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, 
                       action='callback', callback=callback.convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
+    parser.add_option('--nobk', dest='nobk', action='store_true', default=False,
+                      help='don\'t backup to save time, especially when the h5 file is big, make sure your code works before using this option, otherwise h5 file may be corrupted, and data lost "')
+
     (options, args) = parser.parse_args()
     return options
 
