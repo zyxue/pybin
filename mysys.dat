@@ -1,6 +1,6 @@
 # PEPTIDE-SPECIFIC:
 
-# sid seq     col char hbg scnpg gptg len tex_seq order natoms seqitp
+# sid seq     col marker hbg scnpg gptg len tex_seq order natoms seqitp
 @ sq1 (GVPGV)7 blue    ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
 @ sq2 (GGVGV)7 green   o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
 @ sq3 (PGV)12  red     v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
@@ -14,7 +14,7 @@
 # sid: sequence id
 # seq: sequence
 # col: color in plotting
-# char: character in plotting
+# marker: marker in plotting
 # hbg: number of hydrogen-bonding groups: Calculated by N(aa) - N(PRO) + 2(modified ends)
 # scnpg: number of side-chain nonpolar groups during the calculation of nonpolar
 # interactions (1*G + 2*V + 3*P + 1*A) + 1(modified N-ends)

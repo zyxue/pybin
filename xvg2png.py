@@ -4,24 +4,37 @@ import numpy as np
 
 def xvg2array(xvgf):
     """This turns a xvg file into two array""" 
+    data = []
     f1 = open(xvgf, 'r')
-    xlist = []
-    ylist = []
     for line in f1:
         if line.startswith('#') or line.startswith('@'):
             pass
         else:
             linelist = line.split()
             if len(linelist) >= 2:
-                xlist.append(eval(linelist[0]))
-                ylist.append(eval(linelist[1]))
-    xarray = np.array(xlist,dtype=float)
-    yarray = np.array(ylist,dtype=float)
+                data.append([float(i) for i in linelist])
     f1.close()
-    return xarray, yarray
+    data = np.array(data)
+    x = data[:, 0]
+    y = data[:, 1]
+    return x, y
 
 def xvg2array_eb(xvgf, xvol, ycol):
-    pass
+    data = []
+    f1 = open(xvgf, 'r')
+    for line in f1:
+        if line.startswith('#') or line.startswith('@'):
+            pass
+        else:
+            linelist = line.split()
+            if len(linelist) >= 2:
+                data.append([float(i) for i in linelist])
+    f1.close()
+    data = np.array(data)
+    x = data[:, 0]
+    y = data[:, 1]
+    e = data[:, 2]
+    return x, y, e
 
 def xvg2array_data_points(xvgf):
     data_points = []
