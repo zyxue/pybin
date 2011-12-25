@@ -16,6 +16,7 @@ from optparse import OptionParser
 from threading import Thread
 
 import organize
+import interaction
 import basic
 
 AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__
@@ -174,8 +175,10 @@ def target_the_type_of_analysis():
 #                    basic.e2ed_v.func_name],
         'sequence_spacing': [basic.sequence_spacing,
                              basic.sequence_spacing.func_name],
-        'do_dssp_E': [basic.do_dssp_E,
-                      basic.do_dssp_E.func_name]
+        'dssp_E': [basic.dssp_E,
+                      basic.dssp_E.func_name],
+        'upup60': [interaction.upup60,
+                   interaction.upup60.func_name]
         }
     if options.toa in analysis_methods:
         g_tool, g_tool_name = analysis_methods[options.toa]
