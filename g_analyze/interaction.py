@@ -7,9 +7,16 @@ interaction.
 
 NOTE: PROBABLY THIS FILE WILL BE REWRITTEN!!! 2011-11-18
 
+OPTIONS FOR OUTPUT FILES:
+-dist # distance distribution of hydrogen bonds               
+-ang  # angle distribution of HB                              
+-hx   # number of n-n+i HB as a function of time, 0 <= i <= 6 
+-hbn  # existence matriz for all hydrogen bonds over all
+-hbm  # index for hbm, useful if you want to draw the map
 """
 
-__all__ = ['unun', 'unvn', 'unvp', 'upun', 'upup', 'upvn', 'upvp', 'vnvn', 'vpvn', 'vpvp']
+__all__ = ['unun', 'unvn', 'unvp', 'upun', 'upup', 'upvn', 'upvp', 'vnvn', 'vpvn', 'vpvp',
+           'upup60']
 
 def inter_groups_matrix():
     igm = {
@@ -44,6 +51,15 @@ def upup(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default crit
     if kwargs.has_key('hb_tprf'):
         kwargs['tprf'] = kwargs['hb_tprf']
     return uu_hb_template.format(**kwargs)
+
+def upup60(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default criteria in gromacs 4.0.7
+    return 'printf "1\n1" | myg_hbond -f {xtcf} -s {tprf} -b {b} -r 3.5 -a 60 -nonitacc \
+-num {anadir}/{pf}_upup60.xvg \
+-dist {anadir}/{pf}_upup60_dist.xvg \
+-ang {anadir}/{pf}_upup60_ang.xvg \
+-hx {anadir}/{pf}_upup60_hx2.xvg \
+-hbm {anadir}/{pf}_upup60_hbm.xvg \
+-hbn {anadir}/{pf}_upup60_hbn.xvg'.format(**kwargs)
 
 def upun(kwargs):
     return uu_nonhb_template.format(**kwargs)
