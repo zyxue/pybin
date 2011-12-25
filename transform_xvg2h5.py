@@ -11,7 +11,7 @@ import callback
 from configobj import ConfigObj
 from optparse import OptionParser
 
-from xvg2h5 import h5_tables as h5t
+from xvg2h5 import h5tables as h5t
 
 TABLES = h5t.__tables__
 

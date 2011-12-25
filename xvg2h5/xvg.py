@@ -20,10 +20,9 @@ def parse_xvg(xvgf):
         else:
             split_line = line.split()
             if len(split_line) >= 2:                        # Why do I need this line? I forgot
-                data.append([float(i) for i in split_line])
+                data.append(tuple(split_line))              # tuple() necessary for table.append
     f1.close()
     desc = ''.join(desc)
-    data = np.array(data)
     return desc, data
 
 class Xvg(object):
