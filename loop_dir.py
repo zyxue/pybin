@@ -92,7 +92,7 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
         NUMS = config_dict['NUMS']
 
     # more will be appended in the future
-    non_organize_modules = ['g_analyze.basic']
+    non_organize_modules = ['g_analyze.basic', 'g_analyze.interaction']
 
     for inputdir, pf, seq, cdt, tmp, num in dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
         input_args = dict(inputdir=inputdir, pf=pf, seq=seq, cdt=cdt, num=num)
