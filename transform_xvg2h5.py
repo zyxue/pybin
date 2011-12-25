@@ -12,97 +12,124 @@ from configobj import ConfigObj
 from optparse import OptionParser
 
 from xvg2h5 import h5tables as h5t
+from xvg2h5 import xvg
 
 TABLES = h5t.__tables__
 
-def main(OPTIONS):
-    cfg_dict = ConfigObj('.h5.cfg')
-    h5filename = cfg_dict['h5filename']
-    backup_old_file(h5filename) # later when this script matures, this step may not be necessary
+def main(options):
+    """
+    basically it verifies the options and conf_dict first, then loop_xvgs,
+    passing whatever should be parsed, ugly code!!! aaaaaahhh....
+    """
+    conf_dict = ConfigObj('.h5.conf')
+    h5filename = conf_dict['data']['h5filename']
+    title=conf_dict['data']['title']
+    properties = conf_dict['properties']
+    backup_file(h5filename) # later when this script matures, this step may not be necessary
 
-    if OPTIONS.property_name is None:
+    # Get the property name first, then based on it get the 
+    # table description, table format
+    pn = options.property_name
+    if pn is None:
         raise ValueError('You must specify --property-name')
+    elif not pn in properties:
+        raise ValueError('"{0}" has not been included in the .h5.conf file'.format(pn))
     
-    ppty_name = OPTIONS.property_name
+    obj_property = h5t.Property(pn)
+    p_conf = properties[pn]
 
-    ppty_desc = h5t.target_desc(ppty_name)
-    ppty_table = h5t.target_table(ppty_name)
-    ppty_cols = h5t.target_cols(ppty_name)
+    h5file = tables.openFile(h5filename, mode="a", title=title)
+    filters = tables.Filters(complevel=8, complib='zlib')    
 
-    xvg_pattchy_dict = cfg_dict['xvg_pattchy']
-    xvg_pattern = os.path.join(xvg_pattchy_dict['xchy1'],
-                               xvg_pattchy_dict['xchy2'])
+    pgrouppath = create_group(h5file, '/', pn, filters, title=obj_property.desc ) # property grouppath
+    try:
+        ogd = p_conf['ogd']
+    except KeyError:
+        print "#" * 20
+        print "lala! Something is wrong! 'ogd' is not configured"
+        print "#" * 20, "\n"
 
-    loop_xvgs(ppty_name, ppty_desc, ppty_table, ppty_cols, h5filename, cfg_dict, xvg_pattern)
+    create_group(h5file, os.path.join('/', pn), 'ogd', filters)
+    ogdpath = os.path.join('/', pn, 'ogd')
 
-def loop_xvgs(ppty_name, ppty_desc, ppty_table, ppty_cols, h5filename, cfg_dict, xvg_pattern):
+    SEQS, CDTS, TMPS, NUMS = get_sctn(options, conf_dict['systems'])
+
+    # name pattern for a table
+    # loop through xvg files and create a table for each one
+    # ugly code!!! aaaaaahhh Should I learn oop? and make it more clear!
+    # parsing so many options are really confusing
+    loop_xvgs(SEQS, CDTS, TMPS, NUMS,
+              pn, h5file, obj_property, ogd, ogdpath
+              )
+
+def create_group(h5file, path, name, filters, title=''):
+    if isinstance(path, str):
+        pathname = os.path.join(path, name)
+    if not h5file.__contains__(pathname):
+        g = h5file.createGroup(path, name, title, filters)
+    else:
+        g = h5file.getNode(path, name)
+    return g
+
+def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
+              property_name, h5file, obj_property, ogd, ogdpath):
     """
     Under one group which is the name of the property, each xvg file will be
     transformed to a table, dirchy is not implemented, seems useless,
     unnecessary details.
     """
-    h5file = tables.openFile(h5filename, mode="a", title='all analysis results about v700_su')
-
-    ppty_g = h5file.createGroup('/', ppty_name, title=ppty_desc)
-
-    SEQS = options.SEQS if options.SEQS else cfg_dict['SEQS']
-    CDTS = options.CDTS if options.CDTS else cfg_dict['CDTS']
-    TMPS = options.TMPS if options.TMPS else cfg_dict['TMPS']
-    NUMS = options.NUMS if options.NUMS else cfg_dict['NUMS']
-
     for seq in SEQS:
         for cdt in CDTS:
             for tmp in TMPS:
                 for num in NUMS:
-                    xvgf = xvg_pattern.format(**locals())
-                    print xvgf
+                    xvgf = ogd['xvg_path_pattern'].format(**locals())
                     if os.path.exists(xvgf):
-                        # parse the xvg file, get data and description
-                        desc, data = parse_xvg(xvgf)
+                        print xvgf
+                        objxvg = xvg.Xvg(xvgf)
+                        tablename = ogd['tablename_pattern'].format(**locals())
+                        create_table(h5file, ogdpath, tablename, objxvg.data, objxvg.desc, 
+                                     obj_property.schema)
+                    else:
+                        print "{xvgf} doesn't exist.".format(xvgf=xvgf)
 
-                        # create a table for each xvg file
-                        tablename = cfg_dict['prefix'].format(**locals())
-                        table = h5file.createTable(ppty_g, tablename, ppty_table, title=desc)
-                        row = table.row
-                        for row_values in data:
-                            for k, v in enumerate(row_values):
-                                row[ppty_cols[k]] = row_values[k]
-                            row.append()
-                        table.flush()
+def create_table(h5file, grouppath, tablename, data, desc, property_table):
+    # ugly code, reverse should be removed accordly
+    property_cols = property_table.columns.keys()           # get the column names(keys)
+    # property_cols.reverse()
+    tablepath = os.path.join(grouppath, tablename)
+    
+    if not h5file.__contains__(tablepath):
+        table = h5file.createTable(grouppath, tablename, property_table, title=desc)
+        table.append(data)
+        # row = table.row
+        # for row_values in data:
+        #     for k, v in enumerate(property_cols):
+        #         row[v] = row_values[k]
+        #     row.append()
+        # table.flush()
+    else:
+        table = h5file.getNode(tablepath)
+    return table
 
-def backup_old_file(old_f):
-    if os.path.exists(old_f):
+def get_sctn(options, configuration):
+    SEQS = options.SEQS if options.SEQS else configuration['SEQS']
+    CDTS = options.CDTS if options.CDTS else configuration['CDTS']
+    TMPS = options.TMPS if options.TMPS else configuration['TMPS']
+    NUMS = options.NUMS if options.NUMS else configuration['NUMS']
+    return SEQS, CDTS, TMPS, NUMS
+
+def backup_file(f):
+    if os.path.exists(f):
+        dirname = os.path.dirname(f)
+        basename = os.path.basename(f)
         count = 1
-        rn_to = '#' + old_f + '.{0}#'.format(count)                 # rename to
+        rn_to = os.path.join(
+            dirname, '#' + basename + '.{0}#'.format(count))
         while os.path.exists(rn_to):
             count += 1
-            rn_to = '#' + old_f + '.{0}#'.format(count)                 # rename to
-        shutil.copy(old_f, rn_to)
-
-def parse_xvg(xvgf):
-    """
-    This function parses a xvg file, and returns a string of descripition & an
-    multi dimensional matrix of data
-
-    NOTE: Before modifing this script, please read carefully the format of you
-    target xvg file, make sure it's backward compatible.  and create a new
-    TABLE (i.e. class SomeProperty(tables.IsDescription) for the targeted
-    property.
-    """
-    f1 = open(xvgf, 'r')
-    desc = []
-    data = []
-    for line in f1:
-        if line.startswith('#') or line.startswith('@'):
-            desc.append(line)
-        else:
-            split_line = line.split()
-            if len(split_line) >= 2:                        # Why do I need this line? I forgot
-                data.append([float(i) for i in split_line])
-    f1.close()
-    desc = ''.join(desc)
-    data = np.array(data)
-    return desc, data
+            rn_to = os.path.join(
+                dirname, '#' + basename + '.{0}#'.format(count))
+        shutil.copy(f, rn_to)
 
 def parse_cmd():
     """parse_cmd"""
@@ -121,8 +148,8 @@ def parse_cmd():
     parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, 
                       action='callback', callback=callback.convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
-    (OPTIONS, args) = parser.parse_args()
-    return OPTIONS
+    (options, args) = parser.parse_args()
+    return options
 
 if __name__ == "__main__":
     options = parse_cmd()
