@@ -1,0 +1,61 @@
+# PEPTIDE-SPECIFIC:
+
+# sid seq     col marker hbg scnpg gptg len tex_seq order natoms seqitp
+@ sq1 (GVPGV)7 blue    ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
+@ sq2 (GGVGV)7 green   o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
+@ sq3 (PGV)12  red     v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
+@ sq4 (GVGVA)7 cyan    < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp
+@ sq5 (G)35    black   * 72 36 1      35 (G)_3_5   5 254 sq5.itp
+@ sq6 (GV)18   yellow  > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp
+@ sq7 (Q)35    magenta p 72 00 000000 35 (Q)_3_5   0 000 sq7.itp
+@ sq8 (A)35    orange  + 72 00 000000 35 (A)_3_5   0 000 sq8.itp
+@ sq9 (P)35    grey    8 37 00 000000 35 (P)_3_5   0 000 sq9.itp
+
+# sid: sequence id
+# seq: sequence
+# col: color in plotting
+# marker: marker in plotting
+# hbg: number of hydrogen-bonding groups: Calculated by N(aa) - N(PRO) + 2(modified ends)
+# scnpg: number of side-chain nonpolar groups during the calculation of nonpolar
+# interactions (1*G + 2*V + 3*P + 1*A) + 1(modified N-ends)
+# gptg: Gly pecentage
+# len: length of the peptide
+# tex_seq: sequence formatted in latex
+# order: the order of output
+# natoms: number of atoms per molecule including hydrogen
+
+# SOLVENT-SPECIFIC:
+
+# cid name col  solgro solitp maxsol box solname
+& w water     r tip4p_216.gro tip4p.itp 3700 5.8 SOL
+& m methonl   b meo_1728.gro  meo.itp   3300 7.3 MEO
+& e ethanol   g eth_1000.gro  eth.itp   2200 7.3 ETH
+& p propanol  m pol_512.gro   pol.itp   2000 7.8 POL
+& o octane    c oct_512.gro   oct.itp   350  5.8 OCT
+& v vacuo     k None          None      None None None
+
+# nsol: full name of solvent
+# b: black 
+# r: red   
+# g: green 
+# m: magenta
+# c: cyan  
+# k: black
+
+# SYSTEM-SPECIFIC
+
+# tid nm_unvn nm_unvp nm_upvn nm_upvp nm_unun nm_unup nm_upup nm_upv nm_unv
+$ sq1m 295.20 112.24  160.57  41.25   64 1 65 201.83 407.45
+$ sq1w None   300.57  None    67.51   64 1 65 67.51  300.57
+$ sq2m 176.32 65.89   192.59  47.35   50 1 72 239.94 242.22
+$ sq2w None   191.54  None    73.10   50 1 72 73.10  191.54
+$ sq3m 362.14 138.16  148.03  37.73   73 1 62 185.76 500.30
+$ sq3w None   373.07  None    64.44   73 1 62 64.44  373.07
+$ sq4m 224.10 86.99   185.51  48.52   50 1 72 234.03 311.09
+$ sq4w None   245.86  None    73.14   50 1 72 73.14  245.86
+$ sq5m 266.08 127.82  227.85  46.89   36 1 72 274.73 393.90
+$ sq5w None   269.30  None    73.07   36 1 72 73.07  269.30
+$ sq6m 217.05 80.79   186.57  47.63   55 1 74 234.20 297.84
+$ sq6w None   234.42  None    75.28   55 1 74 75.28  234.42
+                                                        
+# nm_unvp (cannot find a proper way of normalization yet 2011-08-05)

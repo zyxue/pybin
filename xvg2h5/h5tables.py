@@ -48,6 +48,10 @@ class rg_c_alpha(tables.IsDescription):
 
 class dssp_E(tables.IsDescription):
     """
+    # This table must be redesigned and do_dssp program modified if you want to
+    # do all secondary structure(ss) analysis, doing do_dssp for each ss is
+    # unacceptable.
+
     dssp analysis, 
     E: extended conformation
     H: alpha helix
