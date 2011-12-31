@@ -35,10 +35,11 @@ def gen_input_files(target_dir, pf):
 
     input_files = dict(
         xtcf = os.path.join(target_dir, '{pf}_md.xtc'.format(pf=pf)),
+        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
         proxtcf = os.path.join(target_dir, '{pf}_pro.xtc'.format(pf=pf)),
+        progrof = os.path.join(target_dir, '{pf}_pro.gro'.format(pf=pf)),
         tprf = os.path.join(target_dir, '{pf}_md.tpr'.format(pf=pf)),
         edrf = os.path.join(target_dir, '{pf}_md.edr'.format(pf=pf)),
-        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
         ndxf = os.path.join(target_dir, '{pf}.ndx'.format(pf=pf)))
 
     hb_tprf = os.path.join(target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
@@ -157,8 +158,8 @@ def target_the_type_of_analysis():
                               organize.g_trjconv_pro_xtc.func_name],
         "g_trjconv_gro": [organize.g_trjconv_gro,
                           organize.g_trjconv_gro.func_name],
-        # "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
-        #                       organize.g_trjconv_pro_gro.func_name],
+        "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
+                              organize.g_trjconv_pro_gro.func_name],
         "g_make_ndx": [organize.g_make_ndx,
                        organize.g_make_ndx.func_name],
         "copy_0_mdrun_sh": [organize.copy_0_mdrun_sh,
