@@ -85,14 +85,14 @@ def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
             for tmp in TMPS:
                 for num in NUMS:
                     xvgf = ogd['xvg_path_pattern'].format(**locals())
-                    if os.path.exists(xvgf):
+                    if not os.path.exists(xvgf):
+                        print "ATTENTION: {0} doesn't exist! YOU SURE YOU KNOW THIS, RIGHT?".format(xvgf)
+                    else:
                         print xvgf
                         objxvg = xvg.Xvg(xvgf)
                         tablename = ogd['tablename_pattern'].format(**locals())
                         create_table(h5file, ogdpath, tablename, objxvg.data, objxvg.desc, 
                                      obj_property.schema)
-                    else:
-                        print "{xvgf} doesn't exist.".format(xvgf=xvgf)
 
 def create_table(h5file, grouppath, tablename, data, desc, property_table):
     # ugly code, reverse should be removed accordly
