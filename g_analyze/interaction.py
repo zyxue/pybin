@@ -19,6 +19,7 @@ __all__ = ['unun', 'unvn', 'unvp', 'upun', 'upup', 'upvn', 'upvp', 'vnvn', 'vpvn
            'upup60']
 
 def inter_groups_matrix():
+    # this is not correct anymore
     igm = {
         'upup':'"16\n16"','upun':'"16\n17"','unun':'"17\n17"',
         'upvp':'"16\n14"','upvn':'"16\n15"','unvp':'"17\n14"','unvn':'"17\n15"',

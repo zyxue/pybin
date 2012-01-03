@@ -1,12 +1,12 @@
 # PEPTIDE-SPECIFIC:
 
-# sid seq     col marker hbg scnpg gptg len tex_seq order natoms seqitp scnpg2
-@ sq1 (GVPGV)7 blue    ^ 65 63 0.4    35 (GVPGV)_7 0 429 sq1.itp 64
-@ sq2 (GGVGV)7 green   o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp 50
-@ sq3 (PGV)12  red     v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp 73
-@ sq4 (GVGVA)7 cyan    < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp 50
-@ sq5 (G)35    black   * 72 36 1      35 (G)_3_5   5 254 sq5.itp 36
-@ sq6 (GV)18   yellow  > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp 55
+# sid seq     col marker hbg scnpg gptg len tex_seq order natoms seqitp
+@ sq1 (GVPGV)7 blue    ^ 65 50 0.4    35 (GVPGV)_7 0 429 sq1.itp
+@ sq2 (GGVGV)7 green   o 72 29 0.6    35 (GGVGV)_7 4 380 sq2.itp
+@ sq3 (PGV)12  red     v 62 61 0.3333 36 (PGV)_1_2 1 453 sq3.itp
+@ sq4 (GVGVA)7 cyan    < 72 36 0.4    35 (GVGVA)_7 2 501 sq4.itp
+@ sq5 (G)35    black   * 72 36 1      35 (G)_3_5   5 254 sq5.itp
+@ sq6 (GV)18   yellow  > 74 37 0.5    36 (GV)_1_8  3 423 sq6.itp
 @ sq7 (Q)35    magenta p 72 00 000000 35 (Q)_3_5   0 000 sq7.itp
 @ sq8 (A)35    orange  + 72 00 000000 35 (A)_3_5   0 000 sq8.itp
 @ sq9 (P)35    grey    8 37 00 000000 35 (P)_3_5   0 000 sq9.itp
@@ -19,17 +19,14 @@
 # hbg: number of hydrogen-bonding groups: Calculated by N(aa) - N(PRO) +
 # 2(modified ends) (because "1\n1" counting involves the ends
 
-# scnpg: number of side-chain nonpolar groups during the calculation of
-# nonpolar interactions (1*G + 2*V + 3*P + 1*A), (G)35 is
-# pecular since it has no sidechain, count C alpha instead
+# scnpg: number of side-chain nonpolar groups during the calculation of nonpolar
+# interactions (1*G + 2*V + 3*P + 1*A) + 1(modified N-ends)
 
 # gptg: Gly pecentage
 # len: length of the peptide
 # tex_seq: sequence formatted in latex
 # order: the order of output
 # natoms: number of atoms per molecule including hydrogen
-
-# scnpg2: counting C alpha of G even in sequences other than (G)35.
 
 # SOLVENT-SPECIFIC:
 
