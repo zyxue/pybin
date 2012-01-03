@@ -23,3 +23,16 @@ class Solvent(object):
         self.maxsol = ssp[5]
         self.box = ssp[6]
         self.solname =ssp[7]
+
+class Mono_sys(object):
+    def __init__(self, monosp):                # monosp: mono_system Specific Propertis
+        self.tid = monosp[0]
+        self.nm_unvn = monosp[1]
+        self.nm_unvp = monosp[2]
+        self.nm_upvn = monosp[3]
+        self.nm_upvp = monosp[4]
+        self.nm_unun = monosp[5]
+        self.nm_unup = monosp[6]
+        self.nm_upup = monosp[7]
+        self.nm_upv = monosp[8]
+        self.nm_unv = monosp[9]

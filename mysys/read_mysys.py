@@ -15,6 +15,9 @@ def read():
                 elif line.startswith('&'):
                     sl = line.split()
                     mysys[sl[1]] = Solvent(sl[1:])
+                elif line.startswith('$'): 
+                    sl = line.split()
+                    mysys[sl[1]] = Mono_sys(sl[1:])
                 else:
                     pass
     return mysys
@@ -22,6 +25,6 @@ def read():
 if __name__ == "__main__":
     import pprint
     a = read()
-    pprint.pprint(a)
-    for k in a.keys():
-        print dir(a[k])
+    print a['sq1w'].nm_unv
+#     for k in a.keys():
+#         print dir(a[k])
