@@ -21,6 +21,7 @@
 
 # scnpg: number of side-chain nonpolar groups during the calculation of nonpolar
 # interactions (1*G + 2*V + 3*P + 1*A) + 1(modified N-ends)
+
 # gptg: Gly pecentage
 # len: length of the peptide
 # tex_seq: sequence formatted in latex
