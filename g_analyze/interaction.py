@@ -66,7 +66,7 @@ def upun(kwargs):
     return uu_nonhb_template.format(**kwargs)
 
 def unun(kwargs):
-    return uu_nonhb_template.format(**kwargs)
+    return 'unun.py -f {proxtcf} -s {progrof} -b {b} -c 0.53 -o {anadir}/{pf}_unun.xvg'.format(**kwargs)
 
 ####################UVI####################
 def upvp(kwargs):
