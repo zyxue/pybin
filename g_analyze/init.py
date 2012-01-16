@@ -19,7 +19,7 @@ import organize
 import interaction
 import basic
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__
+AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__
 
 def parse_cmd():
     """rewrite with argparse module"""
@@ -127,7 +127,7 @@ def parse_cmd():
     parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_num,
                       help='specify the replica number, i.e. "1 2 3" or "1-20"')
     parser.add_option('--nt', type='int', dest='numthread', default=16,
-                      help='specify the number of threads')
+                      help='specify the number of threads, default is 16')
     parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
                       help='available_options:\n%r' % AVAILABLE_ANALYSIS )
     parser.add_option('-b', type='int', dest='btime', default=0,
@@ -179,7 +179,9 @@ def target_the_type_of_analysis():
         'dssp_E': [basic.dssp_E,
                       basic.dssp_E.func_name],
         'upup60': [interaction.upup60,
-                   interaction.upup60.func_name]
+                   interaction.upup60.func_name],
+        'unun': [interaction.unun,
+                 interaction.unun.func_name]
         }
     if options.toa in analysis_methods:
         g_tool, g_tool_name = analysis_methods[options.toa]
