@@ -1,11 +1,14 @@
-
 #! /usr/bin/env python
 
 import os
 from configobj import ConfigObj
 
-from g_analyze import init as gai
+from g_analyze import init2 as gai
 from g_analyze import organize as gao
+
+VERSION = '2.0'
+AUTHOR = 'zyxue'
+EMAIL = 'zhuyi.xue@utoronto.ca'
 
 def parse_conf():
     pass
@@ -17,36 +20,37 @@ def gen_inputargs():
     """loop throught all the directories and gen input args for each"""
     pass
 
-def dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
+def dirchy(SEQS, CDTS, TMPS, NUMS, config_dict):
     """ generate the directory hierarchy"""
-    dirchy_dict = CONFIG_DICT['dirchy']
+    dirchy_dict = config_dict['dirchy']
     pwd = os.getenv('PWD')
     for seq in SEQS:
         for cdt in CDTS:
             for tmp in TMPS:
                 for num in NUMS:
-                    d1 = dirchy_dict['dirchy_d1'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d2 = dirchy_dict['dirchy_d2'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d3 = dirchy_dict['dirchy_d3'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d4 = dirchy_dict['dirchy_d4'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
+                    tropoinputdir = os.path.join(
+                        dirchy_dict['dirchy_d1'],
+                        dirchy_dict['dirchy_d2'],
+                        dirchy_dict['dirchy_d3'],
+                        dirchy_dict['dirchy_d4']
+                        )
+                    inputdir = tropoinputdir.format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     # all the following filenames will be named after pf
+                    # i.e.  xtcf, proxtcf, tprf, edrf, grof, ndxf
                     pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num) 
-                    # where holds the xtcf, proxtcf, tprf, edrf, grof, ndxf
-                    inputdir = os.path.join(pwd, d1, d2, d3, d4)
                     if os.path.exists(inputdir):
                         yield inputdir, pf, seq, cdt, tmp, num
 
-def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
+def init_dirs(g_tool_name, ARGS, CONFIG_DICT):
     """
     initialize directories like outputdir, and outputdir/LOGS and
-    outputdir/LOGS/{g_tool_name_log} if OPTIONS.nolog is False
+    outputdir/LOGS/{g_tool_name_log} if ARGS.nolog is False
     """
-
     # Get the path for outpudir, if not specified either in your console or in
     # the configuration file, 'R_OUTPUT" will be created in the current
-    # directory to avoid scinet creash.
-    if OPTIONS.outputdir:
-        outputdir = OPTIONS.outputdir
+    # directory to avoid scinet crash.
+    if ARGS.outputdir:
+        outputdir = ARGS.outputdir
     elif CONFIG_DICT.has_key('outputdir'):
         outputdir = CONFIG_DICT['outputdir']
     else:
@@ -58,10 +62,10 @@ def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
     # parent_logd holds all the logs which will keep the output of the
     # analysis tools you use
     parent_logd = os.path.join(outputdir, 'LOGS') 
-    if not os.path.exists(parent_logd) and not OPTIONS.test: # if your testing, no point to mkdir
+    if not os.path.exists(parent_logd) and not ARGS.test: # if your testing, no point to mkdir
         os.mkdir(parent_logd)
                            
-    if OPTIONS.nolog:
+    if ARGS.nolog:
         logd = None
     else:
         logd = os.path.join(
@@ -72,22 +76,22 @@ def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
     
     return outputdir, logd
 
-def init_seqs_cdts_tmps_nums(options, config_dict):
-    seqs = options.SEQS if options.SEQS else config_dict['SEQS']
-    cdts = options.CDTS if options.CDTS else config_dict['CDTS']
-    tmps = options.TMPS if options.TMPS else config_dict['TMPS']
-    nums = options.NUMS if options.NUMS else config_dict['NUMS']
+def init_seqs_cdts_tmps_nums(args, config_dict):
+    seqs = args.SEQS if args.SEQS else config_dict['SEQS']
+    cdts = args.CDTS if args.CDTS else config_dict['CDTS']
+    tmps = args.TMPS if args.TMPS else config_dict['TMPS']
+    nums = args.NUMS if args.NUMS else config_dict['NUMS']
     print seqs, cdts, tmps, nums
     return seqs, cdts, tmps, nums
 
-def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
+def gen_input_args(g_tool, g_tool_name, ARGS, CONFIG_DICT):
     """
     generate input_args, which in a dictionary that holds all the varaibles
     needed for your commands
     """
-    outputdir, logd = init_dirs(g_tool_name, OPTIONS, CONFIG_DICT)
+    outputdir, logd = init_dirs(g_tool_name, ARGS, CONFIG_DICT)
 
-    SEQS, CDTS, TMPS, NUMS = init_seqs_cdts_tmps_nums(OPTIONS, CONFIG_DICT)
+    SEQS, CDTS, TMPS, NUMS = init_seqs_cdts_tmps_nums(ARGS, CONFIG_DICT)
 
     # if any of SEQS, CDTS, TMPS, NUMS is None, read from .g_ana.cfg
     if not SEQS:
@@ -103,7 +107,7 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
         NUMS = config_dict['NUMS']
 
     # more will be appended in the future
-    non_organize_modules = ['g_analyze.basic']
+    non_organize_modules = ['g_analyze.basic', 'g_analyze.interaction']
 
     for inputdir, pf, seq, cdt, tmp, num in dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
         input_args = dict(inputdir=inputdir, pf=pf, seq=seq, cdt=cdt, num=num)
@@ -116,11 +120,11 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
         if g_tool.__module__ in non_organize_modules: # if in organize module, no new dir needs to be created
             anadir = os.path.join(outputdir, 'r_' + g_tool_name) # anadir should be a subfolder under outputdir
             input_args['anadir'] = anadir
-            if not os.path.exists(anadir) and not OPTIONS.test:
+            if not os.path.exists(anadir) and not ARGS.test:
                 os.mkdir(anadir)
         
         # this part will be improved later, particular when using a database
-        if OPTIONS.cdb:
+        if ARGS.cdb:
             import connect_db as cdb
             ss = cdb.connect_db(CONFIG_DICT['database'])
             query = ss.query(cdb.Cutoff_rg_alltrj).filter_by(sqid=seq)
@@ -130,20 +134,20 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
             input_args['b'] = 0                                       # default
 
         # particular to make_ndx
-        if OPTIONS.toa == 'g_make_ndx':
+        if ARGS.toa == 'g_make_ndx':
             ndx_id = CONFIG_DICT['ndx_input']                  # ndx_input_dict
             ndx_fd = CONFIG_DICT['ndx_format']                 # ndx_format_dict
             from pprint import pprint as pp
             # pp(locals())
             input_args['ndx_input'] = ' '.join([ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd])
 
-        if OPTIONS.toa == 'sequence_spacing':
+        if ARGS.toa == 'sequence_spacing':
             from Mysys import read_mysys_dat
             mysys = read_mysys_dat()
             input_args['peptide_length'] = mysys[seq].len
 
-        if OPTIONS.btime:
-            input_args['b'] = OPTIONS.btime
+        if ARGS.btime:
+            input_args['b'] = ARGS.btime
 
         cmd = g_tool(input_args)
         if logd:
@@ -153,18 +157,24 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
 
         yield (cmd, logf)
 
-if __name__ == "__main__":
+def main():
     # determine which function to call
-    g_tool, g_tool_name, OPTIONS = gai.target_the_type_of_analysis()
+    g_tool, ARGS = gai.target_the_type_of_analysis()
+    g_tool_name =  g_tool.func_name
 
-    config_file = OPTIONS.config_file
-    CONFIG_DICT = ConfigObj(config_file)
+    config_file = ARGS.config_file
+    if not os.path.exists(config_file):
+        raise ValueError('configuration file: {0} may not exist!'.format(config_file))
+    config_dict = ConfigObj(config_file)
 
-    x = gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT)
-    gai.runit(x, OPTIONS.numthread)
+    x = gen_input_args(g_tool, g_tool_name, ARGS, config_dict)
+    # gai.runit(x, ARGS.numthread)
 
     print "#" * 20
     from pprint import pprint as pp
-    pp(OPTIONS)
+    pp(ARGS)
     print "#" * 20
+
+if __name__ == "__main__":
+    main()
 
