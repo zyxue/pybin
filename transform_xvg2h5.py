@@ -21,6 +21,7 @@ def main(options):
     basically it verifies the options and conf_dict first, then loop_xvgs,
     passing whatever should be parsed, ugly code!!! aaaaaahhh....
     """
+    # add try except for h5filename
     conf_dict = ConfigObj('.h5.conf')
     h5filename = conf_dict['data']['h5filename']
     title=conf_dict['data']['title']
@@ -33,7 +34,7 @@ def main(options):
     # table description, table format
     pn = options.property_name
     if pn is None:
-        raise ValueError('You must specify --property-name')
+        raise ValueError('You must specify -p --property-name')
     elif not pn in properties:
         raise ValueError('"{0}" has not been included in the .h5.conf file'.format(pn))
     

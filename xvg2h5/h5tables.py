@@ -137,40 +137,10 @@ class unv(tables.IsDescription):
 
 #################### rdf ####################
 
-class rdf_upup(tables.IsDescription):
-    """rdf_upup along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_upup = tables.Float32Col(pos=1)
-
-class rdf_upun(tables.IsDescription):
-    """rdf_upun along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_upun = tables.Float32Col(pos=1)
-
-class rdf_unun(tables.IsDescription):
-    """rdf_unun along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_unun = tables.Float32Col(pos=1)
-
-class rdf_upvp(tables.IsDescription):
-    """rdf_upvp along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_upvp = tables.Float32Col(pos=1)
-
-class rdf_upvn(tables.IsDescription):
-    """rdf_upvn along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_upvn = tables.Float32Col(pos=1)
-
-class rdf_unvp(tables.IsDescription):
-    """rdf_unvp along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_unvp = tables.Float32Col(pos=1)
-
-class rdf_unvn(tables.IsDescription):
-    """rdf_unvn along the time trajectory"""
-    time = tables.Float32Col(pos=0)
-    rdf_unvn = tables.Float32Col(pos=1)
+class rdf(tables.IsDescription):
+    """rdf along the time trajectory"""
+    radius = tables.Float32Col(pos=0)
+    rdf = tables.Float32Col(pos=1)
 
 class Property(object):
     def __init__(self, property_name):
@@ -192,13 +162,13 @@ class Property(object):
             'upv':  (upv, 'upv along the time trajectory'),
             'unv':  (unv, 'unv along the time trajectory'),
 
-            'rdf_upup': (rdf_upup, 'rdf_upup along the time trajectory'),
-            'rdf_upun': (rdf_upun, 'rdf_upun along the time trajectory'),
-            'rdf_unun': (rdf_unun, 'rdf_unun along the time trajectory'),
-            'rdf_upvp': (rdf_upvp, 'rdf_upvp along the time trajectory'),
-            'rdf_upvn': (rdf_upvn, 'rdf_upvn along the time trajectory'),
-            'rdf_unvp': (rdf_unvp, 'rdf_unvp along the time trajectory'),
-            'rdf_unvn': (rdf_unvn, 'rdf_unvn along the time trajectory')
+            'rdf_upup': (rdf, 'rdf along the time trajectory'),
+            'rdf_upun': (rdf, 'rdf along the time trajectory'),
+            'rdf_unun': (rdf, 'rdf along the time trajectory'),
+            'rdf_upvp': (rdf, 'rdf along the time trajectory'),
+            'rdf_upvn': (rdf, 'rdf along the time trajectory'),
+            'rdf_unvp': (rdf, 'rdf along the time trajectory'),
+            'rdf_unvn': (rdf, 'rdf along the time trajectory')
             }
         self.desc = d[property_name][1]
         self.schema = d[property_name][0]

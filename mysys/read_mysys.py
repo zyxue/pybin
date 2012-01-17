@@ -1,26 +1,28 @@
 #!/usr/bin/env python
 import os
 import shutil
-from mysys import *
+import mysys
 
 def read():
-    mysys = {}
-    home = os.getenv('HOME', None)
-    with open(os.path.join(home, 'pybin', 'mysys', 'mysys.dat'), 'r') as inf:
+    data_of_mysys = {}
+    # mysys_pwd: the directory where mysys is located
+    mysys_pwd = os.path.dirname(__file__) 
+
+    with open(os.path.join(mysys_pwd, 'mysys.dat'), 'r') as inf:
         for line in inf:
             if line.strip():
                 if line.startswith('@'):
                     sl = line.split()
-                    mysys[sl[1]] = Peptide(sl[1:])
+                    data_of_mysys[sl[1]] = mysys.Peptide(sl[1:])
                 elif line.startswith('&'):
                     sl = line.split()
-                    mysys[sl[1]] = Solvent(sl[1:])
+                    data_of_mysys[sl[1]] = mysys.Solvent(sl[1:])
                 elif line.startswith('$'): 
                     sl = line.split()
-                    mysys[sl[1]] = Mono_sys(sl[1:])
+                    data_of_mysys[sl[1]] = mysys.Mono_sys(sl[1:])
                 else:
                     pass
-    return mysys
+    return data_of_mysys
 
 if __name__ == "__main__":
     import pprint
