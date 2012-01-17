@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 """
-This script is used to wrap the process of file transfer between SciNet,
-Collose and my local system.
+This script is used to wrap the process of file transfer between remote clusters (i.e. SciNet, Collose, Mp2) and my local system.
 
 CAVEAT: options must come at the end of the cmd
 """
@@ -10,34 +9,48 @@ CAVEAT: options must come at the end of the cmd
 import sys
 import glob
 import subprocess
-import optparse
+import argparse
 
-parser = optparse.OptionParser()
-parser.add_option('-r', '--recursive', action='store_true', default=None,
-                  dest='recursive', help='recursive or not')
-parser.add_option('--l2h', action='store_true', default=None,
-                  dest='l2s', help='"local to host is specified')
-parser.add_option('-f', '--from', type='str', dest='from_', default=None)
-parser.add_option('-t', '--to', type='str', dest='to_', default=None)
-parser.add_option('--host', type='str', dest='host', default='scinet', help='scinet(default), colosse')
+def parse_cmd():
+    parser = argparse.ArgumentParser('-f some/file/path -t /SOME/FILE/PATH')
+    parser.add_argument('-r', '--recursive', action='store_true', 
+                        default=None, dest='recursive', 
+                        help='recursive or not')
+    parser.add_argument('--l2h', action='store_true', 
+                        default=None, dest='l2s', 
+                        help='"local to host is specified')
+    parser.add_argument('-f', '--from', type=str, dest='from_', required=True,
+                        help='From what file')
+    parser.add_argument('-t', '--to', type=str, dest='to_', required=True,
+                        help='To what file')
+    parser.add_argument('--host', type=str, dest='host', default='scinet', 
+                        help='specify the host name: s(scinet, default), c(colosse), m(mp2)')
+    
+    args = parser.parse_args()
+    return args
 
+def main():
+    DD = {
+        's': 'zyxue@login.scinet.utoronto.ca:',
+        'c': 'zhuyxue12@colosse.clumeq.ca:',
+        'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:'
+        }
 
-if __name__ == '__main__':
-    options, args = parser.parse_args(sys.argv[1:])
-    if options.host == 'scinet':
-        host = 'zyxue@login.scinet.utoronto.ca:'
-    elif options.host == 'colosse':
-        host = 'zhuyxue12@colosse.clumeq.ca:'
+    ARGS = parse_cmd()
+    host = DD[ARGS.host]
 
-    if options.l2s:                                         # local to scinet
-        local_files = glob.glob(options.from_)
-        cmd = ['rsync'] + local_files + [host + options.to_,
-            '--stats', '-h', '-t', '--progress']
+    if ARGS.l2s:                                         # local to scinet
+        local_files = glob.glob(ARGS.from_)
+        cmd = (['rsync'] + local_files + 
+               [host + ARGS.to_, '--stats', '-h', '-t', '--progress'])
     else:
-        cmd = ['rsync', host + options.from_,
+        cmd = ['rsync', host + ARGS.from_,
                '--stats', '-h', '-t', '--progress']
-        if options.to_:
-            cmd.insert(2, options.to_)
-    if options.recursive:
+        if ARGS.to_:
+            cmd.insert(2, ARGS.to_)
+    if ARGS.recursive:
         cmd.append('-r')
     subprocess.call(cmd)
+
+if __name__ == '__main__':
+    main()
