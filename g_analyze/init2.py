@@ -41,6 +41,28 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'unun': interaction.unun,
     }
 
+<<<<<<< HEAD
+=======
+def gen_input_files(target_dir, pf):
+    """
+    Generalizing input files specific for gromacs tools, default naming
+    """
+
+    input_files = dict(
+        xtcf = os.path.join(target_dir, '{pf}_md.xtc'.format(pf=pf)),
+        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
+        proxtcf = os.path.join(target_dir, '{pf}_pro.xtc'.format(pf=pf)),
+        progrof = os.path.join(target_dir, '{pf}_pro.gro'.format(pf=pf)),
+        tprf = os.path.join(target_dir, '{pf}_md.tpr'.format(pf=pf)),
+        edrf = os.path.join(target_dir, '{pf}_md.edr'.format(pf=pf)),
+        ndxf = os.path.join(target_dir, '{pf}.ndx'.format(pf=pf)))
+
+    hb_tprf = os.path.join(target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
+    if os.path.isfile(hb_tprf):
+        input_files.update(dict(hb_tprf=hb_tprf))
+    return input_files
+
+>>>>>>> e38c34f37b43e1a402a51b2fce00171ae5ca2c19
 def runit(cmd_logf_generator, numthread):
     """
     Putting each analyzing codes in a queue to use the 8 cores simutaneously.
