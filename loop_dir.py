@@ -6,6 +6,16 @@ from configobj import ConfigObj
 from g_analyze import init as gai
 from g_analyze import organize as gao
 
+def parse_conf():
+    pass
+
+def parse_option():
+    pass
+
+def gen_inputargs():
+    """loop throught all the directories and gen input args for each"""
+    pass
+
 def dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
     """ generate the directory hierarchy"""
     dirchy_dict = CONFIG_DICT['dirchy']
