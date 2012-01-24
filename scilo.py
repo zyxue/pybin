@@ -23,7 +23,7 @@ def parse_cmd():
                         help='From what file')
     parser.add_argument('-t', '--to', type=str, dest='to_', required=True,
                         help='To what file')
-    parser.add_argument('--host', type=str, dest='host', default='scinet', 
+    parser.add_argument('--host', type=str, dest='host', default='s', 
                         help='specify the host name: s(scinet, default), c(colosse), m(mp2)')
     
     args = parser.parse_args()
