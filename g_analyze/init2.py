@@ -8,6 +8,7 @@ overhead for starting analysis
 """
 
 import os
+import sys
 import glob
 import subprocess
 import Queue
@@ -39,38 +40,17 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'dssp_E': basic.dssp_E,
     'upup60': interaction.upup60,
     'unun': interaction.unun,
+    'unvp': interaction.unup,
     }
 
-<<<<<<< HEAD
-=======
-def gen_input_files(target_dir, pf):
-    """
-    Generalizing input files specific for gromacs tools, default naming
-    """
-
-    input_files = dict(
-        xtcf = os.path.join(target_dir, '{pf}_md.xtc'.format(pf=pf)),
-        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
-        proxtcf = os.path.join(target_dir, '{pf}_pro.xtc'.format(pf=pf)),
-        progrof = os.path.join(target_dir, '{pf}_pro.gro'.format(pf=pf)),
-        tprf = os.path.join(target_dir, '{pf}_md.tpr'.format(pf=pf)),
-        edrf = os.path.join(target_dir, '{pf}_md.edr'.format(pf=pf)),
-        ndxf = os.path.join(target_dir, '{pf}.ndx'.format(pf=pf)))
-
-    hb_tprf = os.path.join(target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
-    if os.path.isfile(hb_tprf):
-        input_files.update(dict(hb_tprf=hb_tprf))
-    return input_files
-
->>>>>>> e38c34f37b43e1a402a51b2fce00171ae5ca2c19
-def runit(cmd_logf_generator, numthread):
+def runit(cmd_logf_generator, numthread, ftest):
     """
     Putting each analyzing codes in a queue to use the 8 cores simutaneously.
     """
     def worker():
         while True:
             cmd, logf = q.get()
-            if OPTIONS.test:
+            if ftest:
                 print cmd
             else:
                 logging.info('working on {0:s}'.format(cmd))
@@ -111,7 +91,7 @@ class convert_seq(argparse.Action):
                 v = [str(i) for i in xrange(mi, ma)]
             else:
                 v = values
-        setattr(namespace, self.dest, v)
+        setattr(namespace, self.dest, ['sq{0}'.format(i) for i in v])
 
 class convert_num(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -141,7 +121,7 @@ def parse_cmd():
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
-                        help='available_options:\n{0!r}' % AVAILABLE_ANALYSIS )
+                        help='available_options:\n{0!r}'.format(AVAILABLE_ANALYSIS))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
     parser.add_argument('--config_file', type=str, dest='config_file', default='./.g_ana.conf',
@@ -153,8 +133,8 @@ def parse_cmd():
     parser.add_argument('--nolog', dest='nolog', action='store_true', default=False,
                         help='stdout will be printed to the screen rather than collected in a log file')
     parser.add_argument('--cdb', dest='cdb', action='store_true', default=False,
-                        help=('if you need different b values for different trjectory,', 
-                              'and they are stored in a database specified in your .g_ana.conf'))
+                        help=''.join(['if you need different b values for different trjectory,', 
+                                     'and they are stored in a database specified in your .g_ana.conf']))
     args = parser.parse_args()
     return args
 
@@ -167,6 +147,7 @@ def target_the_type_of_analysis():
     return g_tool, args
 
 if __name__ == "__main__":
-    g_tool, g_tool_name, args = target_the_type_of_analysis()
-    print g_tool, type(g_tool)
-    print g_tool_name, type(g_tool_name)
+    # g_tool, args = target_the_type_of_analysis()
+    # print g_tool, type(g_tool)
+    # print g_tool.func_name, type(g_tool.func_name)
+    parse_cmd()
