@@ -124,10 +124,10 @@ def main():
         raise ValueError('configuration file: {0} may not exist!'.format(config_file))
     config_dict = ConfigObj(config_file)
 
-    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['SEQS']
-    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['CDTS']
-    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['TMPS']
-    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['NUMS']
+    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['system']['SEQS']
+    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['system']['CDTS']
+    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['system']['TMPS']
+    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['system']['NUMS']
 
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)

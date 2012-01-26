@@ -20,6 +20,8 @@ import organize
 import interaction
 import basic
 
+from argparse_action import convert_seq, convert_num
+
 AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
@@ -40,7 +42,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'dssp_E': basic.dssp_E,
     'upup60': interaction.upup60,
     'unun': interaction.unun,
-    'unvp': interaction.unup,
+    'unvp': interaction.unvp,
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
@@ -80,44 +82,18 @@ def runit(cmd_logf_generator, numthread, ftest):
     
     q.join()
 
-class convert_seq(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = values
-        else:
-            vv = values[0]
-            if '-' in vv:
-                mi, ma = (int(i) for i in values[0].split('-'))
-                v = [str(i) for i in xrange(mi, ma)]
-            else:
-                v = values
-        setattr(namespace, self.dest, ['sq{0}'.format(i) for i in v])
-
-class convert_num(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = ['{0:02d}'.format(i) for i in (int(j) for j in values)]
-        else:
-            vv = values[0]
-            if '-' in vv:
-                mi, ma = (int(i) for i in vv.split('-'))
-                v = ['{0:02d}'.format(i) for i in xrange(mi, ma)]
-            else:
-                v = ['{0:02d}'.format(int(values[0]))]
-        setattr(namespace, self.dest, v)
-
 def parse_cmd():
     """parse_cmd"""
-    parser = argparse.ArgumentParser(usage='-s, -c, -t, -n may not function according to your .g_ana.conf"')
+    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
 
-    parser.add_argument('-s', '--seq', dest='SEQS', nargs='+', required=True, action=convert_seq,
-                        help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\'')
-    parser.add_argument('-c', '--cdt', dest='CDTS', nargs='+', required=True,
-                        help='specify it this way, i.e. "w m o p e"')
-    parser.add_argument('-t', '--tmp', dest='TMPS', default=None, nargs='+',
+    parser.add_argument('-s', dest='SEQS', nargs='+', required=True, action=convert_seq,
+                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+    parser.add_argument('-c', dest='CDTS', nargs='+', required=True,
+                        help="specify it this way, i.e. w m o p e ")
+    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', '--num', dest='NUMS', nargs='+', required=True, action=convert_num,
-                        help='specify the replica number, i.e. "1 2 3" or "1-20"')
+    parser.add_argument('-n', dest='NUMS', nargs='+', required=True, action=convert_num,
+                        help='specify the replica number, i.e. 1 2 3 or 1-20')
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
