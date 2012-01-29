@@ -92,7 +92,7 @@ def parse_cmd():
                         help="specify it this way, i.e. w m o p e ")
     parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num,
+    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
                         help='specify the replica number, i.e. 1 2 3 or 1-20')
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
