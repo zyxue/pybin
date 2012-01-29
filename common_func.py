@@ -46,4 +46,5 @@ def runit(cmd_logf_generator, numthread, ftest):
 
 
 if __name__ == "__main__":
-    logging.warning("objects in this module is supposed to be imported rather than run directly")
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+    logging.info("objects in this module is supposed to be imported rather than run directly")
