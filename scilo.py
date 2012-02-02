@@ -17,7 +17,7 @@ def parse_cmd():
                         default=None, dest='recursive', 
                         help='recursive or not')
     parser.add_argument('--l2h', action='store_true', 
-                        default=None, dest='l2s', 
+                        default=None, dest='l2h', 
                         help='"local to host is specified')
     parser.add_argument('-f', '--from', dest='from_', required=True, nargs="+",
                         help='From what file')
@@ -39,7 +39,7 @@ def main():
     ARGS = parse_cmd()
     host = DD[ARGS.host]
 
-    if ARGS.l2s:                                         # local to scinet
+    if ARGS.l2h:                                         # local to scinet
         lfl = []                            # local_files_list
         for i in ARGS.from_:
             lfl.extend(glob.glob(i))
