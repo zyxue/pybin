@@ -19,10 +19,11 @@ from threading import Thread
 import organize
 import interaction
 import basic
+import rdf
 
 from argparse_action import convert_seq, convert_num
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__
+AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs': organize.check_inputdirs,
@@ -40,9 +41,20 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     # 'e2ed_v': basic.e2ed_v,
     'sequence_spacing': basic.sequence_spacing,
     'dssp_E': basic.dssp_E,
+
     'upup60': interaction.upup60,
+
     'unun': interaction.unun,
+
+    'upvp': interaction.upvp,
+    'upvn': interaction.upvn,
     'unvp': interaction.unvp,
+    'unvn': interaction.unvn,
+
+    'rdf_upvp': rdf.rdf_upvp,
+    'rdf_upvn': rdf.rdf_upvn,
+    'rdf_unvp': rdf.rdf_unvp,
+    'rdf_unvn': rdf.rdf_unvn,
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
