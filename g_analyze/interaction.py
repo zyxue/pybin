@@ -78,6 +78,7 @@ def upvn(kwargs):
     return 'echo' if kwargs['cdt'] == 'w' else ux_nonhb_template.format(**kwargs)
 
 def unvp(kwargs):
+    # Check how pbc works in gromacs and then do this
     return ux_nonhb_template.format(**kwargs)
 
 def unvn(kwargs):

@@ -8,6 +8,7 @@ overhead for starting analysis
 """
 
 import os
+import sys
 import glob
 import subprocess
 import Queue
@@ -18,6 +19,8 @@ from threading import Thread
 import organize
 import interaction
 import basic
+
+from argparse_action import convert_seq, convert_num
 
 AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__
 
@@ -39,38 +42,17 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'dssp_E': basic.dssp_E,
     'upup60': interaction.upup60,
     'unun': interaction.unun,
+    'unvp': interaction.unvp,
     }
 
-<<<<<<< HEAD
-=======
-def gen_input_files(target_dir, pf):
-    """
-    Generalizing input files specific for gromacs tools, default naming
-    """
-
-    input_files = dict(
-        xtcf = os.path.join(target_dir, '{pf}_md.xtc'.format(pf=pf)),
-        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
-        proxtcf = os.path.join(target_dir, '{pf}_pro.xtc'.format(pf=pf)),
-        progrof = os.path.join(target_dir, '{pf}_pro.gro'.format(pf=pf)),
-        tprf = os.path.join(target_dir, '{pf}_md.tpr'.format(pf=pf)),
-        edrf = os.path.join(target_dir, '{pf}_md.edr'.format(pf=pf)),
-        ndxf = os.path.join(target_dir, '{pf}.ndx'.format(pf=pf)))
-
-    hb_tprf = os.path.join(target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
-    if os.path.isfile(hb_tprf):
-        input_files.update(dict(hb_tprf=hb_tprf))
-    return input_files
-
->>>>>>> e38c34f37b43e1a402a51b2fce00171ae5ca2c19
-def runit(cmd_logf_generator, numthread):
+def runit(cmd_logf_generator, numthread, ftest):
     """
     Putting each analyzing codes in a queue to use the 8 cores simutaneously.
     """
     def worker():
         while True:
             cmd, logf = q.get()
-            if OPTIONS.test:
+            if ftest:
                 print cmd
             else:
                 logging.info('working on {0:s}'.format(cmd))
@@ -100,48 +82,22 @@ def runit(cmd_logf_generator, numthread):
     
     q.join()
 
-class convert_seq(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = values
-        else:
-            vv = values[0]
-            if '-' in vv:
-                mi, ma = (int(i) for i in values[0].split('-'))
-                v = [str(i) for i in xrange(mi, ma)]
-            else:
-                v = values
-        setattr(namespace, self.dest, v)
-
-class convert_num(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = ['{0:02d}'.format(i) for i in (int(j) for j in values)]
-        else:
-            vv = values[0]
-            if '-' in vv:
-                mi, ma = (int(i) for i in vv.split('-'))
-                v = ['{0:02d}'.format(i) for i in xrange(mi, ma)]
-            else:
-                v = ['{0:02d}'.format(int(values[0]))]
-        setattr(namespace, self.dest, v)
-
 def parse_cmd():
     """parse_cmd"""
-    parser = argparse.ArgumentParser(usage='-s, -c, -t, -n may not function according to your .g_ana.conf"')
+    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
 
-    parser.add_argument('-s', '--seq', dest='SEQS', nargs='+', required=True, action=convert_seq,
-                        help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\'')
-    parser.add_argument('-c', '--cdt', dest='CDTS', nargs='+', required=True,
-                        help='specify it this way, i.e. "w m o p e"')
-    parser.add_argument('-t', '--tmp', dest='TMPS', default=None, nargs='+',
+    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+    parser.add_argument('-c', dest='CDTS', nargs='+',
+                        help="specify it this way, i.e. w m o p e ")
+    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', '--num', dest='NUMS', nargs='+', required=True, action=convert_num,
-                        help='specify the replica number, i.e. "1 2 3" or "1-20"')
+    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
+                        help='specify the replica number, i.e. 1 2 3 or 1-20')
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
-                        help='available_options:\n{0!r}' % AVAILABLE_ANALYSIS )
+                        help='available_options:\n{0!r}'.format(AVAILABLE_ANALYSIS))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
     parser.add_argument('--config_file', type=str, dest='config_file', default='./.g_ana.conf',
@@ -153,8 +109,8 @@ def parse_cmd():
     parser.add_argument('--nolog', dest='nolog', action='store_true', default=False,
                         help='stdout will be printed to the screen rather than collected in a log file')
     parser.add_argument('--cdb', dest='cdb', action='store_true', default=False,
-                        help=('if you need different b values for different trjectory,', 
-                              'and they are stored in a database specified in your .g_ana.conf'))
+                        help=''.join(['if you need different b values for different trjectory,', 
+                                     'and they are stored in a database specified in your .g_ana.conf']))
     args = parser.parse_args()
     return args
 
@@ -167,6 +123,7 @@ def target_the_type_of_analysis():
     return g_tool, args
 
 if __name__ == "__main__":
-    g_tool, g_tool_name, args = target_the_type_of_analysis()
-    print g_tool, type(g_tool)
-    print g_tool_name, type(g_tool_name)
+    # g_tool, args = target_the_type_of_analysis()
+    # print g_tool, type(g_tool)
+    # print g_tool.func_name, type(g_tool.func_name)
+    parse_cmd()

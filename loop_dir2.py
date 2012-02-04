@@ -124,10 +124,10 @@ def main():
         raise ValueError('configuration file: {0} may not exist!'.format(config_file))
     config_dict = ConfigObj(config_file)
 
-    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['SEQS']
-    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['CDTS']
-    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['TMPS']
-    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['NUMS']
+    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['system']['SEQS']
+    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['system']['CDTS']
+    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['system']['TMPS']
+    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['system']['NUMS']
 
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
@@ -137,8 +137,12 @@ def main():
     # to avoid scinet crash.
     if ARGS.outputdir:
         outputdir = ARGS.outputdir
-    elif config_dict.has_key('outputdir'):
-        outputdir = config_dict['outputdir']
+    elif config_dict['data'].has_key('outputdir'):
+        v = config_dict['data']['outputdir']
+        if len(v) > 0 and v:                     # make sure v is not '' or None
+            outputdir = v
+        else:
+            outputdir = 'R_OUTPUT'
     else:
         outputdir = 'R_OUTPUT'
 
@@ -155,13 +159,13 @@ def main():
         outputdir, 'LOGS', '{0}_log'.format(g_tool_name)
         ) if not ARGS.nolog else None
 
-    if not os.path.exists(logd):
+    if logd and not os.path.exists(logd):
         os.mkdir(logd)
 
     # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
     x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                        ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime)
-    gai.runit(x, ARGS.numthread)
+    gai.runit(x, ARGS.numthread, ARGS.test)
 
     separator =  "#" * 79
     print separator

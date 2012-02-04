@@ -8,7 +8,7 @@ from threading import Thread
 
 __all__ = ['check_inputdirs', 'g_eneconv', 'g_make_ndx', 'g_trjcat',
            'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
-           'g_make_ndx', 'copy_0_mdrun_sh']
+           'copy_0_mdrun_sh']
 
 def check_inputdirs(input_args):
     d = input_args['inputdir']
