@@ -1,0 +1,3 @@
+/scinet/gpc/bin/ish
+
+cget [options] [GPFSpath :] HPSSpath
