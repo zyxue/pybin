@@ -58,7 +58,7 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                         yield inputdir, pf, seq, cdt, tmp, num
 
 def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                   ftest, fcdb, toa, btime):
+                   ftest, fcdb, toa, btime, CONFIG_DICT):
     """
     generate "input_args", which in a dictionary that holds all the varaibles
     needed for your commands
@@ -164,7 +164,7 @@ def main():
 
     # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
     x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime)
+                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime, config_dict)
     gai.runit(x, ARGS.numthread, ARGS.test)
 
     separator =  "#" * 79
