@@ -4,6 +4,7 @@ import os
 import subprocess
 import StringIO
 import argparse
+import time
 
 __version__ = 2
 
@@ -53,26 +54,30 @@ def parse_cmd():
     # scient argument group
     gscinet = parser.add_argument_group(title='SciNet', 
                                         description='options in this group only works on SciNet')
-    gscinet.add_argument('--gg', action='store_true', dest='gg', default=False,
+    gscinet.add_argument('--gg', action='store_true', dest='fgg', default=False,
                        help='show the number of GigE cores only')
-    gscinet.add_argument('--ib', action='store_true', dest='ib', default=False,
+    gscinet.add_argument('--ib', action='store_true', dest='fib', default=False,
                        help='show the number of ib cores only')
+    gscinet.add_argument('--machine', action='store_true', dest='fmachine', default=False,
+                       help='generate data easy for machine process')
 
     args = parser.parse_args()
     return args
 
-def print_usage(accounts, acu, bcu, ccu):
+def print_usage(accounts, acu, bcu, ccu, fmachine):
     total_usage = {}
     for a in accounts:
         total_usage[a] = acu.get(a, 0) + bcu.get(a, 0) + ccu.get(a, 0)
 
-    print "{0:10s} {1:8s} {2:8s} {3:8s} {4:8s}\n{5:44s}".format(
-        'USERNAME', 'ACTIVE', 'ELIGIBLE', 'BLOCKED', 'TOTAL', "=" * 44)
-
-    sorted_keys = reversed(sorted(total_usage, key=total_usage.get))
-    for k in sorted_keys:
-        print "{0:10s} {1:<8d} {2:<8d} {3:<8d} {4:<8d}".format(
-            k, acu.get(k, 0), bcu.get(k, 0), ccu.get(k, 0), total_usage[k])
+    if fmachine:
+        print '{0}, {1}, {2}'.format(sum(total_usage.values()), time.time(), time.ctime())
+    else:
+        print "{0:10s} {1:8s} {2:8s} {3:8s} {4:8s}\n{5:44s}".format(
+            'USERNAME', 'ACTIVE', 'ELIGIBLE', 'BLOCKED', 'TOTAL', "=" * 44)
+        sorted_keys = reversed(sorted(total_usage, key=total_usage.get))
+        for k in sorted_keys:
+            print "{0:10s} {1:<8d} {2:<8d} {3:<8d} {4:<8d}".format(
+                k, acu.get(k, 0), bcu.get(k, 0), ccu.get(k, 0), total_usage[k])
 
 def main():
     args = parse_cmd()
@@ -114,11 +119,11 @@ def main():
         clist.append(ll)
         ll = output.readline()
 
-    acu = collect_data(accounts, alist, args.host, args.ib, args.gg)
-    bcu = collect_data(accounts, blist, args.host, args.ib, args.gg)
-    ccu = collect_data(accounts, clist, args.host, args.ib, args.gg)
+    acu = collect_data(accounts, alist, args.host, args.fib, args.fgg)
+    bcu = collect_data(accounts, blist, args.host, args.fib, args.fgg)
+    ccu = collect_data(accounts, clist, args.host, args.fib, args.fgg)
 
-    print_usage(accounts, acu, bcu, ccu)
+    print_usage(accounts, acu, bcu, ccu, args.fmachine)
 
 if __name__ == "__main__":
     main()
