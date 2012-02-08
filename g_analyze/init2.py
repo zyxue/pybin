@@ -34,6 +34,8 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_trjconv_pro_gro": organize.g_trjconv_pro_gro,
     "g_make_ndx": organize.g_make_ndx,
     "copy_0_mdrun_sh": organize.copy_0_mdrun_sh,
+    "copy_0_mdrun_py": organize.copy_0_mdrun_py,
+    "qsub_0_mdrun_py": organize.qsub_0_mdrun_py,
     'rg': basic.rg,
     'rg_backbone': basic.rg_backbone,
     'rg_c_alpha': basic.rg_c_alpha,
