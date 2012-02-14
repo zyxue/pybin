@@ -46,4 +46,5 @@ def sequence_spacing(kwargs):
     return "sequence_spacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -l {peptide_length} -o {anadir}/{pf}_sequence_spacing.xvg".format(**kwargs)
 
 def dssp_E(kwargs):
-    return 'printf "Protein" | do_dssp -f {xtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg -o {anadir}/{pf}_dssp_E.xpm'.format(**kwargs)
+    # return 'printf "Protein" | mydo_dssp -f {xtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg -o {anadir}/{pf}_dssp_E.xpm'.format(**kwargs)
+    return 'printf "Protein" | mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)

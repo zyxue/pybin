@@ -35,8 +35,12 @@
 & m methonl   b meo_1728.gro  meo.itp   3300 7.3 MEO
 & e ethanol   g eth_1000.gro  eth.itp   2200 7.3 ETH
 & p propanol  m pol_512.gro   pol.itp   2000 7.8 POL
-& o octane    c oct_512.gro   oct.itp   350  5.8 OCT
+& c octanol   - oco_512.gro   oco.itp	900  8.0 OCO
+& o octane    c oct_512.gro   oct.itp   400  5.8 OCT
 & v vacuo     k None          None      None None None
+
+# & o octane    c oct_512.gro   oct.itp   350  5.8 OCT
+# 350 could be occassionally too small for mono_su_as, so afterwards, try 400
 
 # nsol: full name of solvent
 # b: black 
