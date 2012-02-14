@@ -1,0 +1,131 @@
+#! /usr/bin/env python
+
+#PBS -q qwork@mp2
+#PBS -l walltime=00:05:00 -l nodes=1:ppn=1
+#PBS -N sq1c00
+
+####################
+# Since mdrun will add part000x to the new trajectory automatically, I have to
+# fix all trajectories afterwards. This script will be kept for now, at least
+# ssh works
+####################
+
+import sys
+sys.path.extend(
+    ['/home/xuezhuyi/.virtualenvs/env1_md/bin',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/site-packages/pip-1.0.2-py2.7.egg',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python27.zip',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/plat-linux2',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/lib-tk',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/lib-old',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/lib-dynload',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/site-packages',
+     '/home/xuezhuyi/.virtualenvs/env1_md/lib/python2.7/site-packages/IPython/extensions']
+    )
+
+import re
+import glob
+import ssh
+import StringIO
+import subprocess
+import os
+
+# These values are most often modified, that's why I put them here
+zx_pf = 'sq1c00'
+zx_npme = '-1'
+zx_maxh = '0.05'
+zx_cpt = '2'                                                     # time interval to write cpt file
+
+zx_walltime = '00:05:00'                                       # for re-submission
+
+# GO TO ${PBS_O_WORKDIR}
+wdir = os.environ['PBS_O_WORKDIR']
+os.chdir(wdir)
+
+# EXTEND ${PYTHONPATH}
+
+pf = str(zx_pf)
+pf_md = "{0}_md".format(pf)
+
+# INPUT FILES
+tprf = "{0}.tpr".format(pf_md)
+cpif = "{0}.cpt".format(pf_md)                              # to be created
+
+# OUTPUT FILES
+# need to check the current file names first
+template = re.compile('\d\d\d\d')
+infiles = glob.glob('{0}.part[0-9][0-9][0-9][0-9].xtc'.format(0))
+if len(infiles) == 0:
+    ncount = "{0:04d}".format(1)
+else:
+    max_count = max([int(template.search(f).group()) for f in infiles])
+    # trjconv previous xtc file as a fix, no matter the file is corrupted or not
+    subprocess.call(
+        ['/home/xuezhuyi/exec/gromacs-4.0.5/exec/bin/trjconv',
+         '-f', '{0}.part{1:04d}.xtc'.format(pf_md, max_count),
+         '-s', tprf,
+         '-o', '{0}.part{1:04d}.xtc'.format(pf_md, max_count)]
+        )
+    ncount = "{0:04d}".format(max_count + 1)
+
+deffnm = '{0}.part{1}'.format(pf_md, ncount)
+# here are the names
+# trrf = '{0}.trr'.format(deffnm)                             # maybe useful later
+xtcf = '{0}.xtc'.format(deffnm)
+grof = '{0}.gro'.format(deffnm)
+edrf = '{0}.edr'.format(deffnm)
+logf = '{0}.log'.format(deffnm)
+cpof = str(cpif)
+
+# other optional arguments
+npme = str(zx_npme)
+maxh = str(zx_maxh)
+cpt  = str(zx_cpt)                            # time interval to write cpt file
+other_arguments = ['-npme', npme, '-maxh', maxh, '-cpt', cpt]
+
+# prepare mdrun
+first_mdrun = (['/usr/mpi/intel/openmpi-1.4.3/bin/mpirun',
+               '-np', '24',
+               '/home/xuezhuyi/exec/gromacs-4.0.5/exec/bin/mdrun_openmpi',
+               '-s', tprf,
+               '-x', xtcf, '-c', grof, '-e', edrf, '-g', logf, '-cpo', cpof]
+               + other_arguments)
+
+# START MDRUN
+counter = os.getenv('COUNTER', str(0))
+if int(counter) != 0:      # if not 0, then must have been specified in the cmd
+    first_mdrun.extend(['-cpi', cpif])
+subprocess.call(first_mdrun)
+counter = str(int(counter) + 1)
+
+# prepare for automatic re-submission
+def get_cpt_time(infile):
+    stdout, stderr = subprocess.Popen(
+        ['/home/xuezhuyi/exec/gromacs-4.0.5/exec/bin/gmxcheck',
+         '-f', infile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE).communicate()
+    # It's so stupid that gromacs-4.0.5 will direct out useful content as stderr
+    for line in StringIO.StringIO(stderr):
+        if 'Last frame' in line:
+            sl = [i.strip() for i in line.split()]
+            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)
+    return return_value
+
+t_cpt = get_cpt_time(cpif) if os.path.exists(cpif) else 0
+
+if counter < 55:
+    s = ssh.Connection('pomes-mp2.ccs.usherbrooke.ca', username='xuezhuyi')
+    s.execute('cd {wdir} ;'
+              'qsub ./0_mdrun.py '                          # 0_mdrun.py instead of 0_mdrun.sh
+              '-q qwork@mp2 '
+              '-l walltime={zx_walltime} -l nodes=1:ppn=1 '
+              '-v COUNTER={counter} '
+              '-N {new_title}'.format(wdir=wdir,
+                                       zx_walltime=zx_walltime,
+                                       counter=counter, 
+                                       new_title='{0}t{1}'.format(pf, t_cpt))
+              )
+    s.close()

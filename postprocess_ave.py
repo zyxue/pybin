@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import argparse
 
 import tables
 import numpy as np
@@ -16,9 +17,25 @@ class tave(tables.IsDescription):
 
 # Modulize the code, and plot upup V.S. dssp_E
 
-def main(h5file, UEP, topproc):
+def parse_cmd():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', dest='h5f', required=True,
+                        help='specify the h5f file')
+    parser.add_argument('-c', dest='conf', required=True,
+                        help='specify the configuration file')
+    parser.add_argument('-p', dest='ppty', required=True,
+                        help='specify the property your are trying to do ave postprocess on (i.e. rg_c_alpha')
+    args = parser.parse_args()
+    return args
+
+def main():
     mysys = read_mysys.read()
-    conf_dict = ConfigObj('.h5.conf')
+
+    args = parse_cmd()
+    conf_dict = ConfigObj(args.conf)
+    h5file = args.h5f
+    UEP = args.ppty
+    topproc='ave'                               # type of postprocess. i.e. ave
 
     rootUEP = os.path.join('/', UEP)
     h5f = tables.openFile(h5file, 'a', rootUEP=rootUEP)
@@ -64,12 +81,13 @@ def main(h5file, UEP, topproc):
                 aves = []
                 for num in NUMS:
                     pf = pfpattern.format(**locals())
-                    t = h5f.getNode(h5f.root.ogd, pf)
-                    v = np.array([x[interested_col] for x in t.iterrows()])
-                    v_normed = v / denorminator
-                    aves.append(
-                        (pf, v_normed.mean(), v_normed.std()) # append a tuple
-                        )
+                    if h5f.root.ogd.__contains__(pf):
+                        t = h5f.getNode(h5f.root.ogd, pf)
+                        v = np.array([x[interested_col] for x in t.iterrows()])
+                        v_normed = v / denorminator
+                        aves.append(
+                            (pf, v_normed.mean(), v_normed.std()) # append a tuple
+                            )
 
                 t = h5f.createTable(
                     g, tablename, tave,
@@ -84,7 +102,5 @@ def main(h5file, UEP, topproc):
 # analysis. Then, I choose to create a table instead of an array because I do
 # need the pf to each row as an identity
 if __name__ == "__main__":
-    h5file = '../mono_meo.h5'
-    topproc = 'ave'                                                  # type of postprocess. i.e. ave
-    for UEP in ['unvp', 'upvp']:
-        main(h5file, UEP, topproc)
+    main()
+

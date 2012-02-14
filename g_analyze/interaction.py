@@ -15,34 +15,44 @@ OPTIONS FOR OUTPUT FILES:
 -hbm  # index for hbm, useful if you want to draw the map
 """
 
-__all__ = ['unun', 'unvn', 'unvp', 'upun', 'upup', 'upvn', 'upvp', 'vnvn', 'vpvn', 'vpvp',
+__all__ = ['unun', 'upup', 'upun', 
+           'unvn', 'unvp', 'upvn', 'upvp', 
+           'vnvn', 'vpvn', 'vpvp',
            'upup60']
 
-def inter_groups_matrix():
-    # this is not correct anymore
-    igm = {
-        'upup':'"16\n16"','upun':'"16\n17"','unun':'"17\n17"',
-        'upvp':'"16\n14"','upvn':'"16\n15"','unvp':'"17\n14"','unvn':'"17\n15"',
-        'vpvp':'"14\n14"','vpvn':'"14\n15"','vnvn':'"15\n15'
-        }                                                # interaction matrix groups
-    return igm
+igmat = {                      # interaction groups matrix 
+    # commented means nolonger correct!
+    # 'upup':'"16\n16"',
+    # 'upun':'"16\n17"',
+    # 'unun':'"17\n17"',
 
-def inter_cutoffs():
-    ic = {
-        'upup':0.35,'upun':0.44,'unun':0.53,
-        'upvp':0.35,'upvn':0.44,'unvp':0.44,'unvn':0.53,
-        'vpvp':0.35,'vpvn':0.44,'vnvn':0.53
-        }
-    return ic
+    'upvp': ' 1\n12',                                           # needs hydrogen to calculate HB
+    'upvn': '14\n17',
+    'unvp': '15\n16',
+    'unvn': '15\n17',
+    
+    # commented means nolonger correct!
+    # 'vpvp':'"14\n14"',
+    # 'vpvn':'"14\n15"',
+    # 'vnvn':'"15\n15'
+    }
 
-hb_template = '-s {tprf} -b {b} -r {icff:.2f} -nonitacc -num {anadir}/{pf}_{g_tool}.xvg'
+icmat = {                                            # interaction cutoff matrix
+    'upup':0.35,'upun':0.44,'unun':0.53,
+    'upvp':0.35,'upvn':0.44,'unvp':0.44,'unvn':0.53,
+    'vpvp':0.35,'vpvn':0.44,'vnvn':0.53
+    }
 
-uu_hb_template = 'printf "1\n1" | g_hbond -f {{proxtcf}} {hb_template}'.format(hb_template=hb_template)
-uv_hb_template = 'printf "1\n12" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
-vv_hb_template = 'printf "12\n12" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
+hb_template = '-s {tprf} -b {b} -r {ic:.2f} -nonitacc -num {anadir}/{pf}_{tinter}.xvg'
 
-uu_nonhb_template = 'printf {igrp} | g_mindist_excl1 -f {proxtcf} -s {tprf} -n {ndxf} -b {b} -d {icff:.2f} -on {anadir}/{pf}_{g_tool}.xvg -od {anadir}/tmp_{pf}.xvg'
-ux_nonhb_template = 'printf {igrp} | g_mindist_excl1 -f {xtcf}    -s {tprf} -n {ndxf} -b {b} -d {icff:.2f} -on {anadir}/{pf}_{g_tool}.xvg -od {anadir}/tmp_{pf}.xvg'
+# uu_hb_template = 'printf "1\n1" | g_hbond -f {{proxtcf}} {hb_template}'.format(hb_template=hb_template)
+uv_hb_template = 'printf "{{igrp}}" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
+# vv_hb_template = 'printf "12\n12" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
+
+
+# uu_nonhb_template = 'printf {igrp} | g_mindist_excl1 -f {proxtcf} -s {tprf} -n {ndxf} -b {b} -d {ic:.2f} -on {anadir}/{pf}_{tinter}.xvg -od {anadir}/tmp_{pf}.xvg'
+
+ux_nonhb_template = 'printf "{igrp}" | g_mindist -f {xtcf} -s {tprf} -n {ndxf} -b {b} -d {ic:.2f} -on {anadir}/{pf}_{tinter}.xvg -od {anadir}/tmp_{pf}.xvg'
 
 """THE FOLLOWING FUNCTIONS HAVE TO BE SEPARATED BECAUSE THEIR RETURN VALUES
 CONTAIN THE __NAME__ OF THE FUNCTION"""
@@ -70,18 +80,30 @@ def unun(kwargs):
 
 ####################UVI####################
 def upvp(kwargs):
+    kwargs['igrp'] = igmat['upvp']
+    kwargs['tinter'] = 'upvp'
+    kwargs['ic'] = icmat['upvp']
     if kwargs.has_key('hb_tprf'):
         kwargs['tprf'] = kwargs['hb_tprf']
     return uv_hb_template.format(**kwargs)
 
 def upvn(kwargs):
+    kwargs['igrp'] = igmat['upvn']
+    kwargs['tinter'] = 'upvn'
+    kwargs['ic'] = icmat['upvn']
     return 'echo' if kwargs['cdt'] == 'w' else ux_nonhb_template.format(**kwargs)
 
 def unvp(kwargs):
+    kwargs['igrp'] = igmat['unvp']
+    kwargs['tinter'] = 'unvp'
+    kwargs['ic'] = icmat['unvp']
     # Check how pbc works in gromacs and then do this
     return ux_nonhb_template.format(**kwargs)
 
 def unvn(kwargs):
+    kwargs['igrp'] = igmat['unvn']
+    kwargs['tinter'] = 'unvn'
+    kwargs['ic'] = icmat['unvn']
     return 'echo' if kwargs['cdt'] == 'w' else ux_nonhb_template .format(**kwargs) 
 
 ####################VVI####################

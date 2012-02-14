@@ -17,9 +17,9 @@ def parse_cmd():
                         default=None, dest='recursive', 
                         help='recursive or not')
     parser.add_argument('--l2h', action='store_true', 
-                        default=None, dest='l2s', 
+                        default=None, dest='l2h', 
                         help='"local to host is specified')
-    parser.add_argument('-f', '--from', type=str, dest='from_', required=True,
+    parser.add_argument('-f', '--from', dest='from_', required=True, nargs="+",
                         help='From what file')
     parser.add_argument('-t', '--to', type=str, dest='to_', required=True,
                         help='To what file')
@@ -39,12 +39,14 @@ def main():
     ARGS = parse_cmd()
     host = DD[ARGS.host]
 
-    if ARGS.l2s:                                         # local to scinet
-        local_files = glob.glob(ARGS.from_)
-        cmd = (['rsync'] + local_files + 
+    if ARGS.l2h:                                         # local to scinet
+        lfl = []                            # local_files_list
+        for i in ARGS.from_:
+            lfl.extend(glob.glob(i))
+        cmd = (['rsync'] + lfl + 
                [host + ARGS.to_, '--stats', '-h', '-t', '--progress'])
     else:
-        cmd = ['rsync', host + ARGS.from_,
+        cmd = ['rsync', host + ''.join(ARGS.from_),
                '--stats', '-h', '-t', '--progress']
         if ARGS.to_:
             cmd.insert(2, ARGS.to_)

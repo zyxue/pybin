@@ -58,7 +58,7 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                         yield inputdir, pf, seq, cdt, tmp, num
 
 def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                   ftest, fcdb, toa, btime):
+                   ftest, fcdb, toa, btime, CONFIG_DICT):
     """
     generate "input_args", which in a dictionary that holds all the varaibles
     needed for your commands
@@ -124,10 +124,10 @@ def main():
         raise ValueError('configuration file: {0} may not exist!'.format(config_file))
     config_dict = ConfigObj(config_file)
 
-    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['SEQS']
-    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['CDTS']
-    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['TMPS']
-    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['NUMS']
+    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['system']['SEQS']
+    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['system']['CDTS']
+    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['system']['TMPS']
+    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['system']['NUMS']
 
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
@@ -164,7 +164,7 @@ def main():
 
     # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
     x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime)
+                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime, config_dict)
     gai.runit(x, ARGS.numthread, ARGS.test)
 
     separator =  "#" * 79
