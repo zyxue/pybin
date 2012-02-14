@@ -70,7 +70,7 @@ def print_usage(accounts, acu, bcu, ccu, fmachine):
         total_usage[a] = acu.get(a, 0) + bcu.get(a, 0) + ccu.get(a, 0)
 
     if fmachine:
-        print '{0}, {1}, {2}'.format(sum(total_usage.values()), time.time(), time.ctime())
+        print '{0}, {1}, {2}'.format(sum(acu.values()), time.time(), time.ctime())
     else:
         print "{0:10s} {1:8s} {2:8s} {3:8s} {4:8s}\n{5:44s}".format(
             'USERNAME', 'ACTIVE', 'ELIGIBLE', 'BLOCKED', 'TOTAL', "=" * 44)
