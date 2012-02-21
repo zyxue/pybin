@@ -28,3 +28,27 @@ class convert_num(argparse.Action):
                 v = ['{0:02d}'.format(int(values[0]))]
         setattr(namespace, self.dest, v)
 
+
+# class Myparser(argparse.ArgumentParser):
+#     def __init__(self):
+#         self.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+#                             help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+#         self.add_argument('-c', dest='CDTS', nargs='+',
+#                             help="specify it this way, i.e. w m o p e ")
+#         self.add_argument('-t', dest='TMPS', default=None, nargs='+',
+#                             help='specify it this way, i.e "300 700", maybe improved later')
+#         self.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
+#                             help='specify the replica number, i.e. 1 2 3 or 1-20')
+def myparser():
+    """parse_cmd"""
+    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
+
+    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+    parser.add_argument('-c', dest='CDTS', nargs='+',
+                        help="specify it this way, i.e. w m o p e ")
+    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
+                        help='specify it this way, i.e "300 700", maybe improved later')
+    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
+                        help='specify the replica number, i.e. 1 2 3 or 1-20')
+    return parser
