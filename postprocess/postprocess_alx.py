@@ -6,19 +6,17 @@ import tables
 import numpy as np
 from configobj import ConfigObj
 
+from common_func import tave, parse_cmd
 from mysys import read_mysys
 
-class tave(tables.IsDescription):
-    """table ave"""
-    pf = tables.StringCol(itemsize=15, pos=0)    # like an unique id                     
-    ave = tables.Float32Col(pos=1)
-    std = tables.Float32Col(pos=2)
-
-# Modulize the code, and plot upup V.S. dssp_E
-
-def main(h5file, UEP, topproc):
+def main():
     mysys = read_mysys.read()
-    conf_dict = ConfigObj('.h5.conf')
+
+    args = parse_cmd()
+    conf_dict = ConfigObj(args.conf)
+    h5file = args.h5f
+    UEP = args.ppty
+    topproc = 'alx'
 
     rootUEP = os.path.join('/', UEP)
     h5f = tables.openFile(h5file, 'a', rootUEP=rootUEP)
@@ -93,8 +91,8 @@ def main(h5file, UEP, topproc):
     h5f.close()
 
 if __name__ == "__main__":
-    h5file = '../mono_meo.h5'
-    topproc = 'alx'
-    UEP = 'sequence_spacing'
-    main(h5file, UEP, topproc)
+#     h5file = '../mono_meo.h5'
+#     topproc = 'alx'
+#     UEP = 'sequence_spacing'
+    main()
 

@@ -34,6 +34,7 @@ def main():
     SEQS = conf_dict['systems']['SEQS']
     CDTS = conf_dict['systems']['CDTS']
     NUMS = conf_dict['systems']['NUMS']
+
     tablename_pattern = conf_dict['postprocess'][topproc]['tablenamepattern']
 
     for seq in SEQS:
