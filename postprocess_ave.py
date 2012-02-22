@@ -64,6 +64,8 @@ def main():
                 # prepare for creating a new table
                 dd = {
                     'dssp_E': [float(mysys[seq].len), 'Structure'],
+                    'dssp_H': [float(mysys[seq].len), 'Structure'],
+                    'dssp_G': [float(mysys[seq].len), 'Structure'],
                     'upup'  : [float(mysys[seq].hbg), 'num_upup' ],
                     'unun'  : [float(mysys[seq].scnpg),'num_unun'],
                     'upun'  : [1., 'num_upun'],

@@ -28,7 +28,7 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         elif marker:
             p = ax.plot(x, y, marker=marker, label=label) 
         else:
-            p = ax.plot(x, y, label=label) 
+            p = ax.plot(x, y, linewidth=2, label=label) 
     return x, y
 
 def main(options):

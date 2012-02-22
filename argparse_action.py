@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+"""This script contains class that are expected to be commonly used for my other scripts"""
+
 import argparse
 
 class convert_seq(argparse.Action):
