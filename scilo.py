@@ -33,7 +33,8 @@ def main():
     DD = {
         's': 'zyxue@login.scinet.utoronto.ca:',
         'c': 'zhuyxue12@colosse.clumeq.ca:',
-        'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:'
+        'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:',
+        'n': 'zyxue@nestor.westgrid.ca:',
         }
 
     ARGS = parse_cmd()

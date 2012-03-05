@@ -1,0 +1,49 @@
+pbc wrap -centersel protein -center com -compound res 
+
+# First draw bonds for PRO & VAL sidechains
+############################################################
+
+# No need to addrep for the first representation becasue it's already there
+mol modselect 0 0 resname PRO and name CA CB CG CD N
+# 0.3, 17 specify the radius & resolution of Bonds
+mol modstyle 0 0 Bonds 0.3 20
+mol modcolor 0 0 ColorID 7;				    # green
+# But very few times I have adjusted this option
+mol modmaterial Opaque;					    # 
+
+# adding a new representation
+# I think 0 mean molecule ID as shown in main window
+mol addrep 0
+mol modselect 1 0 resname VAL and name CA CB CG1 CG2
+mol modstyle 1 0 Bonds 0.3 20
+mol modcolor 1 0 ColorID 11;				    # purple
+
+# Second, draw tubes for PRO, VAL & GLY sidechains
+############################################################
+mol addrep 0
+mol modselect 2 0 resname PRO
+# Use the same radius and resolution for tubes as for bonds
+mol modstyle 2 0 Tube 0.3 20
+mol modcolor 2 0 ColorID 7;				    # green
+
+mol addrep 0
+mol modselect 3 0 resname VAL and name CA CB CG1 CG2
+mol modstyle 3 0 Tube 0.3 20
+mol modcolor 3 0 ColorID 11;				    # purple
+
+mol addrep 0
+mol modselect 4 0 resname GLY
+mol modstyle 4 0 Tube 0.3 20
+mol modcolor 4 0 ColorID 2;				    # gray
+
+mol addrep 0
+mol modselect 5 0 same residue as resname MeO and within 4 of protein
+# Sphere Scale, Bond Radius, Sphere Resolution, Bond Resolution
+mol modstyle 5 0 CPK 1 0.3 20 20
+mol modcolor 5 0 Name;
+
+display resetview;		 # orient the molecule to the center of windows
+
+# scale by 1.001000
+
+# render Tachyon vmdscene.dat "/usr/local/lib/vmd1.9/tachyon_LINUX" -aasamples 12 %s -format TARGA -o %s.tga

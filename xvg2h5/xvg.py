@@ -33,7 +33,7 @@ def parse_xvg(xvgf, col=None):
 class Xvg(object):
     def __init__(self, xvgf):
         self.xvgf = xvgf
-        if 'dssp_E' in xvgf:
+        if 'dssp' in xvgf:
             desc, data = parse_xvg(xvgf, col=2)
         else:
             desc, data = parse_xvg(xvgf)

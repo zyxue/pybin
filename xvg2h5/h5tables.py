@@ -11,7 +11,8 @@ than modify the h5.conf in the directory you are working on
 
 import tables
 
-__tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing', 'dssp_E',
+__tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing', 
+              'dssp_E', 'dssp_H', 'dssp_G',
               'upup', 'upun', 'unun', 'upvp', 'upvn', 'unvn', 'unvp',
               'upv', 'unv',
               'rdf_upup', 'rdf_upun', 'rdf_unun',
@@ -150,6 +151,9 @@ class Property(object):
             'rg_c_alpha': (rg_c_alpha, "Radius of gyration of C alpha along the time trjectory"),
             'sequence_spacing': (sequence_spacing, 'sequence_spacing'),
             'dssp_E': (dssp_E, 'dssp_E (b-sheet)'),
+            'dssp_H': (dssp_E, 'dssp_H (alpha-helix)'),
+            'dssp_G': (dssp_E, 'dssp_G (3-helix)'),
+
             'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
             'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
             'upun': (upun, 'upun along the time trajectory'),
