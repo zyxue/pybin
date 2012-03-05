@@ -44,7 +44,26 @@ def runit(cmd_logf_generator, numthread, ftest):
     
     q.join()
 
+def get_cpt_time(infile, gmxcheck):
+    """gmxcheck show be the absolute address of gmxcheck, so the version
+    specified"""
+
+    import StringIO
+
+    stdout, stderr = subprocess.Popen(
+        [gmxcheck,
+         '-f', infile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE).communicate()
+    # It's so stupid that gromacs-4.0.5 will direct out useful content as stderr
+    for line in StringIO.StringIO(stderr):
+        if 'Last frame' in line:
+            sl = [i.strip() for i in line.split()]
+            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)
+    return return_value
+
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     logging.info("objects in this module is supposed to be imported rather than run directly")
+

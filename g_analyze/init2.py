@@ -44,6 +44,11 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'sequence_spacing': basic.sequence_spacing,
     'dssp_E': basic.dssp_E,
     'dssp_H': basic.dssp_H,
+    'dssp_G': basic.dssp_G,
+    'dssp_T': basic.dssp_T,
+    'dssp_B': basic.dssp_B,
+    'dssp_C': basic.dssp_C,
+
     'upup60': interaction.upup60,
 
     'unun': interaction.unun,

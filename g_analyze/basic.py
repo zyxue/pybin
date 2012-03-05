@@ -15,7 +15,8 @@ When you add a new function, add the function name to __all__, too.
 """
 
 __all__ = ['g_energy_tmpr', 'rg', 'rg_backbone', 'rg_c_alpha', 'e2ed',
-           'sequence_spacing', 'dssp_E']
+           'sequence_spacing', 
+           'dssp_E', 'dssp_H', 'dssp_G', 'dssp_T', 'dssp_B', 'dssp_C']
 
 def g_energy_tmpr(kwargs):
     return 'printf "14" | g_energy -f {edrf} -o {anadir}/{pf}_tmpr_md.xvg'.format(**kwargs)
@@ -52,3 +53,15 @@ def dssp_E(kwargs):
 
 def dssp_H(kwargs):
     return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss H -b {b} -sc {anadir}/{pf}_dssp_H.xvg'.format(**kwargs)
+
+def dssp_G(kwargs):
+    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss G -b {b} -sc {anadir}/{pf}_dssp_G.xvg'.format(**kwargs)
+
+def dssp_T(kwargs):
+    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss T -b {b} -sc {anadir}/{pf}_dssp_T.xvg'.format(**kwargs)
+
+def dssp_B(kwargs):
+    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss B -b {b} -sc {anadir}/{pf}_dssp_B.xvg'.format(**kwargs)
+
+def dssp_C(kwargs):
+    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss C -b {b} -sc {anadir}/{pf}_dssp_C.xvg'.format(**kwargs)

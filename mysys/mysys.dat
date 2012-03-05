@@ -37,6 +37,7 @@
 & p propanol  m pol_512.gro   pol.itp   2000 7.8 POL
 & c octanol   - oco_512.gro   oco.itp	900  8.0 OCO
 & o octane    c oct_512.gro   oct.itp   400  5.8 OCT
+& f tfe	      -	tfe_512.gro   tfe.itp	900  6	 TFE
 & v vacuo     k None          None      None None None
 
 # & o octane    c oct_512.gro   oct.itp   350  5.8 OCT
