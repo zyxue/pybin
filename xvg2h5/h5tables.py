@@ -12,7 +12,7 @@ than modify the h5.conf in the directory you are working on
 import tables
 
 __tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing', 
-              'dssp_E', 'dssp_H', 'dssp_G',
+              'dssp_E', 'dssp_H', 'dssp_G', 'dssp_B', 'dssp_C', 'dssp_T',
               'upup', 'upun', 'unun', 'upvp', 'upvn', 'unvn', 'unvp',
               'upv', 'unv',
               'rdf_upup', 'rdf_upun', 'rdf_unun',
@@ -153,6 +153,9 @@ class Property(object):
             'dssp_E': (dssp_E, 'dssp_E (b-sheet)'),
             'dssp_H': (dssp_E, 'dssp_H (alpha-helix)'),
             'dssp_G': (dssp_E, 'dssp_G (3-helix)'),
+            'dssp_B': (dssp_E, 'dssp_B (residue in isolated beta-bridge)'),
+            'dssp_C': (dssp_E, 'dssp_C (coil)'),
+            'dssp_T': (dssp_E, 'dssp_T (hydrogen bonded turn)'),
 
             'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
             'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
