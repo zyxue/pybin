@@ -24,6 +24,9 @@ def g_energy(kwargs):
 def rg(kwargs):
     return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg.xvg'.format(**kwargs)
 
+def rg_all_length(kwargs):
+    return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_all_length.xvg'.format(**kwargs)
+
 def rg_backbone(kwargs):
     """
     Radius of Gyration: backbone heavy atoms only. e.g. for (GVPGV)7, there would be 107 atoms,
