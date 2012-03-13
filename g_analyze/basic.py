@@ -14,7 +14,7 @@ When you add a new function, add the function name to __all__, too.
 
 """
 
-__all__ = ['g_energy', 'rg', 'rg_backbone', 'rg_c_alpha', 'e2ed',
+__all__ = ['g_energy', 'rg', 'rg_whole_length', 'rg_backbone', 'rg_c_alpha', 'e2ed',
            'sequence_spacing', 
            'dssp_E', 'dssp_H', 'dssp_G', 'dssp_T', 'dssp_B', 'dssp_C']
 
@@ -24,8 +24,8 @@ def g_energy(kwargs):
 def rg(kwargs):
     return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg.xvg'.format(**kwargs)
 
-def rg_all_length(kwargs):
-    return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_all_length.xvg'.format(**kwargs)
+def rg_whole_length(kwargs):
+    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
 
 def rg_backbone(kwargs):
     """

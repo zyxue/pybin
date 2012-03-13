@@ -41,6 +41,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_energy":		      basic.g_energy,
     'rg': 		      basic.rg,
     'rg_backbone': 	      basic.rg_backbone,
+    'rg_whole_length': 	      basic.rg_whole_length,
     'rg_c_alpha': 	      basic.rg_c_alpha,
     'e2ed': 		      basic.e2ed,
     # 'e2ed_v': 	      basic.e2ed_v,
