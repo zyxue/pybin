@@ -44,14 +44,11 @@ def runit(cmd_logf_generator, numthread, ftest):
     
     q.join()
 
-def get_cpt_time(infile, gmxcheck):
-    """gmxcheck show be the absolute address of gmxcheck, so the version
-    specified"""
-
+def get_cpt_time(infile):
     import StringIO
 
     stdout, stderr = subprocess.Popen(
-        [gmxcheck,
+        ['gmxcheck',
          '-f', infile],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE).communicate()
