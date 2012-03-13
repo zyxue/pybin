@@ -16,16 +16,7 @@ def parse_cmd():
 
 def main():
     args = parse_cmd()
-    if args.cptversion == '4_5':
-        cpttime = get_cpt_time(
-            args.inputfile,
-            '/home/p/pomes/zyxue/exec/gromacs-4.5.5/exec/bin/gmxcheck')
-    elif args.cptversion == '4_0':
-        cpttime = get_cpt_time(
-            args.inputfile,
-            '/home/p/pomes/zyxue/exec/gromacs-4.0.5/exec/bin/gmxcheck')
-    else:
-        raise ValueError("version unrecoganized!")
+    cpttime = get_cpt_time(args.inputfile)
     print cpttime
 
 if __name__ == "__main__":
