@@ -43,7 +43,7 @@ def rg_c_alpha(kwargs):
 
 def e2ed(kwargs):
     """end to end distance"""
-    return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
+    return 'printf "ACE_&_CH3\nNH2_&_N" | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg'.format(**kwargs)
 
 def sequence_spacing(kwargs):
     """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""

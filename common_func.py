@@ -4,6 +4,7 @@ from threading import Thread
 import logging
 import subprocess
 import Queue
+import StringIO
 
 def runit(cmd_logf_generator, numthread, ftest):
     """
@@ -45,8 +46,6 @@ def runit(cmd_logf_generator, numthread, ftest):
     q.join()
 
 def get_cpt_time(infile):
-    import StringIO
-
     stdout, stderr = subprocess.Popen(
         ['gmxcheck',
          '-f', infile],
@@ -56,8 +55,12 @@ def get_cpt_time(infile):
     for line in StringIO.StringIO(stderr):
         if 'Last frame' in line:
             sl = [i.strip() for i in line.split()]
-            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)
+            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)     # unit: ns
     return return_value
+
+def get_tpr_time(tprfile):
+    pass
+
 
 
 if __name__ == "__main__":
