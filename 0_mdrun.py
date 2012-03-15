@@ -4,7 +4,7 @@ import os
 SELF_SUBMITTED_FLAG = os.getenv('SELF_SUBMITTED_FLAG', None)
 
 import sys
-sys.path.append("/scratch/p/pomes/zyxue/mono_su_as/trj_makeup/sq1w00_makeup/test_0_mdrun_sh/test_MDRun")
+# sys.path.append("/scratch/p/pomes/zyxue/mono_su_as/trj_makeup/sq1w00_makeup/test_0_mdrun_sh/test_MDRun")
 
 import subprocess
 import argparse
@@ -96,6 +96,3 @@ if __name__ == "__main__":
     if fexecute:
         main()
 
-# import ssh
-# s = ssh.Connection('gpc04')
-# s.execute('pwd')
