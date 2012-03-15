@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from common_func import get_cpt_time
+from common_func import get_cpt_time, get_tpr_time
 
 def parse_cmd():
     parser = argparse.ArgumentParser(
@@ -13,8 +13,11 @@ def parse_cmd():
 
 def main():
     args = parse_cmd()
-    cpttime = get_cpt_time(args.inputfile)
-    print cpttime
+    if args.inputfile[-3:] == "cpt":
+        t = get_cpt_time(args.inputfile)
+    elif args.inputfile[-3:] == "tpr":
+        t = get_tpr_time(args.inputfile)
+    print t
 
 if __name__ == "__main__":
     main()

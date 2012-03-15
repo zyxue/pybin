@@ -59,9 +59,27 @@ def get_cpt_time(infile):
     return return_value
 
 def get_tpr_time(tprfile):
-    pass
+    stdout, stderr = subprocess.Popen(
+        ['gmxdump',
+         '-s', tprfile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE).communicate()
 
-
+    # Different from get_cpt_time, we use stdout this time
+    nsteps_found_flag = False
+    dt_found_flag = False
+    for line in StringIO.StringIO(stdout):
+        if 'nsteps' in line:
+            nsteps = float(line.split('=')[1].strip())         # number of steps
+            nsteps_found_flag = True
+        elif "delta_t" in line:
+            dt = float(line.split('=')[1].strip())                    # unit: ps
+            dt_found_flag = True
+        
+        if nsteps_found_flag and dt_found_flag:
+            break
+    result = "{0:.0f}".format(nsteps * dt / 1000)                      # unit: ns
+    return result
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
