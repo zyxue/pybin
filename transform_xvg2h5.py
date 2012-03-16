@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import sys
 import glob
 import shutil
 import argparse
@@ -9,7 +10,7 @@ import numpy as np
 import tables
 from configobj import ConfigObj
 
-from argparse_action import convert_seq, convert_num
+from argparse_action import my_basic_parser, convert_seq, convert_num
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
 
@@ -22,9 +23,14 @@ def main():
     """
     args = parse_cmd()
 
-    # add try except for h5filename
-    conf_dict = ConfigObj('.h5.conf')
-    h5filename = conf_dict['data']['h5filename']
+    # check the validity of args
+    if not os.path.exists(args.conf):
+        raise IOError("Can not find {0}".format(args.conf))
+
+    conf_dict = ConfigObj(args.conf)
+
+    h5filename = args.h5f
+
     title=conf_dict['data']['title']
     properties = conf_dict['properties']
     
@@ -33,17 +39,17 @@ def main():
 
     # Get the property name first, then based on it get the 
     # table description, table format
-    pn = args.property_name
+    pn = args.ppty
     if pn is None:
         raise ValueError('You must specify -p --property-name')
     elif not pn in properties:
         raise ValueError('"{0}" has not been included in the .h5.conf file'.format(pn))
     
     obj_property = h5t.Property(pn)
-    p_conf = properties[pn]
+    p_conf = properties[pn]                                 # property configuration
 
     h5file = tables.openFile(h5filename, mode="a", title=title)
-    filters = tables.Filters(complevel=8, complib='zlib')    
+    filters = tables.Filters(complevel=8, complib='zlib')
 
     pgrouppath = create_group(h5file, '/', pn, filters, title=obj_property.desc ) # property grouppath
     try:
@@ -76,7 +82,7 @@ def create_group(h5file, path, name, filters, title=''):
     return g
 
 def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
-              property_name, h5file, obj_property, ogd, ogdpath):
+              ppty, h5file, obj_property, ogd, ogdpath):
     """
     Under one group which is the name of the property, each xvg file will be
     transformed to a table, dirchy is not implemented, seems useless,
@@ -135,24 +141,28 @@ def backup_file(f):
                 dirname, '#' + basename + '.{0}#'.format(count))
         shutil.copy(f, rn_to)
 
-def parse_cmd():
+def parse_cmd(cmd=None):
     """parse_cmd"""
-    parser = argparse.ArgumentParser(usage='transform data from xvg to h5')
-    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    parser.add_argument('-c', dest='CDTS', nargs='+',
-                        help="specify it this way, i.e. w m o p e ")
-    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
-                        help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-                        help='specify the replica number, i.e. 1 2 3 or 1-20')
-    parser.add_argument('-p', '--property-name', type=str, dest='property_name', default=None,
+
+    parser = my_basic_parser()
+
+    parser.add_argument('-f', dest='h5f', required=True,
+                        help='specify the h5f file')
+    parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(TABLES))
+
+    parser.add_argument('-g', dest='conf', default=".h5.conf",
+                        help='specify the configuration file')
+
     parser.add_argument('--nobk', dest='nobk', action='store_true', default=False,
                         help=('don\'t backup to save time, especially when the h5 file is big,'
                               'make sure your code works before using this option,'
                               'otherwise h5 file may be corrupted, and data lost'))
+    if cmd is None:
+        cmd = sys.argv[1:]
+
     args = parser.parse_args()
+
     return args
 
 if __name__ == "__main__":

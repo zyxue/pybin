@@ -7,18 +7,19 @@ import numpy as np
 from configobj import ConfigObj
 
 from mysys import read_mysys
-
-class tave(tables.IsDescription):
-    """table ave"""
-    pf = tables.StringCol(itemsize=15, pos=0)    # like an unique id                     
-    ave = tables.Float32Col(pos=1)
-    std = tables.Float32Col(pos=2)
+from common_func import tave, parse_cmd
 
 # Modulize the code, and plot upup V.S. dssp_E
 
 def main(h5file, UEP, topproc):
     mysys = read_mysys.read()
+
+    args = parse_cmd()
     conf_dict = ConfigObj('.h5.conf')
+    
+    h5file = args.h5f
+    UEP = args.ppty
+    topproc = 'distr'                           # type of postprocess. i.e. ave
 
     rootUEP = os.path.join('/', UEP)
     h5f = tables.openFile(h5file, 'a', rootUEP=rootUEP)
@@ -32,7 +33,7 @@ def main(h5file, UEP, topproc):
         g = h5f.createGroup(h5f.root, topproc)
     print g
 
-    SEQS = conf_dict['systems']['SEQS']
+    SEQS = conf_dict['systems']['SEQS'] if not 
     CDTS = conf_dict['systems']['CDTS']
     NUMS = conf_dict['systems']['NUMS']
     arrayname_pattern = conf_dict['postprocess'][topproc]['arraynamepattern']
@@ -63,6 +64,6 @@ def main(h5file, UEP, topproc):
 
 if __name__ == "__main__":
     h5file = '../mono_meo.h5'
-    topproc = 'distr'                                                  # type of postprocess. i.e. ave
+
     UEP = 'rg_c_alpha'
     main(h5file, UEP, topproc)

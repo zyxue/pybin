@@ -31,9 +31,10 @@ def main():
         g = h5f.createGroup(h5f.root, topproc)
     print g
 
-    SEQS = conf_dict['systems']['SEQS']
-    CDTS = conf_dict['systems']['CDTS']
-    NUMS = conf_dict['systems']['NUMS']
+    SEQS = args.SEQS if args.SEQS else conf_dict['SEQS']
+    CDTS = args.CDTS if args.CDTS else conf_dict['CDTS']
+    TMPS = args.TMPS if args.TMPS else conf_dict['TMPS']
+    NUMS = args.NUMS if args.NUMS else conf_dict['NUMS']
 
     tablename_pattern = conf_dict['postprocess'][topproc]['tablenamepattern']
 

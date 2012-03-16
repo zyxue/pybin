@@ -4,7 +4,6 @@
 
 import argparse
 
-
 class convert_seq(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         processed_values = []
@@ -33,55 +32,24 @@ class convert_num(argparse.Action):
         final_values = ['{0:02d}'.format(v) for v in processed_values]
         setattr(namespace, self.dest, final_values)
 
-# If the above works, delete the following two classes
+def my_basic_parser():
+    """By default, argparse_action will take sys.argv[1:] as cmd"""
 
-# class convert_seq(argparse.Action):
-#     def __call__(self, parser, namespace, values, option_string=None):
-#         if len(values) > 1:
-#             v = values
-#         else:
-#             vv = values[0]
-#             if '-' in vv:
-#                 mi, ma = (int(i) for i in values[0].split('-'))
-#                 v = [str(i) for i in xrange(mi, ma + 1)]
-#             else:
-#                 v = values
-#         setattr(namespace, self.dest, ['sq{0}'.format(i) for i in v])
+    my_basic_parser = argparse.ArgumentParser()
 
-# class convert_num(argparse.Action):
-#     def __call__(self, parser, namespace, values, option_string=None):
-#         if len(values) > 1:
-#             v = ['{0:02d}'.format(i) for i in (int(j) for j in values)]
-#         else:
-#             vv = values[0]
-#             if '-' in vv:
-#                 mi, ma = (int(i) for i in vv.split('-'))
-#                 v = ['{0:02d}'.format(i) for i in xrange(mi, ma + 1)]
-#             else:
-#                 v = ['{0:02d}'.format(int(values[0]))]
-#         setattr(namespace, self.dest, v)
-
-
-# class Myparser(argparse.ArgumentParser):
-#     def __init__(self):
-#         self.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-#                             help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-#         self.add_argument('-c', dest='CDTS', nargs='+',
-#                             help="specify it this way, i.e. w m o p e ")
-#         self.add_argument('-t', dest='TMPS', default=None, nargs='+',
-#                             help='specify it this way, i.e "300 700", maybe improved later')
-#         self.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-#                             help='specify the replica number, i.e. 1 2 3 or 1-20')
-def myparser():
-    """parse_cmd"""
-    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
-
-    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+    my_basic_parser.add_argument('-s', dest='SEQS', default=None, nargs='+', action=convert_seq,
                         help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    parser.add_argument('-c', dest='CDTS', nargs='+',
+    my_basic_parser.add_argument('-c', dest='CDTS', default=None, nargs='+',
                         help="specify it this way, i.e. w m o p e ")
-    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
+    my_basic_parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
+    my_basic_parser.add_argument('-n', dest='NUMS', default=None, nargs='+', action=convert_num,
                         help='specify the replica number, i.e. 1 2 3 or 1-20')
-    return parser
+
+    # my_basic_parser.add_argument('-f', dest='h5f', required=True,
+    #                     help='specify the h5f file')
+    # my_basic_parser.add_argument('-g', dest='conf',
+    #                     help='specify the configuration file')
+    # my_basic_parser.add_argument('-p', dest='ppty', required=True,   # ppty: property
+    #                     help='specify the property your are trying to do ave postprocess on (i.e. rg_c_alpha')
+    return my_basic_parser
