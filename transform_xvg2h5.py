@@ -10,6 +10,7 @@ import numpy as np
 import tables
 from configobj import ConfigObj
 
+from common_func import backup_file, get_sctn
 from argparse_action import my_basic_parser, convert_seq, convert_num
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
@@ -117,26 +118,6 @@ def zx_create_table(h5file, grouppath, tablename, data, desc, property_table):
     else:
         table = h5file.getNode(tablepath)
     return table
-
-def get_sctn(args, configuration):
-    SEQS = args.SEQS if args.SEQS else configuration['SEQS']
-    CDTS = args.CDTS if args.CDTS else configuration['CDTS']
-    TMPS = args.TMPS if args.TMPS else configuration['TMPS']
-    NUMS = args.NUMS if args.NUMS else configuration['NUMS']
-    return SEQS, CDTS, TMPS, NUMS
-
-def backup_file(f):
-    if os.path.exists(f):
-        dirname = os.path.dirname(f)
-        basename = os.path.basename(f)
-        count = 1
-        rn_to = os.path.join(
-            dirname, '#' + basename + '.{0}#'.format(count))
-        while os.path.exists(rn_to):
-            count += 1
-            rn_to = os.path.join(
-                dirname, '#' + basename + '.{0}#'.format(count))
-        shutil.copy(f, rn_to)
 
 def parse_cmd(cmd=None):
     """parse_cmd"""
