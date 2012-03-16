@@ -49,6 +49,9 @@ def sequence_spacing(kwargs):
     """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""
     return "sequence_spacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -l {peptide_length} -o {anadir}/{pf}_sequence_spacing.xvg".format(**kwargs)
 
+def dssp(kwargs):
+    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -b {b} -sc {anadir}/{pf}_dssp.xvg'.format(**kwargs)
+
 def dssp_E(kwargs):
     # return 'printf "Protein" | mydo_dssp -f {xtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg -o {anadir}/{pf}_dssp_E.xpm'.format(**kwargs)
     # return 'printf "Protein" | mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)

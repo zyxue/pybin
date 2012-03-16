@@ -47,6 +47,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     # 'e2ed_v': 	      basic.e2ed_v,
 
     'sequence_spacing':       basic.sequence_spacing,
+    'dssp': 		      basic.dssp,
     'dssp_E': 		      basic.dssp_E,
     'dssp_H': 		      basic.dssp_H,
     'dssp_G': 		      basic.dssp_G,
