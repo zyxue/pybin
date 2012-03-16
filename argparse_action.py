@@ -38,18 +38,11 @@ def my_basic_parser():
     my_basic_parser = argparse.ArgumentParser()
 
     my_basic_parser.add_argument('-s', dest='SEQS', default=None, nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+                        help="specify it this way, i.e. 1 3 4 or 1-9 or 1, 3-5 (don't include 'sq')")
     my_basic_parser.add_argument('-c', dest='CDTS', default=None, nargs='+',
                         help="specify it this way, i.e. w m o p e ")
     my_basic_parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
     my_basic_parser.add_argument('-n', dest='NUMS', default=None, nargs='+', action=convert_num,
-                        help='specify the replica number, i.e. 1 2 3 or 1-20')
-
-    # my_basic_parser.add_argument('-f', dest='h5f', required=True,
-    #                     help='specify the h5f file')
-    # my_basic_parser.add_argument('-g', dest='conf',
-    #                     help='specify the configuration file')
-    # my_basic_parser.add_argument('-p', dest='ppty', required=True,   # ppty: property
-    #                     help='specify the property your are trying to do ave postprocess on (i.e. rg_c_alpha')
+                        help='specify the replica number, i.e. 1 2 3 or 1-20 or 1, 3, 4-7')
     return my_basic_parser
