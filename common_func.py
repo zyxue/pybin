@@ -94,6 +94,13 @@ def backup_file(f):
                 dirname, '#' + basename + '.{0}#'.format(count))
         shutil.copy(f, rn_to)
 
+def get_sctn(args, configuration):
+    SEQS = args.SEQS if args.SEQS else configuration['SEQS']
+    CDTS = args.CDTS if args.CDTS else configuration['CDTS']
+    TMPS = args.TMPS if args.TMPS else configuration['TMPS']
+    NUMS = args.NUMS if args.NUMS else configuration['NUMS']
+    return SEQS, CDTS, TMPS, NUMS
+
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     logging.info("objects in this module is supposed to be imported rather than run directly")
