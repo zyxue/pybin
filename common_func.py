@@ -4,6 +4,7 @@ from threading import Thread
 import logging
 import subprocess
 import Queue
+import StringIO
 
 def runit(cmd_logf_generator, numthread, ftest):
     """
@@ -45,8 +46,6 @@ def runit(cmd_logf_generator, numthread, ftest):
     q.join()
 
 def get_cpt_time(infile):
-    import StringIO
-
     stdout, stderr = subprocess.Popen(
         ['gmxcheck',
          '-f', infile],
@@ -56,9 +55,31 @@ def get_cpt_time(infile):
     for line in StringIO.StringIO(stderr):
         if 'Last frame' in line:
             sl = [i.strip() for i in line.split()]
-            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)
+            return_value = '{0:.0f}'.format(float(sl[-1]) / 1000)     # unit: ns
     return return_value
 
+def get_tpr_time(tprfile):
+    stdout, stderr = subprocess.Popen(
+        ['gmxdump',
+         '-s', tprfile],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE).communicate()
+
+    # Different from get_cpt_time, we use stdout this time
+    nsteps_found_flag = False
+    dt_found_flag = False
+    for line in StringIO.StringIO(stdout):
+        if 'nsteps' in line:
+            nsteps = float(line.split('=')[1].strip())         # number of steps
+            nsteps_found_flag = True
+        elif "delta_t" in line:
+            dt = float(line.split('=')[1].strip())                    # unit: ps
+            dt_found_flag = True
+        
+        if nsteps_found_flag and dt_found_flag:
+            break
+    result = "{0:.0f}".format(nsteps * dt / 1000)                      # unit: ns
+    return result
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
