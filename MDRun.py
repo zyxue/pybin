@@ -140,8 +140,8 @@ class MDRun(object):
                              '-cpt', str(self.kwargs.get('CPT', 15)),
                              '-npme', str(self.kwargs.get('NPME', -1))]
         if self.is_first_run():
-            subprocess.call(first_run_command)
+            returncode = subprocess.call(first_run_command)
             # print ' '.join(first_run_command)
         else:
-            subprocess.call(first_run_command + ['-cpi', self.cpt, '-append'])
+            returncode = subprocess.call(first_run_command + ['-cpi', self.cpt, '-append'])
             # print ' '.join(first_run_command + ['-cpi', self.cpt, '-append'])

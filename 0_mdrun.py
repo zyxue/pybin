@@ -6,6 +6,7 @@ SELF_SUBMITTED_FLAG = os.getenv('SELF_SUBMITTED_FLAG', None)
 import sys
 # sys.path.append("/scratch/p/pomes/zyxue/mono_su_as/trj_makeup/sq1w00_makeup/test_0_mdrun_sh/test_MDRun")
 
+import time
 import subprocess
 import argparse
 
@@ -18,7 +19,7 @@ if SELF_SUBMITTED_FLAG:
     fexecute = True
 else:
     fexecute = False
-    parser = argparse.ArgumentParser(usage='0_mdrun.py some.tpr')
+    parser = argparse.ArgumentParser(usage='0_mdrun.py -s some.tpr -c some.conf [--debug]')
     parser.add_argument('-s', dest='tpr', required=True, type=str,
                         help="tpr file must be specified")
     parser.add_argument('-n', dest='title', type=str, default=None,
@@ -52,7 +53,7 @@ else:
     tpr = os.path.join(os.environ['PWD'], args.tpr)                   # with absolute path
     mdrun = MDRun(tpr)
     if os.path.exists(mdrun.cpt):
-        tt = mdrun._cpttime(mdrun.cpt)
+        tt = "{0:.0f}".format(mdrun._cpttime(mdrun.cpt) / 1000)       # unit: ns
     else:
         tt = 0
     N = "{0}t{1}".format(args.title if args.title else os.path.basename(tpr)[:-4], tt)
@@ -87,10 +88,14 @@ def main():
     if mdrun.is_finished():
         pass
     else:
-        mdrun.mdrun()
-        s = ssh.Connection('gpc04')
-        s.execute('cd {0}; {1}'.format(pbs_o_workdir, cmd))
-        s.close()
+        returncode = mdrun.mdrun()
+        if returncode == 0:
+            s = ssh.Connection('gpc04')
+            s.execute('cd {0}; {1}'.format(pbs_o_workdir, cmd))
+            s.close()
+            print "mdrun successfully at {0}".format(time.ctime())
+        else:
+            print "mdrun unsuccessfully at {0}".format(time.ctime())
 
 if __name__ == "__main__":
     if fexecute:
