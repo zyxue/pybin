@@ -81,6 +81,19 @@ def get_tpr_time(tprfile):
     result = "{0:.0f}".format(nsteps * dt / 1000)                      # unit: ns
     return result
 
+def backup_file(f):
+    if os.path.exists(f):
+        dirname = os.path.dirname(f)
+        basename = os.path.basename(f)
+        count = 1
+        rn_to = os.path.join(
+            dirname, '#' + basename + '.{0}#'.format(count))
+        while os.path.exists(rn_to):
+            count += 1
+            rn_to = os.path.join(
+                dirname, '#' + basename + '.{0}#'.format(count))
+        shutil.copy(f, rn_to)
+
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     logging.info("objects in this module is supposed to be imported rather than run directly")
