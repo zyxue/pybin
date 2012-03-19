@@ -148,3 +148,5 @@ class MDRun(object):
             cmd = first_run_command + ['-cpi', self.cpt, '-append']
             print "{0}: {1}".format(time.ctime(), ' '.join(first_run_command))
             returncode = subprocess.call(cmd)
+        return returncode
+
