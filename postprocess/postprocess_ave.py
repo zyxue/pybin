@@ -7,81 +7,90 @@ import tables
 import numpy as np
 from configobj import ConfigObj
 
-from common_func import tave, parse_cmd
+from common_func import get_sctn
 from mysys import read_mysys
 
+from common import tave, parse_cmd
+
+
 def main():
-    mysys = read_mysys.read()
-
     args = parse_cmd()
-    conf_dict = ConfigObj(args.conf)
-    h5file = args.h5f
-    UEP = args.ppty
-    topproc='ave'                               # type of postprocess. i.e. ave
 
-    rootUEP = os.path.join('/', UEP)
-    h5f = tables.openFile(h5file, 'a', rootUEP=rootUEP)
+    # initialization YOU DIAN LUANG!
 
-    path = os.path.join('/', topproc)
-    print path
+    conf = args.conf
+    if not os.path.exists(conf):
+        raise IOError("{0} cannot found".format(conf))
 
-    if h5f.__contains__(path):
-        g = h5f.getNode(h5f.root, topproc)
+    conf_dict = ConfigObj(conf)
+    SEQS, CDTS, TMPS, NUMS = get_sctn(args, conf_dict['systems'])
+
+    h5filename = conf_dict['data']['h5filename']
+    if not os.path.exists(h5filename):
+        raise IOError("{0} cannot found".format(h5filename))
+
+    ppty = args.ppty
+    tpostproc='ave'                               # type of postprocess. i.e. ave
+
+    ave_kwargs = conf_dict['postprocess'][tpostproc]
+
+    rootUEP = os.path.join('/', ppty)
+    # start dealing with the h5 file
+    h5file = tables.openFile(h5filename, 'a', rootUEP=rootUEP)
+
+    tpostproc_group_path = os.path.join('/', tpostproc)
+    if h5file.__contains__(tpostproc_group_path): # means first time running ave postprocess for this ppty
+        tpostproc_group = h5file.getNode(h5file.root, tpostproc)
     else:
-        g = h5f.createGroup(h5f.root, topproc)
-    print g
+        tpostproc_group = h5file.createGroup(h5file.root, tpostproc)
 
-    SEQS = conf_dict['systems']['SEQS']
-    CDTS = conf_dict['systems']['CDTS']
-    NUMS = conf_dict['systems']['NUMS']
+    loop_h5(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwargs)
 
-    tablename_pattern = conf_dict['postprocess'][topproc]['tablenamepattern']
-
+def loop_h5(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwargs):
+    mysys = read_mysys.read()
     for seq in SEQS:
+        dd = {                                 # ppty_name: [denominator, interested_col]
+        'dssp_E': [float(mysys[seq].len), 'Structure'],
+        'dssp_H': [float(mysys[seq].len), 'Structure'],
+        'dssp_G': [float(mysys[seq].len), 'Structure'],
+        'dssp_B': [float(mysys[seq].len), 'Structure'],
+        'dssp_C': [float(mysys[seq].len), 'Structure'],
+        'dssp_T': [float(mysys[seq].len), 'Structure'],
+        'upup'  : [float(mysys[seq].hbg), 'num_upup' ],
+        'unun'  : [float(mysys[seq].scnpg),'num_unun'],
+        'upun'  : [1., 'num_upun'],
+        'upvp'  : [float(mysys[seq].hbg), 'num_upvp' ],
+        'upvn'  : [float(mysys[seq].hbg), 'num_upvn' ],
+        'unvp'  : [float(mysys[seq].scnpg), 'num_unvp' ],
+        'unvn'  : [float(mysys[seq].scnpg), 'num_unvn' ],
+        'rg_c_alpha': [1., 'rg_c_alpha']
+        }
         for cdt in CDTS:
-            tablename = tablename_pattern.format(seq=seq, cdt=cdt)
+            tablename = ave_kwargs['tablenamepattern'].format(seq=seq, cdt=cdt)
             print tablename
-            if g.__contains__(tablename):
+            if tpostproc_group.__contains__(tablename):
                 pass
             else:
                 # prepare for creating a new table
-                # ppty_name: [denominator, col_name]
-                dd = {
-                    'dssp_E': [float(mysys[seq].len), 'Structure'],
-                    'dssp_H': [float(mysys[seq].len), 'Structure'],
-                    'dssp_G': [float(mysys[seq].len), 'Structure'],
-                    'upup'  : [float(mysys[seq].hbg), 'num_upup' ],
-                    'unun'  : [float(mysys[seq].scnpg),'num_unun'],
-                    'upun'  : [1., 'num_upun'],
-                    'upvp'  : [float(mysys[seq].hbg), 'num_upvp' ],
-                    'upvn'  : [float(mysys[seq].hbg), 'num_upvn' ],
-                    'unvp'  : [float(mysys[seq].scnpg), 'num_unvp' ],
-                    'unvn'  : [float(mysys[seq].scnpg), 'num_unvn' ],
-                    'rg_c_alpha': [1., 'rg_c_alpha']
-                    }
-
-                denorminator, interested_col = dd[UEP]
-
-                pfpattern = conf_dict['postprocess'][topproc]['pfpattern']
+                denorminator, interested_col = dd[ppty]
+                pfpattern = ave_kwargs['pfpattern']
 
                 aves = []
                 for num in NUMS:
                     pf = pfpattern.format(**locals())
-                    if h5f.root.ogd.__contains__(pf):
-                        t = h5f.getNode(h5f.root.ogd, pf)
-                        v = np.array([x[interested_col] for x in t.iterrows()])
+                    if h5file.root.ogd.__contains__(pf):
+                        t = h5file.getNode(h5file.root.ogd, pf)
+                        v = t.read(field=interested_col).mean()
                         v_normed = v / denorminator
                         aves.append(
                             (pf, v_normed.mean(), v_normed.std()) # append a tuple
                             )
 
-                t = h5f.createTable(
-                    g, tablename, tave,
-                    title=\
-                    'average value of each replica for {0} normded by {1}'\
-                    .format(UEP, denorminator))
-                t.append(aves)
-    h5f.close()
+            t = h5file.createTable(
+                tpostproc_group._v_pathname, tablename, tave, title=(
+                    'average value of {0} of each replica normded by {1}'.format(ppty, denorminator)))
+            t.append(aves)
+    h5file.close()
 
 # I tried with append [str, float, float] to an array, then every element in
 # the list will be converted to str, so not convenient for following

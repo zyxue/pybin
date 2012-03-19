@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import sys
 import glob
 import shutil
 import argparse
@@ -9,7 +10,8 @@ import numpy as np
 import tables
 from configobj import ConfigObj
 
-from argparse_action import convert_seq, convert_num
+from common_func import backup_file, get_sctn
+from argparse_action import my_basic_parser, convert_seq, convert_num
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
 
@@ -22,61 +24,53 @@ def main():
     """
     args = parse_cmd()
 
-    # add try except for h5filename
-    conf_dict = ConfigObj('.h5.conf')
+    # Verify the iterms in args
+    conf = args.conf
+    if not os.path.exists(conf):
+        raise IOError("{0} cannot found".format(conf))
+
+    conf_dict = ConfigObj(conf)
+    SEQS, CDTS, TMPS, NUMS = get_sctn(args, conf_dict['systems'])
+
     h5filename = conf_dict['data']['h5filename']
-    title=conf_dict['data']['title']
-    properties = conf_dict['properties']
-    
+    title      = conf_dict['data']['title']
+
+    # About the property
+    ppty = args.ppty
+    p_conf = conf_dict['properties'][ppty]         # property configuration
+    obj_property = h5t.Property(ppty)              # including table desc & schema
+
+    try:
+        ogd = p_conf['ogd']                    # contains xvg_name and table_name patterns
+    except KeyError:
+        print "#" * 20
+        print '"ogd" not specified in {0} in {1}'.format(ppty, conf)
+        print "#" * 20
+        sys.exit(1)
+
     if not args.nobk:
         backup_file(h5filename) # later when this script matures, this step may not be necessary
 
-    # Get the property name first, then based on it get the 
-    # table description, table format
-    pn = args.property_name
-    if pn is None:
-        raise ValueError('You must specify -p --property-name')
-    elif not pn in properties:
-        raise ValueError('"{0}" has not been included in the .h5.conf file'.format(pn))
-    
-    obj_property = h5t.Property(pn)
-    p_conf = properties[pn]
-
+    # Start dealing with the h5 file now
     h5file = tables.openFile(h5filename, mode="a", title=title)
-    filters = tables.Filters(complevel=8, complib='zlib')    
+    filters = tables.Filters(complevel=8, complib='zlib')
 
-    pgrouppath = create_group(h5file, '/', pn, filters, title=obj_property.desc ) # property grouppath
-    try:
-        ogd = p_conf['ogd']
-    except KeyError:
-        print "#" * 20
-        print "lala! Something is wrong! 'ogd' is not configured"
-        print "#" * 20, "\n"
+    # zx_create_group is redundant and ugly code, I amd looking for a way to
+    # overwrite creatGroup in table.file.File 2012-03-16
+    ppty_group = zx_create_group(h5file, '/', ppty, filters=filters, title=obj_property.desc)   # property group
+    ogd_group = zx_create_group(h5file, ppty_group._v_pathname, 'ogd', filters)
+    ogd_path = ogd_group._v_pathname # should == ogd_path = os.path.join('/', ppty, 'ogd')
 
-    create_group(h5file, os.path.join('/', pn), 'ogd', filters)
-    ogdpath = os.path.join('/', pn, 'ogd')
-
-    SEQS, CDTS, TMPS, NUMS = get_sctn(args, conf_dict['systems'])
-
-    # name pattern for a table
     # loop through xvg files and create a table for each one
-    # ugly code!!! aaaaaahhh Should I learn oop? and make it more clear!
+    # ugly code!!! aaaaaahhh Should I learn loop? and make it more clear!
     # parsing so many args are really confusing
     loop_xvgs(SEQS, CDTS, TMPS, NUMS,
-              pn, h5file, obj_property, ogd, ogdpath
+              ppty, h5file, obj_property, ogd, ogd_path
               )
 
-def create_group(h5file, path, name, filters, title=''):
-    if isinstance(path, str):
-        pathname = os.path.join(path, name)
-    if not h5file.__contains__(pathname):
-        g = h5file.createGroup(path, name, title, filters)
-    else:
-        g = h5file.getNode(path, name)
-    return g
 
 def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
-              property_name, h5file, obj_property, ogd, ogdpath):
+              ppty, h5file, obj_property, ogd, ogd_path):
     """
     Under one group which is the name of the property, each xvg file will be
     transformed to a table, dirchy is not implemented, seems useless,
@@ -88,15 +82,25 @@ def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
                 for num in NUMS:
                     xvgf = ogd['xvg_path_pattern'].format(**locals())
                     if not os.path.exists(xvgf):
-                        print "ATTENTION: {0} doesn't exist! YOU SURE YOU KNOW THIS, RIGHT?".format(xvgf)
+                        print "ATTENTION: {0} doesn't exist! YOU SURELY YOU KNOW THIS, RIGHT?".format(xvgf)
                     else:
                         print xvgf
                         objxvg = xvg.Xvg(xvgf)
                         tablename = ogd['tablename_pattern'].format(**locals())
-                        create_table(h5file, ogdpath, tablename, objxvg.data, objxvg.desc, 
-                                     obj_property.schema)
+                        zx_create_table(h5file, ogd_path, tablename, 
+                                        objxvg.data, objxvg.desc, 
+                                        obj_property.schema)
 
-def create_table(h5file, grouppath, tablename, data, desc, property_table):
+def zx_create_group(h5file, path, name, filters, title=''):
+    if isinstance(path, str):
+        pathname = os.path.join(path, name)
+    if not h5file.__contains__(pathname):
+        g = h5file.createGroup(path, name, title, filters)
+    else:
+        g = h5file.getNode(path, name)
+    return g
+
+def zx_create_table(h5file, grouppath, tablename, data, desc, property_table):
     # ugly code, reverse should be removed accordly
     property_cols = property_table.columns.keys()           # get the column names(keys)
     # property_cols.reverse()
@@ -115,44 +119,24 @@ def create_table(h5file, grouppath, tablename, data, desc, property_table):
         table = h5file.getNode(tablepath)
     return table
 
-def get_sctn(args, configuration):
-    SEQS = args.SEQS if args.SEQS else configuration['SEQS']
-    CDTS = args.CDTS if args.CDTS else configuration['CDTS']
-    TMPS = args.TMPS if args.TMPS else configuration['TMPS']
-    NUMS = args.NUMS if args.NUMS else configuration['NUMS']
-    return SEQS, CDTS, TMPS, NUMS
-
-def backup_file(f):
-    if os.path.exists(f):
-        dirname = os.path.dirname(f)
-        basename = os.path.basename(f)
-        count = 1
-        rn_to = os.path.join(
-            dirname, '#' + basename + '.{0}#'.format(count))
-        while os.path.exists(rn_to):
-            count += 1
-            rn_to = os.path.join(
-                dirname, '#' + basename + '.{0}#'.format(count))
-        shutil.copy(f, rn_to)
-
-def parse_cmd():
+def parse_cmd(cmd=None):
     """parse_cmd"""
-    parser = argparse.ArgumentParser(usage='transform data from xvg to h5')
-    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    parser.add_argument('-c', dest='CDTS', nargs='+',
-                        help="specify it this way, i.e. w m o p e ")
-    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
-                        help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-                        help='specify the replica number, i.e. 1 2 3 or 1-20')
-    parser.add_argument('-p', '--property-name', type=str, dest='property_name', default=None,
+
+    parser = my_basic_parser()
+
+    parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(TABLES))
+    parser.add_argument('-g', dest='conf', default=".h5.conf",
+                        help='specify the configuration file')
     parser.add_argument('--nobk', dest='nobk', action='store_true', default=False,
                         help=('don\'t backup to save time, especially when the h5 file is big,'
                               'make sure your code works before using this option,'
                               'otherwise h5 file may be corrupted, and data lost'))
+    if cmd is None:
+        cmd = sys.argv[1:]
+
     args = parser.parse_args()
+
     return args
 
 if __name__ == "__main__":

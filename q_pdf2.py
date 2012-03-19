@@ -9,7 +9,13 @@ import matplotlib.path as path
 from xvg2png import xvg2array_data_points
 import q_acc
 
-"""adjusted for long line with numerous data points, plotting distributions"""
+"""
+The major difference between q_pdf2.py and q_pdf.py is that the former one uses
+np.histogram instead of ax.hist.
+
+adjusted for long line with numerous data points, plotting distributions
+
+"""
 
 def ax_distri(inf, ax, bins):
     id_ = inf
@@ -18,13 +24,12 @@ def ax_distri(inf, ax, bins):
     print len_y, inf
 
     # bins must be assigned in options
-    n, b = np.histogram(y, bins, normed=True)
+    n, b = np.histogram(y, bins, normed=False)
 
     b = (b[:-1] + b[1:]) / 2.                               # to gain the same length as n
     n = n / len_y                                           # normalized by len_y
 
-    p = ax.plot(b, n, linewidth=4, label=inf)
-    ax.legend()
+    p = ax.plot(b, n, linewidth=2, label=inf)
     return id_, n, b
 
 def outline():
@@ -50,7 +55,12 @@ def outline():
         axes.append(ax)
         id_s.append(id_)
         ns[id_], bs[id_] = n, b
-    q_acc.decorate(id_s, bs, ns, axes, options)
+    q_acc.decorate(
+        id_s, bs, ns, axes, options.blegend, 
+        options.xlb, options.ylb,
+        options.xb, options.xe,
+        options.yb, options.ye,
+        )
     q_acc.show_or_save(options.of)
 
 if __name__ == '__main__':

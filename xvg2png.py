@@ -42,9 +42,8 @@ def xvg2array_eb(xvgf, xvol, ycol):
 def xvg2array_data_points(xvgf):
     data_points = []
     with open(xvgf, 'r') as inf:
-        for line in inf:
-            if not line.startswith('#') and not line.startswith('@'):
-                data_points.extend([float(i) for i in line.split()])
+        data_points = [ float(line.split()[1]) for line in inf
+                        if line[0] != '#' and line[0] != '@']
     return np.array(data_points)
 
 def xvg2array_ap(xvgf):

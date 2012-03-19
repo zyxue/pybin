@@ -6,51 +6,43 @@ import argparse
 
 class convert_seq(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = values
-        else:
-            vv = values[0]
-            if '-' in vv:
+        processed_values = []
+        for v in values:
+            if '-' in v:
                 mi, ma = (int(i) for i in values[0].split('-'))
                 v = [str(i) for i in xrange(mi, ma + 1)]
+                processed_values.extend(v)
             else:
-                v = values
-        setattr(namespace, self.dest, ['sq{0}'.format(i) for i in v])
+                processed_values.append(v)
+
+        final_values = ['sq{0}'.format(i) for i in processed_values]
+        setattr(namespace, self.dest, final_values)
 
 class convert_num(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        if len(values) > 1:
-            v = ['{0:02d}'.format(i) for i in (int(j) for j in values)]
-        else:
-            vv = values[0]
-            if '-' in vv:
-                mi, ma = (int(i) for i in vv.split('-'))
-                v = ['{0:02d}'.format(i) for i in xrange(mi, ma + 1)]
+        processed_values = []
+        for v in values:
+            if '-' in v:
+                mi, ma = (int(i) for i in values[0].split('-'))
+                v = [i for i in xrange(mi, ma + 1)]
+                processed_values.extend(v)
             else:
-                v = ['{0:02d}'.format(int(values[0]))]
-        setattr(namespace, self.dest, v)
+                processed_values.append(int(v))
 
+        final_values = ['{0:02d}'.format(v) for v in processed_values]
+        setattr(namespace, self.dest, final_values)
 
-# class Myparser(argparse.ArgumentParser):
-#     def __init__(self):
-#         self.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-#                             help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-#         self.add_argument('-c', dest='CDTS', nargs='+',
-#                             help="specify it this way, i.e. w m o p e ")
-#         self.add_argument('-t', dest='TMPS', default=None, nargs='+',
-#                             help='specify it this way, i.e "300 700", maybe improved later')
-#         self.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-#                             help='specify the replica number, i.e. 1 2 3 or 1-20')
-def myparser():
-    """parse_cmd"""
-    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
+def my_basic_parser():
+    """By default, argparse_action will take sys.argv[1:] as cmd"""
 
-    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    parser.add_argument('-c', dest='CDTS', nargs='+',
+    my_basic_parser = argparse.ArgumentParser()
+
+    my_basic_parser.add_argument('-s', dest='SEQS', default=None, nargs='+', action=convert_seq,
+                        help="specify it this way, i.e. 1 3 4 or 1-9 or 1, 3-5 (don't include 'sq')")
+    my_basic_parser.add_argument('-c', dest='CDTS', default=None, nargs='+',
                         help="specify it this way, i.e. w m o p e ")
-    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
+    my_basic_parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
                         help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-                        help='specify the replica number, i.e. 1 2 3 or 1-20')
-    return parser
+    my_basic_parser.add_argument('-n', dest='NUMS', default=None, nargs='+', action=convert_num,
+                        help='specify the replica number, i.e. 1 2 3 or 1-20 or 1, 3, 4-7')
+    return my_basic_parser
