@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import StringIO
+import time
 from common_func import get_cpt_time, get_tpr_time
 from subprocess import PIPE as pipe
 
@@ -140,8 +141,10 @@ class MDRun(object):
                              '-cpt', str(self.kwargs.get('CPT', 15)),
                              '-npme', str(self.kwargs.get('NPME', -1))]
         if self.is_first_run():
-            returncode = subprocess.call(first_run_command)
-            # print ' '.join(first_run_command)
+            cmd = first_run_command
+            print "{0}: {1}".format(time.ctime(), ' '.join(cmd))
+            returncode = subprocess.call(cmd)
         else:
-            returncode = subprocess.call(first_run_command + ['-cpi', self.cpt, '-append'])
-            # print ' '.join(first_run_command + ['-cpi', self.cpt, '-append'])
+            cmd = first_run_command + ['-cpi', self.cpt, '-append']
+            print "{0}: {1}".format(time.ctime(), ' '.join(first_run_command))
+            returncode = subprocess.call(cmd)
