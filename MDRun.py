@@ -102,7 +102,7 @@ class MDRun(object):
             if 'Last frame' in line:
                 sl = [i.strip() for i in line.split()]
                 result = float(sl[-1])                          # unit: ps
-        return result
+                return result
 
     def _tprtime(self, tprfile):
         stdout, stderr = subprocess.Popen(['gmxdump', '-s', tprfile],
@@ -119,9 +119,9 @@ class MDRun(object):
                 dt_found_flag = True
 
             if nsteps_found_flag and dt_found_flag:
+                result = float(nsteps * dt)                                   # unit: ps
+                return result
                 break
-        result = float(nsteps * dt)                                   # unit: ps
-        return result
 
     def is_finished(self):
         if not os.path.exists(self.cpt):
@@ -140,9 +140,11 @@ class MDRun(object):
                              '-cpt', str(self.kwargs.get('CPT', 15)),
                              '-npme', str(self.kwargs.get('NPME', -1))]
         if self.is_first_run():
-            returncode = subprocess.call(first_run_command)
-            # print ' '.join(first_run_command)
+            cmd = first_run_command
+            print ' '.join(cmd)
+            returncode = subprocess.call(cmd)
         else:
-            returncode = subprocess.call(first_run_command + ['-cpi', self.cpt, '-append'])
-            # print ' '.join(first_run_command + ['-cpi', self.cpt, '-append'])
+            cmd = first_run_command + ['-cpi', self.cpt, '-append']
+            print ' '.join(cmd)
+            returncode = subprocess.call(cmd)
         return returncode
