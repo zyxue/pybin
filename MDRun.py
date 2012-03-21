@@ -128,7 +128,7 @@ class MDRun(object):
             return False      # if cpt doesn't exist, then haven't even started the first run, yet
         cpttime = self._cpttime(self.cpt)
         tprtime = self._tprtime(self.tpr)
-        if cpttime >= tprtime:
+        if cpttime and tprtime and cpttime >= tprtime:                # cpttime, tprtime cannot be None
             return True
         else:
             return False
