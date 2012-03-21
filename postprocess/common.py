@@ -6,12 +6,12 @@ import tables
 import argparse
 
 from argparse_action import my_basic_parser, convert_seq, convert_num
-
+from xvg2h5 import h5tables
 
 def parse_cmd(cmd=None):
     parser = my_basic_parser()
     parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
-                        help='you must specify the --property-name option from {0!r}'.format(TABLES))
+                        help='you must specify the --property-name option from {0!r}'.format(h5tables.__tables__))
     parser.add_argument('-g', dest='conf', default=".h5.conf",
                         help='specify the configuration file')
 

@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import StringIO
+import time
 from common_func import get_cpt_time, get_tpr_time
 from subprocess import PIPE as pipe
 
@@ -148,3 +149,4 @@ class MDRun(object):
             print ' '.join(cmd)
             returncode = subprocess.call(cmd)
         return returncode
+
