@@ -5,6 +5,7 @@ import subprocess
 import StringIO
 import argparse
 import time
+import re
 
 __version__ = 2
 
@@ -113,7 +114,7 @@ def main():
 
     alist = []                                              # active_cores_usage
     while not ll.lower().startswith(section_headers[1]):
-        if "processors in use by local jobs" in ll: # trying to print the usage percentage of the cluster
+        if re.search('processor', ll, re.IGNORECASE):
             print ll
 
         alist.append(ll)
