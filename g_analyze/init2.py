@@ -33,6 +33,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_trjconv_gro": 	      organize.g_trjconv_gro,
     "g_trjconv_pro_gro":      organize.g_trjconv_pro_gro,
     "g_make_ndx": 	      organize.g_make_ndx,
+    "g_select": 	      organize.g_select,
 
     "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
@@ -67,6 +68,15 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_upvp': 	      rdf.rdf_upvp,
     'rdf_upvn': 	      rdf.rdf_upvn,
     'rdf_unvp': 	      rdf.rdf_unvp,
+
+    'rdf_un1vp': 	      rdf.rdf_un1vp,
+    'rdf_un2vp': 	      rdf.rdf_un2vp,
+    'rdf_un3vp': 	      rdf.rdf_un3vp,
+
+    'rdf_un1vn': 	      rdf.rdf_un1vn,
+    'rdf_un2vn': 	      rdf.rdf_un2vn,
+    'rdf_un3vn': 	      rdf.rdf_un3vn,
+
     'rdf_unvn': 	      rdf.rdf_unvn,
     }
 
