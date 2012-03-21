@@ -106,6 +106,9 @@ def main():
 
     alist = []                                              # active_cores_usage
     while not ll.lower().startswith(section_headers[1]):
+        if "processors in use by local jobs" in ll: # trying to print the usage percentage of the cluster
+            print ll
+
         alist.append(ll)
         ll = output.readline()
 
