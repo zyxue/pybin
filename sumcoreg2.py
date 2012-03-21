@@ -38,16 +38,21 @@ def collect_data(accounts, data_list, host, fgg, fib):
                         n = ncore
                     else:
                         n = 0                               # forgot what wierd would fit this condition
+                elif host == 'l':
+                    # on lattice, showq display the number of cores in PROC column
+                    ncore = int(sl[3])
+                    n = ncore
                 if user in cores_usage:
                     cores_usage[user] += n
                 else:
                     cores_usage[user] = n
+
     return cores_usage
 
 def parse_cmd():
     parser = argparse.ArgumentParser(prog='you need to specify the host')
     parser.add_argument('--host', type=str, dest='host', default='s',
-                        help='specify the host name: s(scinet, default), c(colosse), m(mp2)')
+                        help='specify the host name: s(scinet, default), c(colosse), m(mp2), l(lattice)')
     parser.add_argument('-n', '--by-node', action='store_true', dest='bn', default=False,
                       help='show the number of nodes instead of cores')
     
@@ -87,6 +92,8 @@ def main():
         accounts.remove('pomes_group')
     elif args.host == 's':
         accounts = os.listdir('/scratch/p/pomes/')
+    elif args.host == 'l':
+        accounts = ['zyxue', 'grace']
 
     r_showq = showq()                                       # r_showq: result of showq
     if r_showq.returncode != 0 or r_showq.stderr != '':
@@ -106,6 +113,9 @@ def main():
 
     alist = []                                              # active_cores_usage
     while not ll.lower().startswith(section_headers[1]):
+        if "processors in use by local jobs" in ll: # trying to print the usage percentage of the cluster
+            print ll
+
         alist.append(ll)
         ll = output.readline()
 
