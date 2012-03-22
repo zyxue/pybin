@@ -39,8 +39,8 @@ def collect_data(accounts, data_list, host, fgg, fib):
                         n = ncore
                     else:
                         n = 0                               # forgot what wierd would fit this condition
-                elif host == 'l':
-                    # on lattice, showq display the number of cores in PROC column
+                elif host == 'l' or host == 'g':
+                    # on lattice and guillimin, showq display the number of cores in PROC column
                     ncore = int(sl[3])
                     n = ncore
                 if user in cores_usage:
@@ -53,7 +53,9 @@ def collect_data(accounts, data_list, host, fgg, fib):
 def parse_cmd():
     parser = argparse.ArgumentParser(prog='you need to specify the host')
     parser.add_argument('--host', type=str, dest='host', default='s',
-                        help='specify the host name: s(scinet, default), c(colosse), m(mp2), l(lattice)')
+                        help=('specify the host name: '
+                              's(scinet, default), c(colosse), '
+                              'm(mp2), l(lattice), g(guillimin)'))
     parser.add_argument('-n', '--by-node', action='store_true', dest='bn', default=False,
                       help='show the number of nodes instead of cores')
     
@@ -95,6 +97,9 @@ def main():
         accounts = os.listdir('/scratch/p/pomes/')
     elif args.host == 'l':
         accounts = ['zyxue', 'grace']
+    elif args.host == 'g':
+        accounts = os.listdir('/sb/project/uix-840-ac/')
+
 
     r_showq = showq()                                       # r_showq: result of showq
     if r_showq.returncode != 0 or r_showq.stderr != '':

@@ -24,7 +24,9 @@ def parse_cmd():
     parser.add_argument('-t', '--to', type=str, dest='to_', required=True,
                         help='To what file')
     parser.add_argument('--host', type=str, dest='host', default='s', 
-                        help='specify the host name: s(scinet, default), c(colosse), m(mp2)')
+                        help=('specify the host name: '
+                              's(scinet, default), c(colosse), m(mp2)'
+                              'g(guillimin), l(lattice)'))
     
     args = parser.parse_args()
     return args
@@ -35,6 +37,8 @@ def main():
         'c': 'zhuyxue12@colosse.clumeq.ca:',
         'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:',
         'n': 'zyxue@nestor.westgrid.ca:',
+        'l': 'zyxue@lattice.westgrid.ca:',
+        'g': 'zhuyxue12@guillimin.clumeq.ca:',
         }
 
     ARGS = parse_cmd()
