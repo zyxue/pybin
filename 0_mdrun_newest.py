@@ -1,8 +1,11 @@
 #! /usr/bin/env python
 
 """
-0_mdrun_newest.py will be comitted all the time, when qsub new jobs, this one should be used
-0_mdrun.py should never be comitted to ensure the running jobs finishes smoothly
+0_mdrun_newest.py will be comitted all the time, when qsub new jobs, this one
+should copied to a different name than what has been used before, and then be
+used.
+0_mdrun.py should never be comitted to ensure the running jobs finishes
+smoothly
 """
 
 
