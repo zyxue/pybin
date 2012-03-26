@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 
+import os
 from Bio import SeqIO
-
 
 #   Primary        Secondary        Tertiary        bbpC        scnC            
 # G 		   1(Ca)                            3(N, C, O)  0
+# V 2(Cy1, Cy2)			    2(Ca, Cb)       3(N, C, O)  3(Cb, Cy1, Cy2)
 # P		   3(Cb, Cy, Cd)                    3(N, C, O)  3(Cb, Cy, Cd)
 # A 1(Cb)			    1(Ca)           3(N, C, O)  1(Cb)
-# V 2(Cy1, Cy2)			    2(Ca, Cb)       3(N, C, O)  3(Cb, Cy1, Cy2)
 # Q 	           2(Cb, Cy)	    1(Ca)           3(N, C, O)  2(Cb, Cy)
 
 nonpolar_carbon_DD = {
@@ -39,7 +39,7 @@ nonpolar_carbon_DD = {
     }
 
 def main():
-    seq_file = '/Users/zyxue/pybin/myseqs.fasta'
+    seq_file = os.path.join(os.environ['HOME'], 'pybin/mysys/myseqs.fasta')
     primary, secondary, tertiary, HBgroup, patoms, scnC = {}, {}, {}, {}, {}, {}
     for seq in SeqIO.parse(seq_file, 'fasta'):
         primary[seq.description] = sum(
