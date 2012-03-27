@@ -57,6 +57,9 @@ def rdf_un2vp(kwargs):
 def rdf_un3vp(kwargs):
     return 'printf "UN3\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un3vp.xvg'.format(**kwargs)
 
+def rdf_un4vp(kwargs):
+    return 'printf "UN4\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un4vp.xvg'.format(**kwargs)
+
 def rdf_un1vn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'echo cdt is w, not rdf_un1vn'
@@ -75,25 +78,8 @@ def rdf_un3vn(kwargs):
     else:
         return 'printf "UN3\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un3vn.xvg'.format(**kwargs)
 
-def rdf_unvp(kwargs):
-    kwargs['inter_groups'] = inter_groups_matrix['unvp']
-    kwargs['type_of_rdf'] = 'rdf_unvp'
-    return ux_rdf_template.format(**kwargs)
-
-def rdf_unvn(kwargs):
-    kwargs['inter_groups'] = inter_groups_matrix['unvn']
-    kwargs['type_of_rdf'] = 'rdf_unvn'
-    return 'pwd' if kwargs['cdt'] == 'w' else ux_rdf_template.format(**kwargs)
-
-####################
-
-def rdf_vpvp(kwargs):
-    return ux_rdf_template.format(**kwargs)
-
-def rdf_vpvn(kwargs):
-    return 'pwd' if kwargs['cdt'] == 'w' else ux_rdf_template.format(**kwargs)
-
-def rdf_vnvn(kwargs):
-    return 'pwd' if kwargs['cdt'] == 'w' else ux_rdf_template.format(**kwargs)
-
-
+def rdf_un4vn(kwargs):
+    if kwargs['cdt'] == 'w':
+        return 'echo cdt is w, not rdf_un4vn'
+    else:
+        return 'printf "UN4\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un4vn.xvg'.format(**kwargs)

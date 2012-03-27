@@ -50,11 +50,6 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'sequence_spacing':       basic.sequence_spacing,
     'dssp': 		      basic.dssp,
     'dssp_E': 		      basic.dssp_E,
-    'dssp_H': 		      basic.dssp_H,
-    'dssp_G': 		      basic.dssp_G,
-    'dssp_T': 		      basic.dssp_T,
-    'dssp_B': 		      basic.dssp_B,
-    'dssp_C': 		      basic.dssp_C,
 
     'upup60': 		      interaction.upup60,
 
@@ -65,19 +60,19 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'unvp':		      interaction.unvp,
     'unvn': 		      interaction.unvn,
 
-    'rdf_upvp': 	      rdf.rdf_upvp,
-    'rdf_upvn': 	      rdf.rdf_upvn,
-    'rdf_unvp': 	      rdf.rdf_unvp,
+    # 'rdf_upvp': 	      rdf.rdf_upvp,
+    # 'rdf_upvn': 	      rdf.rdf_upvn,
+    # 'rdf_unvp': 	      rdf.rdf_unvp,
 
     'rdf_un1vp': 	      rdf.rdf_un1vp,
     'rdf_un2vp': 	      rdf.rdf_un2vp,
     'rdf_un3vp': 	      rdf.rdf_un3vp,
+    'rdf_un4vp': 	      rdf.rdf_un4vp,
 
     'rdf_un1vn': 	      rdf.rdf_un1vn,
     'rdf_un2vn': 	      rdf.rdf_un2vn,
     'rdf_un3vn': 	      rdf.rdf_un3vn,
-
-    'rdf_unvn': 	      rdf.rdf_unvn,
+    'rdf_un4vn': 	      rdf.rdf_un4vn,
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
