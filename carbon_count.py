@@ -6,7 +6,7 @@ from Bio import SeqIO
 #   Primary        Secondary        Tertiary        bbpC        scnC            
 # G 		   1(Ca)                            3(N, C, O)  0
 # V 2(Cy1, Cy2)			    2(Ca, Cb)       3(N, C, O)  3(Cb, Cy1, Cy2)
-# P		   3(Cb, Cy, Cd)                    3(N, C, O)  3(Cb, Cy, Cd)
+# P		   3(Cb, Cy, Cd)    1(Ca)           3(N, C, O)  3(Cb, Cy, Cd)
 # A 1(Cb)			    1(Ca)           3(N, C, O)  1(Cb)
 # Q 	           2(Cb, Cy)	    1(Ca)           3(N, C, O)  2(Cb, Cy)
 
