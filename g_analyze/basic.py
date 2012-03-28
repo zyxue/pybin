@@ -32,7 +32,7 @@ def rg_backbone(kwargs):
     Radius of Gyration: backbone heavy atoms only. e.g. for (GVPGV)7, there would be 107 atoms,
     which is 35 * 3 + 2 (modified ends)
     """
-    return 'printf "Backbone" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -o {anadir}/{pf}_rg_backbone.xvg'.format(**kwargs)
+    return 'printf "Backbone" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg_backbone.xvg'.format(**kwargs)
 
 def rg_c_alpha(kwargs):
     """
@@ -57,17 +57,3 @@ def dssp_E(kwargs):
     # return 'printf "Protein" | mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)
     return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)
 
-def dssp_H(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss H -b {b} -sc {anadir}/{pf}_dssp_H.xvg'.format(**kwargs)
-
-def dssp_G(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss G -b {b} -sc {anadir}/{pf}_dssp_G.xvg'.format(**kwargs)
-
-def dssp_T(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss T -b {b} -sc {anadir}/{pf}_dssp_T.xvg'.format(**kwargs)
-
-def dssp_B(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss B -b {b} -sc {anadir}/{pf}_dssp_B.xvg'.format(**kwargs)
-
-def dssp_C(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss C -b {b} -sc {anadir}/{pf}_dssp_C.xvg'.format(**kwargs)
