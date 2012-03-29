@@ -20,7 +20,7 @@ def xvg2array(xvgf):
     data = np.array(data)
     x = data[:, 0]
     y = data[:, 1]
-    return x, y
+    return np.array([x, y])
 
 def xvg2array_eb(xvgf, xvol, ycol):
     data = []

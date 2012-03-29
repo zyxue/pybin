@@ -99,6 +99,12 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                 [ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd]
                 )
 
+        if toa == 'g_select':
+            input_args['g_select_select'] = ('"' +
+                                             CONFIG_DICT['g_select']["seq"] +
+                                             CONFIG_DICT['g_select'][ cdt ] +
+                                             '"')
+
         # particular to sequence_spacing, maybe later toa need also to be
         # checked for other analysis, as well.
         if toa == 'sequence_spacing':

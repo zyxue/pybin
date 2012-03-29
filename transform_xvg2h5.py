@@ -84,12 +84,10 @@ def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
                     if not os.path.exists(xvgf):
                         print "ATTENTION: {0} doesn't exist! YOU SURELY YOU KNOW THIS, RIGHT?".format(xvgf)
                     else:
-                        print xvgf
                         objxvg = xvg.Xvg(xvgf)
                         tablename = ogd['tablename_pattern'].format(**locals())
                         zx_create_table(h5file, ogd_path, tablename, 
-                                        objxvg.data, objxvg.desc, 
-                                        obj_property.schema)
+                                        objxvg, obj_property.schema)
 
 def zx_create_group(h5file, path, name, filters, title=''):
     if isinstance(path, str):
@@ -100,21 +98,22 @@ def zx_create_group(h5file, path, name, filters, title=''):
         g = h5file.getNode(path, name)
     return g
 
-def zx_create_table(h5file, grouppath, tablename, data, desc, property_table):
+def zx_create_table(h5file, grouppath, tablename, objxvg, property_table):
     # ugly code, reverse should be removed accordly
     property_cols = property_table.columns.keys()           # get the column names(keys)
     # property_cols.reverse()
     tablepath = os.path.join(grouppath, tablename)
     
     if not h5file.__contains__(tablepath):
-        table = h5file.createTable(grouppath, tablename, property_table, title=desc)
-        table.append(data)
+        table = h5file.createTable(grouppath, tablename, property_table, title=objxvg.desc)
+        table.append(objxvg.data)
         # row = table.row
         # for row_values in data:
         #     for k, v in enumerate(property_cols):
         #         row[v] = row_values[k]
         #     row.append()
         # table.flush()
+        print "{0} IS TRANSFORMED".format(objxvg.filename)
     else:
         table = h5file.getNode(tablepath)
     return table

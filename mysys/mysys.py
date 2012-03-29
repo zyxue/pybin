@@ -12,6 +12,7 @@ class Peptide(object):
         self.order = int(psp[9])
         self.natom = int(psp[10])
         self.seqitp = psp[11]
+        self.KDhydropathy = psp[12]
 
 class Solvent(object):
     def __init__(self, ssp):                  # ssp: Solvent_Specific_Properties
