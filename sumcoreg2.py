@@ -9,7 +9,24 @@ import re
 import pwd
 import grp
 
-__version__ = 2
+__version__ = 3
+
+# from JobOverseer.clusters import User
+
+# UserList.append(User("Zhuyi Xue", ["zyxue","xuezhuyi","zhuyxue12"]))
+# UserList.append(User("Chris Ing", ["ceing","cing"]))
+# UserList.append(User("Loan Huynh", ["lhuynh"]))
+# UserList.append(User("John Holyoake", ["holyoake"]))
+# UserList.append(User("Chris Neale", ["cneale","nealechr"]))
+# UserList.append(User("Sarah Rauscher", ["srausche"]))
+# UserList.append(User("David Caplan", ["dacaplan"]))
+# UserList.append(User("Grace Li", ["grace", "ligrace1"]))
+# UserList.append(User("Nilu Chakrabarti", ["nilu", "nchakrab12", "chakraba"]))
+# UserList.append(User("Kethika Kulleperuma", ["kethika7", "kkullepe12","kkullepe"]))
+# UserList.append(User("Aditi Ramesh", ["aditi"]))
+
+
+
 
 class showq(object):
     def __init__(self):
