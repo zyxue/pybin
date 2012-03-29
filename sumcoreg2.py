@@ -16,7 +16,7 @@ def generate_hash(dd):
     return new_dd
 
 def main():
-    config_dict = ConfigObj(os.path.expanduser('~/pybin/sumcoreg.conf')
+    config_dict = ConfigObj(os.path.expanduser('~/pybin/sumcoreg.conf'))
     username2realname = generate_hash(config_dict['USERS'])
     hostname2clustername = generate_hash(config_dict['HOSTNAMES'])
 
