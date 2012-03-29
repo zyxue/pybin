@@ -1,0 +1,29 @@
+#   Primary        Secondary        Tertiary      scnC            bbpC
+# G                1(Ca)                          0               3(N, C, O)
+# P                3(Cb, Cy, Cd)                  3(Cb, Cy, Cd)   3(N, C, O)
+# A 1(Cb)                           1(Ca)         1(Cb)           3(N, C, O)
+# V 2(Cy1, Cy2)                     2(Ca, Cb)     3(Cb, Cy1, Cy2) 3(N, C, O)
+# Q                2(Cb, Cy)        1(Ca)         2(Cb, Cy)       3(N, C, O)   
+
+
+
+############################################################################### 
+
+# all_nC  : all nonpolar carbons (including CA)
+# all_scnC: all sidechain nonpolar carbons (exception: for (G)35, CA is used instead)
+# all 12C : all primary and secondary carbons
+# HBg     : hydrogen bonding groups
+# patoms  : polar atoms
+
+############################################################################### 
+
+               ,         all_nC,       all_scnC,        all_12C,            HBg,  patoms(C,O,N)
+sq1|(GVPGV)7   ,             98,             63,             63,             63,            105
+sq2|(GGVGV)7   ,             77,             42,             49,             70,            105
+sq3|(PGV)12    ,            108,             72,             72,             60,            108
+sq4|(GVGVA)7   ,             84,             49,             49,             70,            105
+sq5|(G)35      ,             35,              0,             35,             70,            105
+sq6|(GV)18     ,             90,             54,             54,             72,            108
+sq7|(Q)35      ,            105,             70,             70,             70,            105
+sq8|(A)35      ,             70,             35,             35,             70,            105
+sq9|(P)35      ,            140,            105,            105,             35,            105

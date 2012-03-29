@@ -4,6 +4,7 @@ import os
 from threading import Thread
 import logging
 import subprocess
+import shutil
 import Queue
 import StringIO
 

@@ -32,7 +32,7 @@ def parse_xvg(xvgf, col=None):
 
 class Xvg(object):
     def __init__(self, xvgf):
-        self.xvgf = xvgf
+        self.filename = xvgf
         if 'dssp' in xvgf:
             desc, data = parse_xvg(xvgf, col=2)
         else:
@@ -53,6 +53,6 @@ class Xvg(object):
         if tn is specified, tn will be used as the tablename, otherwise, the
         file name will be used
         """
-        tablename = tn if tn else os.path.basename(self.xvgf)
+        tablename = tn if tn else os.path.basename(self.filename)
         return tablename
 
