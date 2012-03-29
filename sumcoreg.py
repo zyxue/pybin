@@ -100,17 +100,6 @@ def main():
         users = [user[:8] for user in users]
     else:                       # on some clusters, this could be []. e.g. orca
         users = [user.pw_name[:8] for user in pwd.getpwall() if user.pw_gid == my_gid]
-        
-
-#     if args.host == 'm':
-#         accounts = os.listdir('/mnt/scratch_mp2/pomes/')
-#         accounts.remove('pomes_group')
-#     elif args.host == 's':
-#         accounts = os.listdir('/scratch/p/pomes/')
-#     elif args.host == 'l':
-#         accounts = ['zyxue', 'grace']
-#     elif args.host == 'g':
-#         accounts = os.listdir('/sb/project/uix-840-ac/')
 
     r_showq = showq()                                       # r_showq: result of showq
     if r_showq.returncode != 0 or r_showq.stderr != '':
