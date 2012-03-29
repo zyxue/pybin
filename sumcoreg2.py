@@ -1,13 +1,6 @@
 #! /usr/bin/env python
 
 import os
-import subprocess
-import StringIO
-import argparse
-import time
-import re
-import pwd
-import grp
 
 from configobj import ConfigObj
 from JobOverseer import clusters
@@ -23,7 +16,7 @@ def generate_hash(dd):
     return new_dd
 
 def main():
-    config_dict = ConfigObj('sumcoreg.conf')
+    config_dict = ConfigObj(os.path.expanduser('~/pybin/sumcoreg.conf')
     username2realname = generate_hash(config_dict['USERS'])
     hostname2clustername = generate_hash(config_dict['HOSTNAMES'])
 
