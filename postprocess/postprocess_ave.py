@@ -12,7 +12,6 @@ from mysys import read_mysys
 
 from common import tave, parse_cmd
 
-
 def main():
     args = parse_cmd()
 
@@ -35,6 +34,7 @@ def main():
     ave_kwargs = conf_dict['postprocess'][tpostproc]
 
     rootUEP = os.path.join('/', ppty)
+
     # start dealing with the h5 file
     h5file = tables.openFile(h5filename, 'a', rootUEP=rootUEP)
 

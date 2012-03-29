@@ -37,17 +37,17 @@ class rama(tables.IsDescription):
     # For types with a non-fixed size, this sets the size in bytes of individual items in the column.
     aa  = tables.StringCol(itemsize=10, pos=2)
 
-class rg_c_alpha(tables.IsDescription):
+class rg(tables.IsDescription):
     """
     Radius of gyration of C alpha along the time trjectory
     """
     time = tables.Float32Col(pos=0)
-    rg_c_alpha = tables.Float32Col(pos=1)
-    rg_c_alpha_x = tables.Float32Col(pos=2)
-    rg_c_alpha_y = tables.Float32Col(pos=3)
-    rg_c_alpha_z = tables.Float32Col(pos=4)
+    rg = tables.Float32Col(pos=1)
+    rg_x = tables.Float32Col(pos=2)
+    rg_y = tables.Float32Col(pos=3)
+    rg_z = tables.Float32Col(pos=4)
 
-class dssp_E(tables.IsDescription):
+class dssp(tables.IsDescription):
     """
     # This table must be redesigned and do_dssp program modified if you want to
     # do all secondary structure(ss) analysis, doing do_dssp for each ss is
@@ -63,11 +63,11 @@ class dssp_E(tables.IsDescription):
     C: coil
     """
     time = tables.Float32Col(pos=0)
-    Structure = tables.UInt32Col(pos=1)
+    structure = tables.UInt32Col(pos=1)
     # number of structure types vary, which is a headache!
     # Coil = tables.UInt32Col(pos=2)
     # b-sheet = tables.Float32Col(pos=3)
-    # rg_c_alpha_z = tables.Float32Col(pos=4)
+    # rg_z = tables.Float32Col(pos=4)
 
 class sequence_spacing(tables.IsDescription):
     """
@@ -148,14 +148,16 @@ class Property(object):
         """values of d contain two parts: the table class & its description"""
         d = {
             'e2ed' : (e2ed, "end-to-end distance data along the time trjectory"),
-            'rg_c_alpha': (rg_c_alpha, "Radius of gyration of C alpha along the time trjectory"),
+            'rg_c_alpha': (rg, "Radius of gyration of C alpha along the time trjectory"),
+            'rg_backbone': (rg, "Radius of gyration of C alpha along the time trjectory"),
+            'rg_whole_length': (rg, "along the whole length of trjectory, usually used to determine the cutoff for collecting data"),
             'sequence_spacing': (sequence_spacing, 'sequence_spacing'),
-            'dssp_E': (dssp_E, 'dssp_E (b-sheet)'),
-            'dssp_H': (dssp_E, 'dssp_H (alpha-helix)'),
-            'dssp_G': (dssp_E, 'dssp_G (3-helix)'),
-            'dssp_B': (dssp_E, 'dssp_B (residue in isolated beta-bridge)'),
-            'dssp_C': (dssp_E, 'dssp_C (coil)'),
-            'dssp_T': (dssp_E, 'dssp_T (hydrogen bonded turn)'),
+            'dssp_E': (dssp, 'dssp_E (b-sheet)'),
+            'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
+            'dssp_G': (dssp, 'dssp_G (3-helix)'),
+            'dssp_B': (dssp, 'dssp_B (residue in isolated beta-bridge)'),
+            'dssp_C': (dssp, 'dssp_C (coil)'),
+            'dssp_T': (dssp, 'dssp_T (hydrogen bonded turn)'),
 
             'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
             'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
@@ -175,7 +177,15 @@ class Property(object):
             'rdf_upvp': (rdf, 'rdf along the time trajectory'),
             'rdf_upvn': (rdf, 'rdf along the time trajectory'),
             'rdf_unvp': (rdf, 'rdf along the time trajectory'),
-            'rdf_unvn': (rdf, 'rdf along the time trajectory')
+            'rdf_unvn': (rdf, 'rdf along the time trajectory'),
+
+            'rdf_un1vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_un2vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_un3vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_un1vp': (rdf, 'rdf along the time trajectory'),
+            'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
+            'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
+
             }
         self.desc = d[property_name][1]
         self.schema = d[property_name][0]

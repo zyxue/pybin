@@ -46,3 +46,10 @@ def my_basic_parser():
     my_basic_parser.add_argument('-n', dest='NUMS', default=None, nargs='+', action=convert_num,
                         help='specify the replica number, i.e. 1 2 3 or 1-20 or 1, 3, 4-7')
     return my_basic_parser
+
+def get_sctn(args, configuration):
+    SEQS = args.SEQS if args.SEQS else configuration['SEQS']
+    CDTS = args.CDTS if args.CDTS else configuration['CDTS']
+    TMPS = args.TMPS if args.TMPS else configuration['TMPS']
+    NUMS = args.NUMS if args.NUMS else configuration['NUMS']
+    return SEQS, CDTS, TMPS, NUMS
