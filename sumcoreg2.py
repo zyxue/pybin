@@ -17,12 +17,17 @@ def generate_hash(dd):
 
 def main():
     config_dict = ConfigObj(os.path.expanduser('~/pybin/sumcoreg.conf'))
+
     username2realname = generate_hash(config_dict['USERS'])
+
     hostname2clustername = generate_hash(config_dict['HOSTNAMES'])
 
     thehostname = os.environ['HOSTNAME']
+
     clustername = hostname2clustername[thehostname]
+
     cluster_kwargs = config_dict['CLUSTERS'][clustername]
+
     cores, statcmd = cluster_kwargs.values()
     
     cluster = clusters.Cluster(clustername, cores, statcmd, username2realname)
