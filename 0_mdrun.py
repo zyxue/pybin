@@ -65,8 +65,12 @@ else:
         'qsub', sys.argv[0],
         '-N', N, 
         '-l', 'nodes={NODES}:ppn={PPN},walltime={WALLTIME}'.format(**pbs_kwargs),
-        '-v', 'SELF_SUBMITTED_FLAG=1,TPR={0},CONF={1},CMD={2}'.format(tpr, conf, cmd),
+        '-m', 'bea',
+        '-M', 'alfred532008@gmail.com',
+        '-v', 'SELF_SUBMITTED_FLAG=1,TPR={0},CONF={1},CMD="{2}"'.format(tpr, conf, cmd),
+        '-q', '{QUEUE}'.format(**pbs_kwargs),
         ]
+
     if args.debug:
         subprocess.call(basic_submit + ['-q', 'debug'])               # not interactive
     else:
@@ -77,11 +81,12 @@ def main():
     conf = os.environ['CONF']
     cmd = os.environ['CMD']
     pbs_o_workdir = os.environ['PBS_O_WORKDIR']
-    print tpr
-    print cmd
-    print pbs_o_workdir
+
+    print time.ctime(), cmd
+    print time.ctime(), pbs_o_workdir
 
     config_dict = ConfigObj(conf)
+    host = config_dict['PBS']['HOST']
     mpi_kwargs = config_dict['MDRUN_MPI']
 
     mdrun = MDRun(tpr, **mpi_kwargs)
@@ -90,7 +95,7 @@ def main():
     else:
         returncode = mdrun.mdrun()
         if returncode == 0:
-            s = ssh.Connection('gpc04')
+            s = ssh.Connection(host)
             s.execute('cd {0}; {1}'.format(pbs_o_workdir, cmd))
             s.close()
             print "mdrun successfully at {0}".format(time.ctime())
