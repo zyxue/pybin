@@ -6,6 +6,8 @@ import StringIO
 import argparse
 import time
 import re
+import pwd
+import grp
 
 __version__ = 2
 
@@ -25,7 +27,7 @@ def collect_data(accounts, data_list, host, fgg, fib):
         if len(sl) == 9:
             user = sl[1]
             if user in accounts:
-                if host == 'm':
+                if host in ['m', 'o']:
                     # on mp2, showq display the number of nodes in PROC column
                     ncore = int(sl[3]) * 24 
                     n = ncore                               # to be consistent with the scinet condition
@@ -55,7 +57,7 @@ def parse_cmd():
     parser.add_argument('--host', type=str, dest='host', default='s',
                         help=('specify the host name: '
                               's(scinet, default), c(colosse), '
-                              'm(mp2), l(lattice), g(guillimin)'))
+                              'm(mp2), l(lattice), g(guillimin), o(orca)'))
     parser.add_argument('-n', '--by-node', action='store_true', dest='bn', default=False,
                       help='show the number of nodes instead of cores')
     
@@ -90,16 +92,20 @@ def print_usage(accounts, acu, bcu, ccu, fmachine):
 def main():
     args = parse_cmd()
 
-    if args.host == 'm':
-        accounts = os.listdir('/mnt/scratch_mp2/pomes/')
-        accounts.remove('pomes_group')
-    elif args.host == 's':
-        accounts = os.listdir('/scratch/p/pomes/')
-    elif args.host == 'l':
-        accounts = ['zyxue', 'grace']
-    elif args.host == 'g':
-        accounts = os.listdir('/sb/project/uix-840-ac/')
+    my_gid = pwd.getpwnam(os.environ['LOGNAME']).pw_gid
+    accounts = grp.getgrgid(my_gid).gr_mem
+    if not accounts:                    # on some clusters, this could be []. e.g. orca
+        accounts = [user.pw_name for user in pwd.getpwall() if user.pw_gid == my_gid]
 
+#     if args.host == 'm':
+#         accounts = os.listdir('/mnt/scratch_mp2/pomes/')
+#         accounts.remove('pomes_group')
+#     elif args.host == 's':
+#         accounts = os.listdir('/scratch/p/pomes/')
+#     elif args.host == 'l':
+#         accounts = ['zyxue', 'grace']
+#     elif args.host == 'g':
+#         accounts = os.listdir('/sb/project/uix-840-ac/')
 
     r_showq = showq()                                       # r_showq: result of showq
     if r_showq.returncode != 0 or r_showq.stderr != '':
