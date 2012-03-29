@@ -142,6 +142,8 @@ def calc_walltime(x):
 def make_title(tpr):
     mdrun = MDRun.MDRun(tpr)
     if os.path.exists(mdrun.cpt):
+        # Here code is wrong, cpt could have been corrupted, so if possible, it
+        # should try to fix it itself
         tt = "{0:.0f}".format(mdrun._cpttime(mdrun.cpt) / 1000)       # unit: ns
     else:
         tt = 0
