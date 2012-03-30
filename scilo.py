@@ -26,7 +26,7 @@ def parse_cmd():
     parser.add_argument('--host', type=str, dest='host', default='s', 
                         help=('specify the host name: '
                               's(scinet, default), c(colosse), m(mp2)'
-                              'g(guillimin), l(lattice)'))
+                              'g(guillimin), l(lattice), o(orca)'))
     
     args = parser.parse_args()
     return args
@@ -39,6 +39,7 @@ def main():
         'n': 'zyxue@nestor.westgrid.ca:',
         'l': 'zyxue@lattice.westgrid.ca:',
         'g': 'zhuyxue12@guillimin.clumeq.ca:',
+        'o': 'zyxue@orca.sharcnet.ca:',
         }
 
     ARGS = parse_cmd()
