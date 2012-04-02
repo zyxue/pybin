@@ -142,10 +142,9 @@ def calc_walltime(x):
 def make_title(tpr):
     mdrun = MDRun.MDRun(tpr)
     if os.path.exists(mdrun.cpt):
-        r = subprocess.call(['gmxcheck', '-f', mdrun.cpt], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if r != 0:
+        if mdrun._check_integrity(mdrun.cpt):
             tt = "{0:.0f}".format(mdrun._cpttime(mdrun.cpt) / 1000)       # unit: ns
-        else:
+        elif mdrun._check_integrity(mdrun.prev_cpt):
             tt = "{0:.0f}".format(mdrun._cpttime(mdrun.prev_cpt) / 1000)       # unit: ns
         # Here code is wrong, cpt could have been corrupted, so if possible, it
         # should try to fix it itself
