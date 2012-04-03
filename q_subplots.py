@@ -15,7 +15,7 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
     """keys in kwargs could be: legend, title, color, marker"""
     label = legend
     if berrorbar:
-        x, y, e = xvg2array_eb(inf, options.xcol, options.ycol)
+        x, y, e = xvg2array_eb(inf)
         x = x/1000. if options.nm else x
         ax.errorbar(x, y, yerr=e, label=label)
     else:
