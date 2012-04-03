@@ -3,87 +3,145 @@
 import os
 import subprocess
 import StringIO
-from optparse import OptionParser
+import argparse
+import time
+import re
+import pwd
+import grp
 
-def main(stdoutdata, stderrdata, returncode, accounts):
-    if returncode != 0 or stderrdata != '':
-        raise IOError('Check the returncode: {0:d}\n and stderrdata: {1!s}\n'.format(
-                returncode, stderrdata))
+__version__ = 2
 
-    output = StringIO.StringIO(stdoutdata)
+class showq(object):
+    def __init__(self):
+        pipe = subprocess.PIPE
+        p = subprocess.Popen(['showq', '--noblock'], stdout=pipe, stderr=pipe)
+        stdoutdata, stderrdata = p.communicate()
+        self.stdout = stdoutdata
+        self.stderr = stderrdata
+        self.returncode = p.returncode
 
-    ll = output.readline()
-    while not ll.startswith('active jobs'):
-        ll = output.readline()
+def collect_data(users, data_list, host, fgg, fib):
+    cores_usage = {}
+    for ll in data_list:
+        sl = ll.split()
+        if len(sl) == 9:
+            user = sl[1]
+            if user in users:
+                if host in ['m', 'o']:
+                    # on mp2, showq display the number of nodes in PROC column
+                    ncore = int(sl[3]) * 24 
+                    n = ncore                               # to be consistent with the scinet condition
+                elif host == 's':
+                    # on scinet, showq display the number of cores in PROC column
+                    ncore = int(sl[3])
+                    check1 = (not fib) and (not fgg)
+                    check2 = fgg and ncore == 8
+                    check3 = fib and ncore > 8
+                    if check1 or check2 or check3:
+                        n = ncore
+                    else:
+                        n = 0                               # forgot what wierd would fit this condition
+                elif host == 'l' or host == 'g':
+                    # on lattice and guillimin, showq display the number of cores in PROC column
+                    ncore = int(sl[3])
+                    n = ncore
+                if user in cores_usage:
+                    cores_usage[user] += n
+                else:
+                    cores_usage[user] = n
 
-    acu = {}                                                # active_cores_usage
-    while not ll.startswith('eligible jobs'):
-        ll, acu = collect_data(output, acu)
-
-    ecu = {}                                              # eligible_cores_usage
-    while not ll.startswith('blocked jobs'):
-        ll, ecu = collect_data(output, ecu)
-
-    bcu = {}                                               # blocked_cores_usage
-    while ll:
-        ll, bcu = collect_data(output, bcu)
-
-    if OPTIONS.bn:
-        for cores_usage in [acu, ecu, bcu]:
-            for k in cores_usage:
-                cores_usage[k] /= 8
-    return acu, ecu, bcu
-
-def run_showq():
-    pipe = subprocess.PIPE
-    p = subprocess.Popen('showq', stdout=pipe, stderr=pipe)
-    stdoutdata, stderrdata = p.communicate()
-    return stdoutdata, stderrdata, p.returncode
-
-def collect_data(output, cores_usage):
-    ll = output.readline()
-    sl = ll.split()
-    if len(sl) == 9:
-        user = sl[1]
-        if user in accounts:
-            ncore = int(sl[3])
-            check1 = (not OPTIONS.ib) and (not OPTIONS.gg)
-            check2 = OPTIONS.gg and ncore == 8
-            check3 = OPTIONS.ib and ncore > 8
-            if check1 or check2 or check3:
-                n = ncore
-            else:
-                n = 0
-            if user in cores_usage:
-                cores_usage[user] += n
-            else:
-                cores_usage[user] = n
-    return ll, cores_usage
+    return cores_usage
 
 def parse_cmd():
-    parser = OptionParser()
-    parser.add_option('--gg', action='store_true', dest='gg', default=False,
-                      help='show the number of GigE cores only')
-    parser.add_option('--ib', action='store_true', dest='ib', default=False,
-                      help='show the number of ib cores only') 
-    parser.add_option('-n', '--by-node', action='store_true', dest='bn', default=False,
-                      help='show the number of nodes instead of cores') 
-    global OPTIONS
-    OPTIONS, args = parser.parse_args()
+    parser = argparse.ArgumentParser(prog='you need to specify the host')
+    parser.add_argument('--host', type=str, dest='host', default='s',
+                        help=('specify the host name: '
+                              's(scinet, default), c(colosse), '
+                              'm(mp2), l(lattice), g(guillimin), o(orca)'))
+    parser.add_argument('-n', '--by-node', action='store_true', dest='bn', default=False,
+                      help='show the number of nodes instead of cores')
+    
+    # scient argument group
+    gscinet = parser.add_argument_group(title='SciNet', 
+                                        description='options in this group only works on SciNet')
+    gscinet.add_argument('--gg', action='store_true', dest='fgg', default=False,
+                       help='show the number of GigE cores only')
+    gscinet.add_argument('--ib', action='store_true', dest='fib', default=False,
+                       help='show the number of ib cores only')
+    gscinet.add_argument('--machine', action='store_true', dest='fmachine', default=False,
+                       help='generate data easy for machine process')
 
-if __name__ == "__main__":
-    parse_cmd()
-    accounts = os.listdir('/scratch/p/pomes')
-    stdoutdata, stderrdata, returncode = run_showq()
-    acu, ecu, bcu = main(stdoutdata, stderrdata, returncode, accounts)
+    args = parser.parse_args()
+    return args
+
+def print_usage(accounts, acu, bcu, ccu, fmachine):
     total_usage = {}
     for a in accounts:
-        total_usage[a] = acu.get(a, 0) + ecu.get(a, 0) + bcu.get(a, 0)
+        total_usage[a] = acu.get(a, 0) + bcu.get(a, 0) + ccu.get(a, 0)
 
-    print "{0:10s} {1:8s} {2:8s} {3:8s} {4:8s}\n{5:44s}".format(
-        'USERNAME', 'ACTIVE', 'ELIGIBLE', 'BLOCKED', 'TOTAL', "=" * 44)
+    if fmachine:
+        print '{0}, {1}, {2}'.format(sum(acu.values()), time.time(), time.ctime())
+    else:
+        print "{0:10s} {1:8s} {2:8s} {3:8s} {4:8s}\n{5:44s}".format(
+            'USERNAME', 'ACTIVE', 'ELIGIBLE', 'BLOCKED', 'TOTAL', "=" * 44)
+        sorted_keys = reversed(sorted(total_usage, key=total_usage.get))
+        for k in sorted_keys:
+            print "{0:10s} {1:<8d} {2:<8d} {3:<8d} {4:<8d}".format(
+                k, acu.get(k, 0), bcu.get(k, 0), ccu.get(k, 0), total_usage[k])
 
-    sorted_keys = reversed(sorted(total_usage, key=total_usage.get))
-    for k in sorted_keys:
-        print "{0:10s} {1:<8d} {2:<8d} {3:<8d} {4:<8d}".format(
-            k, acu.get(k, 0), ecu.get(k, 0), bcu.get(k, 0), total_usage[k])
+def main():
+    args = parse_cmd()
+
+    # This way of user name collection doesn't work on lattice
+
+    my_gid = pwd.getpwnam(os.environ['LOGNAME']).pw_gid
+    users = grp.getgrgid(my_gid).gr_mem
+    if users:
+        # [:8] in order to prevent too long usernames which cannot be fully
+        # displayed on showq, e.g. zhuyxue12 => zhuyxue1
+        users = [user[:8] for user in users]
+    else:                       # on some clusters, this could be []. e.g. orca
+        users = [user.pw_name[:8] for user in pwd.getpwall() if user.pw_gid == my_gid]
+
+    r_showq = showq()                                       # r_showq: result of showq
+    if r_showq.returncode != 0 or r_showq.stderr != '':
+        raise IOError('Check the returncode: {0:d}\n and stderrdata: {1!s}\n'.format(
+                r_showq.returncode, r_showq.stderr))
+
+    output = StringIO.StringIO(r_showq.stdout)
+    # 
+    # How try to divide the output into three sections
+    section_headers = ['active jobs', 'eligible jobs', 'blocked jobs']
+    if args.host == 'm':
+        section_headers[1] = 'idle jobs'
+
+    ll = output.readline()
+    while not ll.lower().startswith(section_headers[0]):
+        ll = output.readline()
+
+    alist = []                                              # active_cores_usage
+    while not ll.lower().startswith(section_headers[1]):
+        if re.search('processor', ll, re.IGNORECASE):
+            print ll
+
+        alist.append(ll)
+        ll = output.readline()
+
+    blist = []                                             # eligible/idle_cores_usage
+    while not ll.lower().startswith(section_headers[2]):
+        blist.append(ll)
+        ll = output.readline()
+        
+    clist = []                                               # blocked_cores_usage
+    while ll:
+        clist.append(ll)
+        ll = output.readline()
+
+    acu = collect_data(users, alist, args.host, args.fib, args.fgg)
+    bcu = collect_data(users, blist, args.host, args.fib, args.fgg)
+    ccu = collect_data(users, clist, args.host, args.fib, args.fgg)
+
+    print_usage(users, acu, bcu, ccu, args.fmachine)
+
+if __name__ == "__main__":
+    main()
