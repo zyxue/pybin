@@ -8,7 +8,7 @@ import numpy as np
 from configobj import ConfigObj
 
 # local system level
-from common_func import get_sctn
+from argparse_action import get_sctn
 
 # local module level
 from common import tave, parse_cmd, loop_h5_alx, loop_h5_ave
