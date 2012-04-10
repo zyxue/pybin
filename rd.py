@@ -1,4 +1,4 @@
-#!/scinet/gpc/tools/Python/Python262/bin/python
+#! /usr/bin/env python
 
 import random
 import sys
