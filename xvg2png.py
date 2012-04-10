@@ -22,7 +22,7 @@ def xvg2array(xvgf):
     y = data[:, 1]
     return np.array([x, y])
 
-def xvg2array_eb(xvgf, xvol, ycol):
+def xvg2array_eb(xvgf):
     data = []
     f1 = open(xvgf, 'r')
     for line in f1:

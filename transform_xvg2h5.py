@@ -10,8 +10,8 @@ import numpy as np
 import tables
 from configobj import ConfigObj
 
-from common_func import backup_file, get_sctn
-from argparse_action import my_basic_parser, convert_seq, convert_num
+from common_func import backup_file
+from argparse_action import my_basic_parser, convert_seq, convert_num, get_sctn
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
 
