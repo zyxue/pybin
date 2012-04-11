@@ -145,7 +145,7 @@ class MDRun(object):
             print ' '.join(cmd)
             returncode = subprocess.call(cmd)
         else:
-            cmd = first_run_command + ['-cpi', self.cpt, '-append']
+            cmd = first_run_command + ['-cpi', self.cpt, '-noappend']
             print ' '.join(cmd)
             returncode = subprocess.call(cmd)
         return returncode
