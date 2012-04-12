@@ -35,6 +35,10 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_make_ndx": 	      organize.g_make_ndx,
     "g_select": 	      organize.g_select,
 
+    "rename_tpr2old": 	      organize.rename_tpr2old,
+    "generate_500ns_tpr":     organize.generate_500ns_tpr,
+    "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
+
     "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
     "qsub_0_mdrun_py": 	      organize.qsub_0_mdrun_py,
@@ -127,7 +131,7 @@ def parse_cmd():
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
-                        help='available_options:\n{0!r}'.format(AVAILABLE_ANALYSIS))
+                        help='available_options:\n{0!r}'.format(ANALYSIS_METHODS.keys()))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
     parser.add_argument('--config_file', type=str, dest='config_file', default='./.g_ana.conf',

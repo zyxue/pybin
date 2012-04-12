@@ -1,4 +1,5 @@
 *pyc
+MDRun.py
 0_mdrun.py
 tprtaker*.py
 trial_compare_readlines/
