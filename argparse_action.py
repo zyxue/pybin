@@ -23,13 +23,13 @@ class convert_num(argparse.Action):
         processed_values = []
         for v in values:
             if '-' in v:
-                mi, ma = (int(i) for i in values[0].split('-'))
+                mi, ma = (int(i) for i in v.split('-'))
                 v = [i for i in xrange(mi, ma + 1)]
                 processed_values.extend(v)
             else:
                 processed_values.append(int(v))
-
         final_values = ['{0:02d}'.format(v) for v in processed_values]
+        print sorted(final_values)
         setattr(namespace, self.dest, final_values)
 
 def my_basic_parser():
