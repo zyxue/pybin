@@ -54,3 +54,19 @@ def copy_0_mdrun_py(input_args):
 
 def qsub_0_mdrun_py(input_args):
     return 'pwd=$(pwd); cd {inputdir}; qsub 0_mdrun.py; cd ${{pwd}}'.format(**input_args)
+
+def rename_tpr2old(input_args):
+    input_args['tprf_dirname'] = os.path.dirname(input_args['tprf'])
+    return 'cp -v {tprf} {tprf_dirname}/{pf}_md.old_200ns.tpr'.format(**input_args)
+
+def generate_500ns_tpr(input_args):                # remember that nstenergy is changed to 1
+    input_args['topf'] = os.path.join(os.path.dirname(input_args['tprf']),
+                                      'beforenpt',
+                                      '{0}.top'.format(input_args['pf']))
+    input_args['mdpf'] = os.path.join(os.path.dirname(input_args['tprf']),
+                                      '{0}_md.mdp'.format(input_args['pf']))
+
+    return '''grompp -f repository/md_extend_to_500ns.mdp -c {grof} -p {topf} -o {tprf} -po {mdpf}'''.format(**input_args)
+
+def sed_0_mdrun_sh(input_args):
+    return 'sed "s/sq1w00/sq1{cdt}{num}/g" repository/tmp_0_mdrun.sh > {cdt}300/sq1{cdt}/sq1{cdt}{num}/0_mdrun.sh'.format(**input_args)

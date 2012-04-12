@@ -29,7 +29,6 @@ class convert_num(argparse.Action):
             else:
                 processed_values.append(int(v))
         final_values = ['{0:02d}'.format(v) for v in processed_values]
-        print sorted(final_values)
         setattr(namespace, self.dest, final_values)
 
 def my_basic_parser():
