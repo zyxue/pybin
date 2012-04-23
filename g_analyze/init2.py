@@ -148,6 +148,8 @@ def parse_cmd():
                         help='available_options:\n{0!r}'.format(ANALYSIS_METHODS.keys()))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
+    parser.add_argument('-e', type=int, dest='etime', default=0,
+                        help='specify the ending time, corresponding to the -e option in gromacs (ps)')
     parser.add_argument('-g', type=str, dest='config_file', default='./.g_ana.conf',
                         help='specify the configuration file, default as ./g_ana.conf')
     parser.add_argument('--outputdir', type=str, dest='outputdir', default=None,

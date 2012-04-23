@@ -60,7 +60,7 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                         yield inputdir, pf, seq, cdt, tmp, num
 
 def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                   ftest, fcdb, toa, btime, CONFIG_DICT):
+                   ftest, fcdb, toa, btime, etime, CONFIG_DICT):
     """
     generate "input_args", which in a dictionary that holds all the varaibles
     needed for your commands
@@ -114,8 +114,8 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
             mysys = read_mysys_dat()
             input_args['peptide_length'] = mysys[seq].len
 
-        if btime:
-            input_args['b'] = btime
+        input_args['b'] = btime                                   # beginning time
+        input_args['e'] = etime                                   # endding time
 
         # generate the command that is gonna be executed
         cmd = g_tool(input_args)
@@ -172,7 +172,7 @@ def main():
 
     # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
     x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime, config_dict)
+                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime, ARGS.etime, config_dict)
     gai.runit(x, ARGS.numthread, ARGS.test)
 
     separator =  "#" * 79

@@ -91,4 +91,11 @@ def g_trjcat_500ns(input_args):
     return cmd
 
 def g_trjconv_centerxtc(input_args):
+    # -center -pbc whole : protien is centered, but it's not surrounded by solvent
+    # -center -pbc mol   : no tric box anymore, like a cuboid
+    # -center -pbc atom  : doesn't correct pbc, not useful
+    # -center -pbc mol -ur compact: solvent are ordered closest to the protein
+    # -center -pbc mol -ur tric: most suitable in this case
     return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
+
+
