@@ -39,6 +39,11 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "generate_500ns_tpr":     organize.generate_500ns_tpr,
     "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
 
+    'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
+    "g_trjcat_500ns":         organize.g_trjcat_500ns,
+
+    'g_trjconv_centerxtc':    organize.g_trjconv_centerxtc,
+
     "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
     "qsub_0_mdrun_py": 	      organize.qsub_0_mdrun_py,
@@ -54,7 +59,10 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'sequence_spacing':       basic.sequence_spacing,
     'dssp': 		      basic.dssp,
     'dssp_E': 		      basic.dssp_E,
+    'cis_trans_pro':          basic.cis_trans_pro,
+    'peptide_bonds_dih':      basic.peptide_bonds_dih,
 
+    'upup': 		      interaction.upup,
     'upup60': 		      interaction.upup60,
 
     'unun': 		      interaction.unun,
@@ -71,12 +79,18 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_un1vp': 	      rdf.rdf_un1vp,
     'rdf_un2vp': 	      rdf.rdf_un2vp,
     'rdf_un3vp': 	      rdf.rdf_un3vp,
-    'rdf_un4vp': 	      rdf.rdf_un4vp,
 
     'rdf_un1vn': 	      rdf.rdf_un1vn,
     'rdf_un2vn': 	      rdf.rdf_un2vn,
     'rdf_un3vn': 	      rdf.rdf_un3vn,
-    'rdf_un4vn': 	      rdf.rdf_un4vn,
+
+    'rdf_c1vp': 	      rdf.rdf_c1vp,
+    'rdf_c2vp': 	      rdf.rdf_c2vp,
+    'rdf_c3vp': 	      rdf.rdf_c3vp,
+
+    'rdf_c1vn': 	      rdf.rdf_c1vn,
+    'rdf_c2vn': 	      rdf.rdf_c2vn,
+    'rdf_c3vn': 	      rdf.rdf_c3vn,
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
@@ -134,7 +148,7 @@ def parse_cmd():
                         help='available_options:\n{0!r}'.format(ANALYSIS_METHODS.keys()))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
-    parser.add_argument('--config_file', type=str, dest='config_file', default='./.g_ana.conf',
+    parser.add_argument('-g', type=str, dest='config_file', default='./.g_ana.conf',
                         help='specify the configuration file, default as ./g_ana.conf')
     parser.add_argument('--outputdir', type=str, dest='outputdir', default=None,
                         help='specify the output directory, which will overwrite that in .g_ana.conf')

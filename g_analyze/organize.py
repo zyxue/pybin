@@ -70,3 +70,25 @@ def generate_500ns_tpr(input_args):                # remember that nstenergy is 
 
 def sed_0_mdrun_sh(input_args):
     return 'sed "s/sq1w00/sq1{cdt}{num}/g" repository/tmp_0_mdrun.sh > {cdt}300/sq1{cdt}/sq1{cdt}{num}/0_mdrun.sh'.format(**input_args)
+
+def rename_xtcf_200ns(input_args):
+    xtcf = input_args['xtcf']
+    xtcf_200ns = xtcf.replace('_md', '_md_200ns')
+    if os.path.exists(xtcf):
+        return "mv -v {0} {1}".format(xtcf, xtcf_200ns)
+    else:
+        return "echo ALREADY RENAMED PREVIOUSLY {0} {1}".format(xtcf, xtcf_200ns)
+
+def g_trjcat_500ns(input_args):
+    tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].xtc'.format(**input_args)
+    xtcfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
+    input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
+
+    xtcf = input_args['xtcf']
+    input_args.update(dict(xtcf_200ns=xtcf.replace('_md', '_md_200ns')))
+
+    cmd = 'trjcat -f {xtcf_200ns} {fmt_xtcfs} -o {xtcf}'.format(**input_args)
+    return cmd
+
+def g_trjconv_centerxtc(input_args):
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)

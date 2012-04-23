@@ -57,3 +57,8 @@ def dssp_E(kwargs):
     # return 'printf "Protein" | mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)
     return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg'.format(**kwargs)
 
+def cis_trans_pro(kwargs):
+    return 'g_angle -f {proxtcf} -n ./repository/sq1_cis_trans_pro.ndx -b {b} -type dihedral -od {anadir}/{pf}_cis_trans_pro_dist.xvg -all -ov  {anadir}/{pf}_cis_trans_pro_ave.xvg '.format(**kwargs)
+
+def peptide_bonds_dih(kwargs):
+    return 'g_angle -f {proxtcf} -n /scratch/p/pomes/zyxue/mono_su_as/repository/sq2_peptide_bond_dih.ndx -type dihedral -od {anadir}/{pf}_peptide_bond_dih.xvg'.format(**kwargs)

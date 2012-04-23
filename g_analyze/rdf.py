@@ -57,29 +57,60 @@ def rdf_un2vp(kwargs):
 def rdf_un3vp(kwargs):
     return 'printf "UN3\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un3vp.xvg'.format(**kwargs)
 
-def rdf_un4vp(kwargs):
-    return 'printf "UN4\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un4vp.xvg'.format(**kwargs)
-
 def rdf_un1vn(kwargs):
     if kwargs['cdt'] == 'w':
-        return 'echo cdt is w, not rdf_un1vn'
+        return 'echo cdt is w, no rdf_un1vn'
     else:
         return 'printf "UN1\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un1vn.xvg'.format(**kwargs)
 
 def rdf_un2vn(kwargs):
     if kwargs['cdt'] == 'w':
-        return 'echo cdt is w, not rdf_un2vn'
+        return 'echo cdt is w, no rdf_un2vn'
     else:
         return 'printf "UN2\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un2vn.xvg'.format(**kwargs)
 
 def rdf_un3vn(kwargs):
     if kwargs['cdt'] == 'w':
-        return 'echo cdt is w, not rdf_un3vn'
+        return 'echo cdt is w, no rdf_un3vn'
     else:
         return 'printf "UN3\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un3vn.xvg'.format(**kwargs)
 
 def rdf_un4vn(kwargs):
     if kwargs['cdt'] == 'w':
-        return 'echo cdt is w, not rdf_un4vn'
+        return 'echo cdt is w, no rdf_un4vn'
     else:
         return 'printf "UN4\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_un4vn.xvg'.format(**kwargs)
+
+###############################################################################
+# Below, For checking primary, secondary, tertiary carbons, individually
+###############################################################################
+def rdf_c1vp(kwargs):
+    return 'printf "C1\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c1vp.xvg'.format(**kwargs)
+
+def rdf_c2vp(kwargs):
+    return 'printf "C2\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c2vp.xvg'.format(**kwargs)
+
+def rdf_c3vp(kwargs):
+    return 'printf "C3\nVP\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c3vp.xvg'.format(**kwargs)
+
+def rdf_c1vn(kwargs):
+    if kwargs['cdt'] == 'w':
+        return 'echo cdt is w, no rdf_c1vn'
+    else:
+        return 'printf "C1\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c1vn.xvg'.format(**kwargs)
+
+def rdf_c2vn(kwargs):
+    if kwargs['cdt'] == 'w':
+        return 'echo cdt is w, no rdf_c2vn'
+    else:
+        return 'printf "C2\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c2vn.xvg'.format(**kwargs)
+
+def rdf_c3vn(kwargs):
+    if kwargs['cdt'] == 'w':
+        return 'echo cdt is w, no rdf_c3vn'
+    else:
+        return 'printf "C3\nVN\n" | g_rdf -f {xtcf} -s {tprf} -b {b} -n {ndxf} -bin 0.02 -o {anadir}/{pf}_rdf_c3vn.xvg'.format(**kwargs)
+
+###############################################################################
+# Above, For checking primary, secondary, tertiary carbons, individually
+###############################################################################

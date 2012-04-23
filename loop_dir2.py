@@ -18,6 +18,8 @@ def gen_input_files(target_dir, pf):
     input_files = dict(
         xtcf = os.path.join(
             target_dir, '{pf}_md.xtc'.format(pf=pf)),
+        centerxtcf = os.path.join(
+            target_dir, '{pf}_center.xtc'.format(pf=pf)),
         grof = os.path.join(
             target_dir, '{pf}_md.gro'.format(pf=pf)),
         proxtcf = os.path.join(
