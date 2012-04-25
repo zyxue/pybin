@@ -19,11 +19,12 @@ from threading import Thread
 import organize
 import interaction
 import basic
+import fancy
 import rdf
 
 from argparse_action import convert_seq, convert_num
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
+# AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs': organize.check_inputdirs,
@@ -56,7 +57,8 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'e2ed': 		      basic.e2ed,
     # 'e2ed_v': 	      basic.e2ed_v,
 
-    'sequence_spacing':       basic.sequence_spacing,
+    'bonds_length':           basic.bonds_length,
+
     'dssp': 		      basic.dssp,
     'dssp_E': 		      basic.dssp_E,
     'cis_trans_pro':          basic.cis_trans_pro,
@@ -91,6 +93,10 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_c1vn': 	      rdf.rdf_c1vn,
     'rdf_c2vn': 	      rdf.rdf_c2vn,
     'rdf_c3vn': 	      rdf.rdf_c3vn,
+
+    'sequence_spacing':       fancy.sequence_spacing,
+    'conf_entropy':           fancy.conf_entropy,
+
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
@@ -150,6 +156,8 @@ def parse_cmd():
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
     parser.add_argument('-e', type=int, dest='etime', default=0,
                         help='specify the ending time, corresponding to the -e option in gromacs (ps)')
+    parser.add_argument('--dt', type=int, dest='dt', default=0,
+                        help='specify the dt, corresponding to the -dt option in gromacs (ps)')
     parser.add_argument('-g', type=str, dest='config_file', default='./.g_ana.conf',
                         help='specify the configuration file, default as ./g_ana.conf')
     parser.add_argument('--outputdir', type=str, dest='outputdir', default=None,

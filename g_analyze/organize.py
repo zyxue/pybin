@@ -69,7 +69,8 @@ def generate_500ns_tpr(input_args):                # remember that nstenergy is 
     return '''grompp -f repository/md_extend_to_500ns.mdp -c {grof} -p {topf} -o {tprf} -po {mdpf}'''.format(**input_args)
 
 def sed_0_mdrun_sh(input_args):
-    return 'sed "s/sq1w00/sq1{cdt}{num}/g" repository/tmp_0_mdrun.sh > {cdt}300/sq1{cdt}/sq1{cdt}{num}/0_mdrun.sh'.format(**input_args)
+    # return 'sed "s/sq1w00/{pf}/g" repository/tmp_0_mdrun.sh > {seq}{cdt}300_su/{seq}{cdt}300s{num}/0_mdrun.sh'.format(**input_args) # mono_meo
+    return 'sed "s/sq1w00/{pf}/g" repository/tmp_0_mdrun.sh > {cdt}300/sq1{cdt}/sq1{cdt}{num}/0_mdrun.sh'.format(**input_args) # mono_su_as
 
 def rename_xtcf_200ns(input_args):
     xtcf = input_args['xtcf']
