@@ -151,7 +151,7 @@ def parse_cmd():
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
-                        help='available_options:\n{0!r}'.format(ANALYSIS_METHODS.keys()))
+                        help='available_options:\n{0!r}'.format(sorted(ANALYSIS_METHODS.keys())))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
     parser.add_argument('-e', type=int, dest='etime', default=0,
