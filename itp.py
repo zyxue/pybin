@@ -170,5 +170,4 @@ bonds = read_bond_pairs(itpfile, ff='martini')
 # pp(bonds)
 
 dihedrals = collect_dihedrals(bonds)
-# print_dihedrals(dihedrals, ft=1)
 print_martini_dihedrals(dihedrals, atoms, params=cg_params)
