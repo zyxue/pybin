@@ -19,11 +19,12 @@ from threading import Thread
 import organize
 import interaction
 import basic
+import fancy
 import rdf
 
 from argparse_action import convert_seq, convert_num
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
+# AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs': organize.check_inputdirs,
@@ -39,6 +40,11 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "generate_500ns_tpr":     organize.generate_500ns_tpr,
     "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
 
+    'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
+    "g_trjcat_500ns":         organize.g_trjcat_500ns,
+
+    'g_trjconv_centerxtc':    organize.g_trjconv_centerxtc,
+
     "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
     "qsub_0_mdrun_py": 	      organize.qsub_0_mdrun_py,
@@ -51,10 +57,14 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'e2ed': 		      basic.e2ed,
     # 'e2ed_v': 	      basic.e2ed_v,
 
-    'sequence_spacing':       basic.sequence_spacing,
+    'bonds_length':           basic.bonds_length,
+
     'dssp': 		      basic.dssp,
     'dssp_E': 		      basic.dssp_E,
+    'cis_trans_pro':          basic.cis_trans_pro,
+    'peptide_bonds_dih':      basic.peptide_bonds_dih,
 
+    'upup': 		      interaction.upup,
     'upup60': 		      interaction.upup60,
 
     'unun': 		      interaction.unun,
@@ -71,12 +81,22 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_un1vp': 	      rdf.rdf_un1vp,
     'rdf_un2vp': 	      rdf.rdf_un2vp,
     'rdf_un3vp': 	      rdf.rdf_un3vp,
-    'rdf_un4vp': 	      rdf.rdf_un4vp,
 
     'rdf_un1vn': 	      rdf.rdf_un1vn,
     'rdf_un2vn': 	      rdf.rdf_un2vn,
     'rdf_un3vn': 	      rdf.rdf_un3vn,
-    'rdf_un4vn': 	      rdf.rdf_un4vn,
+
+    'rdf_c1vp': 	      rdf.rdf_c1vp,
+    'rdf_c2vp': 	      rdf.rdf_c2vp,
+    'rdf_c3vp': 	      rdf.rdf_c3vp,
+
+    'rdf_c1vn': 	      rdf.rdf_c1vn,
+    'rdf_c2vn': 	      rdf.rdf_c2vn,
+    'rdf_c3vn': 	      rdf.rdf_c3vn,
+
+    'sequence_spacing':       fancy.sequence_spacing,
+    'conf_entropy':           fancy.conf_entropy,
+
     }
 
 def runit(cmd_logf_generator, numthread, ftest):
@@ -131,10 +151,14 @@ def parse_cmd():
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
-                        help='available_options:\n{0!r}'.format(ANALYSIS_METHODS.keys()))
+                        help='available_options:\n{0!r}'.format(sorted(ANALYSIS_METHODS.keys())))
     parser.add_argument('-b', type=int, dest='btime', default=0,
                         help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
-    parser.add_argument('--config_file', type=str, dest='config_file', default='./.g_ana.conf',
+    parser.add_argument('-e', type=int, dest='etime', default=0,
+                        help='specify the ending time, corresponding to the -e option in gromacs (ps)')
+    parser.add_argument('--dt', type=int, dest='dt', default=0,
+                        help='specify the dt, corresponding to the -dt option in gromacs (ps)')
+    parser.add_argument('-g', type=str, dest='config_file', default='./.g_ana.conf',
                         help='specify the configuration file, default as ./g_ana.conf')
     parser.add_argument('--outputdir', type=str, dest='outputdir', default=None,
                         help='specify the output directory, which will overwrite that in .g_ana.conf')
