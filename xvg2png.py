@@ -10,7 +10,7 @@ def xvg2array(xvgf):
     data = []
     f1 = open(xvgf, 'r')
     for line in f1:
-        if line.startswith('#') or line.startswith('@'):
+        if line.startswith('#') or line.startswith('@') or 'nan' in line:
             pass
         else:
             linelist = line.split()
@@ -62,6 +62,7 @@ def xvg2array_ap(xvgf):
             data.append([float(i) for i in line.split()])
     inf.close()
     data = np.array(data)
+    print data.shape[-1]
     if len(legends) != data.shape[-1]:
         raise "Check the integrity of {0},\n, the # of legends doesn't match # of data columns".format(xvgf)
     else:

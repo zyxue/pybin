@@ -143,7 +143,7 @@ def find_the_files(option, opt_str, value, parser):
     infs = value.split()
     for f in infs:
         infiles.extend(glob.glob(f))
-    setattr(parser.values, option.dest, sorted(infiles))
+    setattr(parser.values, option.dest, infiles)
 
 def parse_cmd(cmd=None):
     parser = optparse.OptionParser('usage: %prog [options] **args')

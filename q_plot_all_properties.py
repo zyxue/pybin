@@ -22,6 +22,8 @@ def outline(options):
         ax.plot(x, data[key])
         ax.set_title(key)
         ax.grid(b=True)
+        ax.set_ylim([-180, 180])
+
     show_or_save(options.of)
 
 if __name__ == '__main__':
