@@ -14,12 +14,12 @@ def add_cid(atom_line, symbol):
     # This format is nearly right but unfamiliar items lie occu, bfac, segid,
     # elsy, charge haven't been tested
 
-    return "{0:<6s}{1:>5s} {2:>4s}{3:1s}{4:>3s} {5:1s}{6:>4s}{7:1s}     {8:<8s}{9:<8s}{10:<8s}{11:6s}{12:6s}{13:4s}{14:2s}{15:2s}\n".format(*atom_line)
+    return "{0:<6s}{1:>5s} {2:>4s}{3:1s}{4:>3s} {5:1s}{6:>4s}{7:1s}   {8:>8s}{9:>8s}{10:>8s}{11:6s}{12:6s}{13:4s}{14:2s}{15:2s}\n".format(*atom_line)
 
 def parse_pdb(infile):
     with open(infile, 'r') as inf:
         for line in inf:
-            if line.startswith("ATOM"):
+            if line.startswith("ATOM") and 'W' not in line:
                 line = line.strip().ljust(80) # incase some cols are empty in terms of pdb format
                 recn = line[0:6].strip()              # record name
                 aid_ = line[6:12].strip()             # atom id
