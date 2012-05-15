@@ -52,7 +52,7 @@ def main(infile, outputfile, natom):
             if isinstance(item, str):
                 opf.write(item)
             elif isinstance(item, list):
-                symbol = symbols[chain_count]
+                symbol = symbols[chain_count % 100]         # %100 for pdb files with > 100 chains
                 opf.write(add_cid(item, symbol))
                 atom_count += 1
                 if atom_count % natom == 0:
