@@ -3,7 +3,7 @@
 import sys
 import string
 
-def add_cid(atom_line, symbol):
+def add_cid(atom_line, symbol=None, segid=None):
     """
     atom_line should be a list of values for pdb colums
     symbol is the chain distinguishment"
@@ -11,10 +11,13 @@ def add_cid(atom_line, symbol):
     atom_line.pop(5)                                        # remove the old cid
     atom_line.insert(5, symbol)                             # add the new one
 
+    atom_line.pop(13)                                        # remove the old cid
+    atom_line.insert(13, segid)                             # add the new one
+
     # This format is nearly right but unfamiliar items lie occu, bfac, segid,
     # elsy, charge haven't been tested
 
-    return "{0:<6s}{1:>5s} {2:>4s}{3:1s}{4:>3s} {5:1s}{6:>4s}{7:1s}   {8:>8s}{9:>8s}{10:>8s}{11:6s}{12:6s}{13:4s}{14:2s}{15:2s}\n".format(*atom_line)
+    return "{0:<6s}{1:>5s} {2:>4s}{3:1s}{4:>3s} {5:1s}{6:>4s}{7:1s}   {8:>8s}{9:>8s}{10:>8s}{11:>6s}{12:>6s}      {13:<4s}{14:<2s}{15:>2s}\n".format(*atom_line)
 
 def parse_pdb(infile):
     with open(infile, 'r') as inf:
@@ -44,19 +47,20 @@ def parse_pdb(infile):
 
 def main(infile, outputfile, natom):
     """natom: number of atoms in a monomer"""
-    symbols = string.printable
+    symbols = string.digits + string.ascii_letters
+    lensym = len(symbols)
     atom_count = 0
-    chain_count = 0
+    seg_count = 0    # chain identifier is the corresponding ascii of seg_count
     with open(outputfile, 'w') as opf:
         for item in parse_pdb(infile):
             if isinstance(item, str):
                 opf.write(item)
             elif isinstance(item, list):
-                symbol = symbols[chain_count % 100]         # %100 for pdb files with > 100 chains
-                opf.write(add_cid(item, symbol))
+                symbol = symbols[seg_count % lensym] # "% lensym" for pdb files with > lensym chains
+                opf.write(add_cid(item, symbol, str(seg_count)))
                 atom_count += 1
                 if atom_count % natom == 0:
-                    chain_count += 1
+                    seg_count += 1
             else:
                 raise ValueError("unexpected line in {0}".format(infile))
 

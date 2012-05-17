@@ -7,9 +7,6 @@ overhead for starting analysis
 
 """
 
-import os
-import sys
-import glob
 import subprocess
 import Queue
 import logging

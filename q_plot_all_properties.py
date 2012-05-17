@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 import matplotlib.pyplot as plt
-import numpy as np
-import sys
-import glob
 from xvg2png import xvg2array_ap
 from q_acc import parse_cmd, show_or_save, det_row_col
 
@@ -22,7 +19,7 @@ def outline(options):
         ax.plot(x, data[key])
         ax.set_title(key)
         ax.grid(b=True)
-        ax.set_ylim([-180, 180])
+        # ax.set_ylim([-180, 180])
 
     show_or_save(options.of)
 

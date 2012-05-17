@@ -6,14 +6,11 @@ or decoration of the final plot
 """
 
 import glob
-import optparse
-import sys
+import argparse
 import re
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from xvg2png import xvg2array
 
 __all__ = ['gen_len_to_num_map', 'det_row_col', 'get_id', 'show_or_save',
            'det_raw_lim', 'det_final_lim', 'decorate', 'parse_cmd']
@@ -138,75 +135,82 @@ def convert_bins(option, opt_str, value, parser):
         min_, max_, interval = [float(i) for i in v]
         parser.values.bins = np.arange(min_, max_, interval)
 
-def find_the_files(option, opt_str, value, parser):
-    infiles = []
-    infs = value.split()
-    for f in infs:
-        infiles.extend(glob.glob(f))
-    setattr(parser.values, option.dest, infiles)
+class convert_bins(argparse.Action):
+    def __call__(self, parser, namespace, values, optoin_string=None):
+        assert len(values) == 3
+        final_values = np.arange(*values)
+        setattr(namespace, self.dest, final_values)        
+
+# def find_the_files(option, opt_str, value, parser):
+#     infiles = []
+#     infs = value.split()
+#     for f in infs:
+#         infiles.extend(glob.glob(f))
+#     setattr(parser.values, option.dest, infiles)
 
 def parse_cmd(cmd=None):
-    parser = optparse.OptionParser('usage: %prog [options] **args')
-    # parser.add_option('-f', type='str', dest='fs', help='specify this option if plotting only one property'
-    parser.add_option('-f', type='str', dest='fs', default=None, action="callback", callback=find_the_files,
-                      help='specify this option if plotting only one property')
-    parser.add_option('--xlb', type='str', default='x', dest='xlb', 
-                      help='bottom label')
-    parser.add_option('--ylb', type='str', default='y', dest='ylb', 
-                      help='left label')
-    parser.add_option('--xb', type='float', default=None, dest='xb', 
-                      help='specifly x beginning')
-    parser.add_option('--xe', type='float', default=None, dest='xe', 
-                      help='specifly x ending')
-    parser.add_option('--yb', type='float', default=None, dest='yb', 
-                      help='specifly y beginning')
-    parser.add_option('--ye', type='float', default=None, dest='ye', 
-                      help='specifly y ending')
-    parser.add_option('--title', type='str', default=None, dest='title', 
-                      help='specifly the title when plot on a single subplot')
-    parser.add_option('--legend', action='store_true', default=False, dest='blegend', 
-                      help='specifly the legend, otherwise, no legends will show up for q_subplots.py')
-    parser.add_option('--template_for_legend', type='str', default=None, dest='template_for_legend', 
-                      help='find the legend from the file name useing regex')
-    parser.add_option('--bins', type='str', default="100", dest='bins', action='callback', callback=convert_bins,
-                      help='specify this options if plotting histogram, could be a number of bins or a string containing 3 values (i.e min, max, interval, e.g. "0.6, 2.0, 0.02"')
-    parser.add_option('-o', type='str', default=None, dest='of', 
-                      help='specifly output file OPT.')
-    parser.add_option('--ap', action="store_true", default=None, dest='ap', 
-                      help='plot_all_properties?')
-    parser.add_option('--overlap', type="int", default=None, dest='overlap',
-                      help='put multiple subplots together.')
-    parser.add_option('--nm', action="store_true", default=None, dest='nm', 
-                      help='x axis normalized by 1000 or not? usefule when x values are large,  OPT.')
-    parser.add_option('--eb', action="store_true", default=None, dest='eb', 
-                      help='plot error bar or not,  OPT.')
-    parser.add_option('--scol', action="store_true", default=None, dest='scol', 
-                      help='use scol or not,  otherwise,  use scol,  OPT.')
-    parser.add_option('--ndx', type='str', dest='ndx', 
-                      help='ndx file when calculating turns.')
-    parser.add_option('--gro', type='str', dest='gro', 
-                      help='gro file when calculating turns.')
-    parser.add_option('--xpm', type='str', dest='xpm', 
-                      help='xpm file when calculating turns.')
-    parser.add_option('--morer', action='store_true', dest='morer', default=False, 
-                      help='when multiple subplots are needed,  more rows or more columns,  default is more rows.')
-    parser.add_option('--mysys', action='store_true', dest='mysys', default=False, 
-                      help='whether to use those properties specified in mysys.dat or not.')
-
-    group = optparse.OptionGroup(parser,  "xy",  "use these options when the x & y data are from different files")
-
-    group.add_option('--xf', type='str', dest='xf', 
-                     help='file containing the property along the x axis')
-    group.add_option('--yf', type='str', dest='yf', 
-                     help='file containing the property along the y axis')
-    group.add_option('--xcol', type='int', default=1, dest='xcol', 
-                     help='specifly the num of the column on the x axis')
-    group.add_option('--ycol', type='int', default=2, dest='ycol', 
-                     help='specifly the num of the column on the y axis ')
-
-    parser.add_option_group(group)
-    options, args = parser.parse_args(cmd)
-    return options
+    parser = argparse.ArgumentParser('usage: %prog [options] **args')
+    parser.add_argument('-f', type=str, dest='fs', default=None, nargs="+",
+                        help='specify this option if plotting only one property')
+    parser.add_argument('--xlb', type=str, default='x', dest='xlb', 
+                        help='bottom label')
+    parser.add_argument('--ylb', type=str, default='y', dest='ylb', 
+                        help='left label')
+    parser.add_argument('--xb', type=float, default=None, dest='xb', 
+                        help='specifly x beginning')
+    parser.add_argument('--xe', type=float, default=None, dest='xe', 
+                        help='specifly x ending')
+    parser.add_argument('--yb', type=float, default=None, dest='yb', 
+                        help='specifly y beginning')
+    parser.add_argument('--ye', type=float, default=None, dest='ye', 
+                        help='specifly y ending')
+    parser.add_argument('--title', type=str, default=None, dest='title', 
+                        help='specifly the title when plot on a single subplot')
+    parser.add_argument('--legend', action='store_true', default=False, dest='blegend', 
+                        help='specifly the legend, otherwise, no legends will show up for q_subplots.py')
+    parser.add_argument('--template_for_legend', type=str, default=None, dest='template_for_legend', 
+                        help='find the legend from the file name useing regex')
+    parser.add_argument('--bins', type=str, default="100", dest='bins', nargs='+', action=convert_bins,
+                        help=('specify this options if plotting histogram,'
+                              'could be a number of bins or a string containing 3 values'
+                              '(i.e min, max, interval, e.g. "0.6, 2.0, 0.02")'))
+    parser.add_argument('-o', type=str, default=None, dest='of', 
+                        help='specifly output file OPT.')
+    parser.add_argument('--ap', action="store_true", default=None, dest='ap', 
+                        help='plot_all_properties?')
+    parser.add_argument('--overlap', type=int, default=None, dest='overlap',
+                        help='put multiple subplots together.')
+    parser.add_argument('--nm', action="store_true", default=None, dest='nm', 
+                        help='x axis normalized by 1000 or not? usefule when x values are large,  OPT.')
+    parser.add_argument('--eb', action="store_true", default=None, dest='eb', 
+                        help='plot error bar or not,  OPT.')
+    parser.add_argument('--scol', action="store_true", default=None, dest='scol', 
+                        help='use scol or not,  otherwise,  use scol,  OPT.')
+    parser.add_argument('--ndx', type=str, dest='ndx', 
+                        help='ndx file when calculating turns.')
+    parser.add_argument('--gro', type=str, dest='gro', 
+                        help='gro file when calculating turns.')
+    parser.add_argument('--xpm', type=str, dest='xpm', 
+                        help='xpm file when calculating turns.')
+    parser.add_argument('--morer', action='store_true', dest='morer', default=False, 
+                        help='when multiple subplots are needed,  more rows or more columns,  default is more rows.')
+    parser.add_argument('--mysys', action='store_true', dest='mysys', default=False, 
+                        help='whether to use those properties specified in mysys.dat or not.')
+    
+    group = parser.add_argument_group("xy",  "use these options when the x & y data are from different files")
+    
+    group.add_argument('--xf', type=str, dest='xf', 
+                       help='file containing the property along the x axis')
+    group.add_argument('--yf', type=str, dest='yf', 
+                       help='file containing the property along the y axis')
+    group.add_argument('--xcol', type=int, default=1, dest='xcol', 
+                       help='specifly the num of the column on the x axis')
+    group.add_argument('--ycol', type=int, default=2, dest='ycol', 
+                       help='specifly the num of the column on the y axis ')
+    
+    parser.add_argument_group(group)
+    args = parser.parse_args(cmd)
+    return args
 
 if __name__ == '__main__':
     options = parse_cmd()
