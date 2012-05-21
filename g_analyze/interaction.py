@@ -79,6 +79,7 @@ def unun(kwargs):
 
 ####################UVI####################
 def upvp(kwargs):
+    return 'printf "Protein_no_end\nVP\n" | g_hbond -f {mdxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upup.xvg'.format(**kwargs)
     pass
     # if kwargs.has_key('hb_tprf'):
     #     kwargs['tprf'] = kwargs['hb_tprf']

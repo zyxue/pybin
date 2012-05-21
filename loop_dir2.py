@@ -96,7 +96,7 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
         if toa == 'g_make_ndx':
             ndx_id = CONFIG_DICT['ndx_input']                  # ndx_input_dict
             ndx_fd = CONFIG_DICT['ndx_format']                 # ndx_format_dict
-            from pprint import pprint as pp
+            # from pprint import pprint as pp
             input_args['ndx_input'] = ' '.join(
                 [ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd]
                 )

@@ -2,9 +2,6 @@
 
 import os
 import glob
-import subprocess
-import Queue
-from threading import Thread
 
 __all__ = ['check_inputdirs', 'g_eneconv', 'g_make_ndx', 'g_select',
            'g_trjcat', 'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
@@ -100,5 +97,3 @@ def g_trjconv_centerxtc(input_args):
     # -center -pbc mol -ur compact: solvent are ordered closest to the protein
     # -center -pbc mol -ur tric: most suitable in this case
     return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
-
-

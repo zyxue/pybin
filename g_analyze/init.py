@@ -8,7 +8,6 @@ overhead for starting analysis
 """
 
 import os
-import glob
 import subprocess
 import Queue
 import logging
