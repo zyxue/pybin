@@ -2,6 +2,9 @@
 
 import sys
 import string
+import argparse
+
+import common_func as cf
 
 def add_cid(atom_line, symbol):
     """
@@ -16,10 +19,11 @@ def add_cid(atom_line, symbol):
 
     return "{0:<6s}{1:>5s} {2:>4s}{3:1s}{4:>3s} {5:1s}{6:>4s}{7:1s}   {8:>8s}{9:>8s}{10:>8s}{11:6s}{12:6s}{13:4s}{14:2s}{15:2s}\n".format(*atom_line)
 
-def parse_pdb(infile):
+def parse_pdb(infile, exresname):
+    """exresname: resname to exclude when adding chain id"""
     with open(infile, 'r') as inf:
         for line in inf:
-            if line.startswith("ATOM") and 'W' not in line:
+	    if line.startswith("ATOM"):
                 line = line.strip().ljust(80) # incase some cols are empty in terms of pdb format
                 recn = line[0:6].strip()              # record name
                 aid_ = line[6:12].strip()             # atom id
@@ -37,18 +41,21 @@ def parse_pdb(infile):
                 segid = line[72:76].strip()           # segment identifier, left, justified
                 elsy  = line[76:78].strip()           # element symbol ,right justified
                 charge = line[78-80].strip()          # charge on the atom
-                yield [recn, aid_, name, char, resname, cid , resid, achar, x, y, z, 
-                        occu, bfac, segid, elsy , charge]
+		if resname not in exresname:
+		    yield [recn, aid_, name, char, resname, cid , resid, achar, x, y, z, 
+			   occu, bfac, segid, elsy , charge]
+		else:
+		    yield line
             else:
                 yield line
 
-def main(infile, outputfile, natom):
+def doit(infile, outputfile, natom, exresname):
     """natom: number of atoms in a monomer"""
     symbols = string.printable
     atom_count = 0
     chain_count = 0
     with open(outputfile, 'w') as opf:
-        for item in parse_pdb(infile):
+        for item in parse_pdb(infile, exresname):
             if isinstance(item, str):
                 opf.write(item)
             elif isinstance(item, list):
@@ -60,7 +67,26 @@ def main(infile, outputfile, natom):
             else:
                 raise ValueError("unexpected line in {0}".format(infile))
 
-if __name__ == "__main__":
-    infile = sys.argv[1]
+def parse_cmd():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', dest='infile', required=True,
+                        help="specify the input pdb file")
+    parser.add_argument('-n', dest='natoms', required=True,
+                        help="specify the number of atoms in a single chain molecule, only applies to homo aggregate")
+    parser.add_argument('--exresname', dest='exresname', nargs="+", default=[],
+                        help="specify the resname you don't want to count when adding cid, e.g. solvents")
+
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_cmd()
+    infile = args.infile
     outputfile = infile[:-4] + '_with_cid.pdb'
-    main(infile, outputfile, 56)
+    cf.backup_file(outputfile)
+    natoms = int(args.natoms)
+    exresname = args.exresname
+    doit(infile, outputfile, natoms, exresname)
+    
+if __name__ == "__main__":
+    main()
