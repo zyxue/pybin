@@ -42,8 +42,8 @@ def gmxcheck_batch():
                 # e.g. '\rLast frame         -1 time 200000.016\n'
                 if options.time == '-1' :
                     # when t is not specified
-                    match = re.search("\rLast frame\s+\d+ time (\d+)", line)
-                    # e.g. '\rLast frame      20000 time 200000'
+                    match = re.search("\rLast frame\s+\d+ time (\d+\.?\d+)", line)
+                    # e.g. '\rLast frame      20000 time 200000.016'
                     print '%s # Last_frame %s\n' % (inf, match.group(1)),
                 elif options.time in line:
                     # when t is specified 
