@@ -48,7 +48,7 @@ def parse_pdb(infile, exresname):
 		    yield [recn, aid_, name, char, resname, cid , resid, achar, x, y, z, 
 			   occu, bfac, segid, elsy , charge]
 		else:
-		    yield line
+		    yield line + '\n' 	# since '\n' has been stripped in the beginning of if condition
             else:
                 yield line
 
