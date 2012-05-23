@@ -5,7 +5,6 @@ This module is widely imported in the other q_xx.py files as for initialization
 or decoration of the final plot
 """
 
-import glob
 import argparse
 import re
 
@@ -127,18 +126,18 @@ def decorate(keys, xps, yps, axes, blegend, xlb, ylb, xb, yb, xe, ye):
         if blegend:
             ax.legend(loc=0)
 
-def convert_bins(option, opt_str, value, parser):
-    v = value.split(',')
-    if len(v) == 1:
-        parser.values.bins = int(v[0])
-    elif len(v) == 3:
-        min_, max_, interval = [float(i) for i in v]
-        parser.values.bins = np.arange(min_, max_, interval)
+# def convert_bins(option, opt_str, value, parser):
+#     v = value.split(',')
+#     if len(v) == 1:
+#         parser.values.bins = int(v[0])
+#     elif len(v) == 3:
+#         min_, max_, interval = [float(i) for i in v]
+#         parser.values.bins = np.arange(min_, max_, interval)
 
 class convert_bins(argparse.Action):
     def __call__(self, parser, namespace, values, optoin_string=None):
         assert len(values) == 3
-        final_values = np.arange(*values)
+        final_values = np.arange(*[float(i) for i in values])
         setattr(namespace, self.dest, final_values)        
 
 # def find_the_files(option, opt_str, value, parser):
