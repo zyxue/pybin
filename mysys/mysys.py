@@ -35,5 +35,5 @@ class Mono_sys(object):
         self.nm_unun = monosp[5]
         self.nm_unup = monosp[6]
         self.nm_upup = monosp[7]
-        self.nm_upv = monosp[8]
-        self.nm_unv = monosp[9]
+        self.nm_unv = monosp[8]
+        self.nm_upv = monosp[9]
