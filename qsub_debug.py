@@ -21,6 +21,11 @@ def main():
         subprocess.call("qsub -l nodes={0}:ppn=8,walltime=02:00:00 -q debug -I".format(args.nodes), shell=True)
     elif clustername == 'mp2':
         subprocess.call("qsub -l nodes={0}:ppn=1,walltime=02:00:00 -q qwork@mp2 -I".format(args.nodes), shell=True)
+    elif clustername == 'guillimin':
+        subprocess.call("msub -l nodes={0}:ppn=12,walltime=02:00:00 -q debug -I".format(args.nodes), shell=True)
+
+# Available clusternames: scinet, mp2, guillimin, lattice, orca, nestor 
+
 
 if __name__ == "__main__":
     main()

@@ -13,7 +13,6 @@ overhead for starting analysis
 import subprocess
 import Queue
 import logging
-import argparse
 from threading import Thread
 
 import argparse_action as aa
@@ -22,8 +21,6 @@ import interaction
 import basic
 import fancy
 import rdf
-
-from argparse_action import convert_seq, convert_num
 
 # AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
