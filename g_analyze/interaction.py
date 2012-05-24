@@ -57,7 +57,8 @@ def unvp(kwargs):
 def unvn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'pwd'
-    return 'printf "UN\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_unvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    # TESTED, in the "uv" case, g_mindist_excl1 and g_mindist produce the same result
+    return 'printf "UN\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.55 -on {anadir}/{pf}_unvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 ####################VVI####################
 def vpvp(kwargs):

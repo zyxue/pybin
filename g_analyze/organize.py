@@ -3,10 +3,6 @@
 import os
 import glob
 
-__all__ = ['check_inputdirs', 'eneconv', 'g_make_ndx', 'g_select',
-           'trjcat', 'trjconv_gro', 'trjconv_pro_xtc', 'trjconv_pro_gro',
-           'copy_0_mdrun_sh', 'copy_0_mdrun_py']
-
 def check_inputdirs(input_args):
     d = input_args['inputdir']
     if not os.path.exists(d):
@@ -28,11 +24,22 @@ def eneconv(input_args):
     cmd = 'eneconv -f {fmt_edrfs} -o {edrf}'.format(**input_args)
     return cmd
 
-def trjconv_gro(input_args):          # used to extract the last frame
-    return "echo 'System' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {grof}".format(**input_args)
+# -ur will be delt later, be customized in .g_ana.conf
+
+def trjconv_center_xtc(input_args):
+    # -center -pbc whole : protien is centered, but it's not surrounded by solvent
+    # -center -pbc mol   : no tric box anymore, like a cuboid
+    # -center -pbc atom  : doesn't correct pbc, not useful
+    # -center -pbc mol -ur compact: solvent are ordered closest to the protein
+    # -center -pbc mol -ur tric: most suitable in this case
+    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
+
+def trjconv_center_gro(input_args):          # used to extract the last frame
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b}  -dump 0 -o {grof}".format(**input_args)
 
 def trjconv_pro_xtc(input_args):
-    return "echo 'Protein' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -o {proxtcf}".format(**input_args)
+    return "printf 'Protein\nProtein\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -o {proxtcf}".format(**input_args)
 
 def trjconv_pro_gro(input_args):
     return "echo '1' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {progrof}".format(**input_args)
@@ -89,11 +96,3 @@ def trjcat_500ns(input_args):
 
     cmd = 'trjcat -f {xtcf_200ns} {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd
-
-def trjconv_centerxtc(input_args):
-    # -center -pbc whole : protien is centered, but it's not surrounded by solvent
-    # -center -pbc mol   : no tric box anymore, like a cuboid
-    # -center -pbc atom  : doesn't correct pbc, not useful
-    # -center -pbc mol -ur compact: solvent are ordered closest to the protein
-    # -center -pbc mol -ur tric: most suitable in this case
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
