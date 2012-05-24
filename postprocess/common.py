@@ -4,14 +4,13 @@ import sys
 
 import numpy as np
 import tables
-import argparse
 
-from argparse_action import my_basic_parser, convert_seq, convert_num
+import argparse_action as aa
 from mysys import read_mysys
 from xvg2h5 import h5tables
 
 def parse_cmd(cmd=None):
-    parser = my_basic_parser()
+    parser = aa.my_basic_parser()
     parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(h5tables.__tables__))
     parser.add_argument('-a', dest='tpostproc', required=True,
@@ -59,6 +58,8 @@ def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwarg
         'e2ed': [1., 'e2ed'],
         }
         for cdt in CDTS:
+            dd['upv'] = [float(mysys[seq + cdt].nm_upv), 'upv' ]
+
             tablename = ave_kwargs['tablenamepattern'].format(seq=seq, cdt=cdt)
             if tpostproc_group.__contains__(tablename):
                 print "{0} HAS ALREADY EXISTED".format(tablename)
@@ -151,7 +152,7 @@ def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwarg
                 ave_ds = []                                 # ave distances
                 for table in tables:
                     distance = table.read(field=ycoln)[:min_len]
-                    ave_ds.append(table.read(field=ycoln)[:min_len])
+                    ave_ds.append(distance)
 
                 ave_ds = np.array(ave_ds) / denominator
                 alx_ave = np.average(ave_ds, axis=0)       # summing along the 0th axis
@@ -164,7 +165,7 @@ def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwarg
 
                 # transpose to be in consistend with tables in ogd
                 alx_result = np.array([xaxis_ref, alx_ave, alx_std]).transpose()
-                array = h5file.createArray(
+                h5file.createArray(
                     tpostproc_group, arrayname, alx_result, 
                     title=('average along the x axis over all replicas'
                            'column 0, 1, 2 are x axis, ave, std, respectively'))
@@ -186,6 +187,6 @@ def get_minimum_length(tables, xcoln):
                 xaxis_ref = xaxis
             if set(xaxis[:min_xlen]) != set(xaxis_ref):
                 raise ValueError(
-                    'ref: {0} and {1} have different x axes'.format(t_ref, t.name)
+                    "ref: {0} and {1} have different x axes".format(t_ref, t.name)
                     )
     return min_xlen, xaxis_ref
