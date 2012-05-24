@@ -4,7 +4,7 @@ import os
 from configobj import ConfigObj
 
 from g_analyze import init2 as gai
-from g_analyze import organize as gao
+import argparse_action as aa
 
 VERSION = '2.0'
 AUTHOR = 'zyxue'
@@ -41,7 +41,6 @@ def gen_input_files(target_dir, pf):
 
 def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
     """ generate the directory hierarchy"""
-    pwd = os.getenv('PWD')
     for seq in SEQS:
         for cdt in CDTS:
             for tmp in TMPS:
@@ -55,7 +54,7 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                     inputdir = tropoinputdir.format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     # all the following filenames will be named after pf
                     # i.e.  xtcf, proxtcf, tprf, edrf, grof, ndxf
-                    pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num) 
+                    pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     if os.path.exists(inputdir):
                         yield inputdir, pf, seq, cdt, tmp, num
 
@@ -125,18 +124,19 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
 
 def main():
     # determine which function to call
-    g_tool, ARGS = gai.target_the_type_of_analysis()
+    g_tool, args = gai.target_the_type_of_analysis()
     g_tool_name =  g_tool.func_name   # directory will be named after func_name
 
-    config_file = ARGS.config_file
+    config_file = args.config_file
     if not os.path.exists(config_file):
         raise ValueError('configuration file: {0} may not exist!'.format(config_file))
     config_dict = ConfigObj(config_file)
 
-    SEQS = ARGS.SEQS if ARGS.SEQS else config_dict['system']['SEQS']
-    CDTS = ARGS.CDTS if ARGS.CDTS else config_dict['system']['CDTS']
-    TMPS = ARGS.TMPS if ARGS.TMPS else config_dict['system']['TMPS']
-    NUMS = ARGS.NUMS if ARGS.NUMS else config_dict['system']['NUMS']
+    SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, config_dict['system'])
+    # SEQS = args.SEQS if args.SEQS else config_dict['system']['SEQS']
+    # CDTS = args.CDTS if args.CDTS else config_dict['system']['CDTS']
+    # TMPS = args.TMPS if args.TMPS else config_dict['system']['TMPS']
+    # NUMS = args.NUMS if args.NUMS else config_dict['system']['NUMS']
 
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
@@ -144,8 +144,8 @@ def main():
     # confirm outpudir path, if not specified either in cmd or in the
     # configuration file, 'R_OUTPUT" will be used in the current directory
     # to avoid scinet crash.
-    if ARGS.outputdir:
-        outputdir = ARGS.outputdir
+    if args.outputdir:
+        outputdir = args.outputdir
     elif config_dict['data'].has_key('outputdir'):
         v = config_dict['data']['outputdir']
         if len(v) > 0 and v:                     # make sure v is not '' or None
@@ -166,20 +166,20 @@ def main():
                            
     logd = os.path.join(
         outputdir, 'LOGS', '{0}_log'.format(g_tool_name)
-        ) if not ARGS.nolog else None
+        ) if not args.nolog else None
 
     if logd and not os.path.exists(logd):
         os.mkdir(logd)
 
     # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
     x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
-                       ARGS.test, ARGS.cdb, ARGS.toa, ARGS.btime, ARGS.etime, ARGS.dt, 
+                       args.test, args.cdb, args.toa, args.btime, args.etime, args.dt, 
                        config_dict)
-    gai.runit(x, ARGS.numthread, ARGS.test)
+    gai.runit(x, args.numthread, args.test)
 
     separator =  "#" * 79
     print separator
-    dd = ARGS.__dict__
+    dd = args.__dict__
     for k in sorted(dd):
         print "{0:>20s}:{1}".format(k, dd[k])
     print separator

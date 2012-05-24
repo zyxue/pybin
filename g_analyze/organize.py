@@ -3,8 +3,8 @@
 import os
 import glob
 
-__all__ = ['check_inputdirs', 'g_eneconv', 'g_make_ndx', 'g_select',
-           'g_trjcat', 'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
+__all__ = ['check_inputdirs', 'eneconv', 'g_make_ndx', 'g_select',
+           'trjcat', 'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
            'copy_0_mdrun_sh', 'copy_0_mdrun_py']
 
 def check_inputdirs(input_args):
@@ -14,14 +14,14 @@ def check_inputdirs(input_args):
     s = 'echo "{0!s} exists"'.format(d)
     return s
 
-def g_trjcat(input_args):
+def trjcat(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].xtc'.format(**input_args)
     xtcfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
     input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
     cmd = 'trjcat -f {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd
 
-def g_eneconv(input_args):
+def eneconv(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].edr'.format(**input_args)
     edrfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
     input_args.update(dict(fmt_edrfs=' '.join(edrfs)))
@@ -79,7 +79,7 @@ def rename_xtcf_200ns(input_args):
     else:
         return "echo ALREADY RENAMED PREVIOUSLY {0} {1}".format(xtcf, xtcf_200ns)
 
-def g_trjcat_500ns(input_args):
+def trjcat_500ns(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].xtc'.format(**input_args)
     xtcfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
     input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))

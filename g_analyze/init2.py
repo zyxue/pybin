@@ -16,6 +16,7 @@ import logging
 import argparse
 from threading import Thread
 
+import argparse_action as aa
 import organize
 import interaction
 import basic
@@ -28,8 +29,8 @@ from argparse_action import convert_seq, convert_num
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs': organize.check_inputdirs,
-    "g_trjcat":               organize.g_trjcat,
-    "g_eneconv":	      organize.g_eneconv,
+    "trjcat":               organize.trjcat,
+    "eneconv":	      organize.eneconv,
     "g_trjconv_pro_xtc":      organize.g_trjconv_pro_xtc,
     "g_trjconv_gro": 	      organize.g_trjconv_gro,
     "g_trjconv_pro_gro":      organize.g_trjconv_pro_gro,
@@ -41,7 +42,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
 
     'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
-    "g_trjcat_500ns":         organize.g_trjcat_500ns,
+    "trjcat_500ns":         organize.trjcat_500ns,
 
     'g_trjconv_centerxtc':    organize.g_trjconv_centerxtc,
 
@@ -138,16 +139,19 @@ def runit(cmd_logf_generator, numthread, ftest):
 
 def parse_cmd():
     """parse_cmd"""
-    parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
+    parser = aa.my_basic_parser()
 
-    parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    parser.add_argument('-c', dest='CDTS', nargs='+',
-                        help="specify it this way, i.e. w m o p e ")
-    parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
-                        help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num, required=True,
-                        help='specify the replica number, i.e. 1 2 3 or 1-20')
+    # parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
+
+    # parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+    #                     help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+    # parser.add_argument('-c', dest='CDTS', nargs='+',
+    #                     help="specify it this way, i.e. w m o p e ")
+    # parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
+    #                     help='specify it this way, i.e "300 700", maybe improved later')
+    # parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num,
+    #                     help='specify the replica number, i.e. 1 2 3 or 1-20')
+
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')
     parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
