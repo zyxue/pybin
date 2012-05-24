@@ -7,53 +7,107 @@ overhead for starting analysis
 
 """
 
-import os
+# import os
+# import sys
+# import glob
 import subprocess
 import Queue
 import logging
-from optparse import OptionParser
+import argparse
 from threading import Thread
 
+import argparse_action as aa
 import organize
 import interaction
 import basic
+import fancy
+import rdf
 
-AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__
+from argparse_action import convert_seq, convert_num
 
-def parse_cmd():
-    """rewrite with argparse module"""
-    pass
+# AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
-def targe_analysis_type():
-    pass
+ANALYSIS_METHODS = {                                    # this dict will keep increasing
+    'check_inputdirs': organize.check_inputdirs,
+    "trjcat":               organize.trjcat,
+    "eneconv":	      organize.eneconv,
+    "g_trjconv_pro_xtc":      organize.g_trjconv_pro_xtc,
+    "g_trjconv_gro": 	      organize.g_trjconv_gro,
+    "g_trjconv_pro_gro":      organize.g_trjconv_pro_gro,
+    "g_make_ndx": 	      organize.g_make_ndx,
+    "g_select": 	      organize.g_select,
 
-def gen_input_files(target_dir, pf):
-    """
-    Generalizing input files specific for gromacs tools, default naming
-    """
+    "rename_tpr2old": 	      organize.rename_tpr2old,
+    "generate_500ns_tpr":     organize.generate_500ns_tpr,
+    "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
 
-    input_files = dict(
-        xtcf = os.path.join(target_dir, '{pf}_md.xtc'.format(pf=pf)),
-        grof = os.path.join(target_dir, '{pf}_md.gro'.format(pf=pf)),
-        proxtcf = os.path.join(target_dir, '{pf}_pro.xtc'.format(pf=pf)),
-        progrof = os.path.join(target_dir, '{pf}_pro.gro'.format(pf=pf)),
-        tprf = os.path.join(target_dir, '{pf}_md.tpr'.format(pf=pf)),
-        edrf = os.path.join(target_dir, '{pf}_md.edr'.format(pf=pf)),
-        ndxf = os.path.join(target_dir, '{pf}.ndx'.format(pf=pf)))
+    'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
+    "trjcat_500ns":         organize.trjcat_500ns,
 
-    hb_tprf = os.path.join(target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
-    if os.path.isfile(hb_tprf):
-        input_files.update(dict(hb_tprf=hb_tprf))
-    return input_files
+    'g_trjconv_centerxtc':    organize.g_trjconv_centerxtc,
 
-def runit(cmd_logf_generator, numthread):
+    "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
+    "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
+    "qsub_0_mdrun_py": 	      organize.qsub_0_mdrun_py,
+
+    "g_energy":		      basic.g_energy,
+    'rg': 		      basic.rg,
+    'rg_backbone': 	      basic.rg_backbone,
+    'rg_whole_length': 	      basic.rg_whole_length,
+    'rg_c_alpha': 	      basic.rg_c_alpha,
+    'e2ed': 		      basic.e2ed,
+    # 'e2ed_v': 	      basic.e2ed_v,
+
+    'bonds_length':           basic.bonds_length,
+
+    'dssp': 		      basic.dssp,
+    'dssp_E': 		      basic.dssp_E,
+    'cis_trans_pro':          basic.cis_trans_pro,
+    'peptide_bonds_dih':      basic.peptide_bonds_dih,
+
+    'upup': 		      interaction.upup,
+    'upup60': 		      interaction.upup60,
+
+    'unun': 		      interaction.unun,
+
+    'upvp': 		      interaction.upvp,
+    'upvn': 		      interaction.upvn,
+    'unvp':		      interaction.unvp,
+    'unvn': 		      interaction.unvn,
+
+    # 'rdf_upvp': 	      rdf.rdf_upvp,
+    # 'rdf_upvn': 	      rdf.rdf_upvn,
+    # 'rdf_unvp': 	      rdf.rdf_unvp,
+
+    'rdf_un1vp': 	      rdf.rdf_un1vp,
+    'rdf_un2vp': 	      rdf.rdf_un2vp,
+    'rdf_un3vp': 	      rdf.rdf_un3vp,
+
+    'rdf_un1vn': 	      rdf.rdf_un1vn,
+    'rdf_un2vn': 	      rdf.rdf_un2vn,
+    'rdf_un3vn': 	      rdf.rdf_un3vn,
+
+    'rdf_c1vp': 	      rdf.rdf_c1vp,
+    'rdf_c2vp': 	      rdf.rdf_c2vp,
+    'rdf_c3vp': 	      rdf.rdf_c3vp,
+
+    'rdf_c1vn': 	      rdf.rdf_c1vn,
+    'rdf_c2vn': 	      rdf.rdf_c2vn,
+    'rdf_c3vn': 	      rdf.rdf_c3vn,
+
+    'sequence_spacing':       fancy.sequence_spacing,
+    'conf_entropy':           fancy.conf_entropy,
+
+    }
+
+def runit(cmd_logf_generator, numthread, ftest):
     """
     Putting each analyzing codes in a queue to use the 8 cores simutaneously.
     """
     def worker():
         while True:
             cmd, logf = q.get()
-            if OPTIONS.test:
+            if ftest:
                 print cmd
             else:
                 logging.info('working on {0:s}'.format(cmd))
@@ -83,107 +137,55 @@ def runit(cmd_logf_generator, numthread):
     
     q.join()
 
-def convert_seq(option, opt_str, value, parser):
-    if not value is None:
-        if '-' in value:
-            mi, ma = value.split('-')                   # process args like "-s 1-9"
-            range_ = [str(i) for i in range(int(mi), int(ma) + 1)]
-        else:
-            range_ = [i for i in value.split()]
-        parser.values.SEQS = [ 'sq' + str(i) for i in range_]
-
-def convert_cdt(option, opt_str, value, parser):
-    if not value is None:
-        # water, methanol, ethanol, propanol, octane, vacuo
-        valid_cdts = ['w', 'm', 'e', 'p', 'o', 'v']
-        split_v = value.split()
-        for v in split_v:
-            if v not in valid_cdts:
-                raise ValueError('cdt {0:s} is not one of {1!r}'.format(v, valid_cdts))
-        parser.values.CDTS = split_v
-
-def convert_tmp(option, opt_str, value, parser):
-    parser.values.TMPS = value.split()
-
-def convert_num(option, opt_str, value, parser):
-    if not value is None:
-        if '-' in value:                   
-            mi, ma = value.split('-')
-            range_ = range(int(mi), int(ma) + 1)
-        else:
-            range_ = [int(i) for i in value.split()]
-        parser.values.NUMS = [ '{0:02d}'.format(i) for i in range_]
-
 def parse_cmd():
     """parse_cmd"""
-    parser = OptionParser(usage='-s, -c, -t, -n may not function according to your .g_ana.cfg"')
-    parser.add_option('-s', '--seq', type='str', dest='SEQS', default=None, action='callback', callback=convert_seq,
-                      help='specify it this way, i.e. "1 3 4" or "1-9"; don\'t include \'sq\''  )
-    parser.add_option('-c', '--cdt', type='str', dest='CDTS', default=None, action='callback', callback=convert_cdt,
-                      help='specify it this way, i.e. "w m o p e"')
-    parser.add_option('-t', '--tmp', type='str', dest='TMPS', default=None, action='callback', callback=convert_tmp,
-                      help='specify it this way, i.e "300 700", maybe improved later')
-    parser.add_option('-n', '--num', type='str', dest='NUMS', default=None, action='callback', callback=convert_num,
-                      help='specify the replica number, i.e. "1 2 3" or "1-20"')
-    parser.add_option('--nt', type='int', dest='numthread', default=16,
-                      help='specify the number of threads, default is 16')
-    parser.add_option('-a','--type_of_analysis', type='str', dest='toa', default=None,
-                      help='available_options:\n%r' % AVAILABLE_ANALYSIS )
-    parser.add_option('-b', type='int', dest='btime', default=0,
-                      help='specify the beginning time, corresponding to the -b option in gromacs')
-    parser.add_option('--config_file', type='str', dest='config_file', default='./.g_ana.cfg',
-                      help='specify the configuration file')
-    parser.add_option('--outputdir', type='str', dest='outputdir', default=None,
-                      help='specify the output directory, which will overwrite .g_ana.cfg')
-    parser.add_option('--test', dest='test', action='store_true', default=False)
-    parser.add_option('--nolog', dest='nolog', action='store_true', default=False)
-    parser.add_option('--cdb', dest='cdb', action='store_true', default=False,
-                      help='if you need different b values for different trjectory, and they are stored in a database specified in your .g_ana.cfg')
+    parser = aa.my_basic_parser()
 
-    global OPTIONS
-    (OPTIONS, args) = parser.parse_args()
-    return OPTIONS
+    # parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
+
+    # parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
+    #                     help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
+    # parser.add_argument('-c', dest='CDTS', nargs='+',
+    #                     help="specify it this way, i.e. w m o p e ")
+    # parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
+    #                     help='specify it this way, i.e "300 700", maybe improved later')
+    # parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num,
+    #                     help='specify the replica number, i.e. 1 2 3 or 1-20')
+
+    parser.add_argument('--nt', type=int, dest='numthread', default=16,
+                        help='specify the number of threads, default is 16')
+    parser.add_argument('-a','--type_of_analysis', type=str, dest='toa', required=True,
+                        help='available_options:\n{0!r}'.format(sorted(ANALYSIS_METHODS.keys())))
+    parser.add_argument('-b', type=int, dest='btime', default=0,
+                        help='specify the beginning time, corresponding to the -b option in gromacs (ps)')
+    parser.add_argument('-e', type=int, dest='etime', default=0,
+                        help='specify the ending time, corresponding to the -e option in gromacs (ps)')
+    parser.add_argument('--dt', type=int, dest='dt', default=0,
+                        help='specify the dt, corresponding to the -dt option in gromacs (ps)')
+    parser.add_argument('-g', type=str, dest='config_file', default='./.g_ana.conf',
+                        help='specify the configuration file, default as ./g_ana.conf')
+    parser.add_argument('--outputdir', type=str, dest='outputdir', default=None,
+                        help='specify the output directory, which will overwrite that in .g_ana.conf')
+    parser.add_argument('--test', dest='test', action='store_true', default=False, 
+                        help='for debugging, commands will be printed rather than executed')
+    parser.add_argument('--nolog', dest='nolog', action='store_true', default=False,
+                        help='stdout will be printed to the screen rather than collected in a log file')
+    parser.add_argument('--cdb', dest='cdb', action='store_true', default=False,
+                        help=''.join(['if you need different b values for different trjectory,', 
+                                     'and they are stored in a database specified in your .g_ana.conf']))
+    args = parser.parse_args()
+    return args
 
 def target_the_type_of_analysis():
-    options = parse_cmd()
-    analysis_methods = {                                    # this dict will keep increasing
-        'check_inputdirs': [organize.check_inputdirs, 
-                            organize.check_inputdirs.func_name],
-        "trjcat" : [organize.trjcat,
-                      organize.trjcat.func_name],
-        "eneconv": [organize.eneconv,
-                      organize.eneconv.func_name],
-        "g_trjconv_pro_xtc": [organize.g_trjconv_pro_xtc,
-                              organize.g_trjconv_pro_xtc.func_name],
-        "g_trjconv_gro": [organize.g_trjconv_gro,
-                          organize.g_trjconv_gro.func_name],
-        "g_trjconv_pro_gro": [organize.g_trjconv_pro_gro,
-                              organize.g_trjconv_pro_gro.func_name],
-        "g_make_ndx": [organize.g_make_ndx,
-                       organize.g_make_ndx.func_name],
-        "copy_0_mdrun_sh": [organize.copy_0_mdrun_sh,
-                            organize.copy_0_mdrun_sh.func_name],
-        'rg': [basic.rg,
-               basic.rg.func_name],
-        'rg_backbone': [basic.rg_backbone,
-                        basic.rg_backbone.func_name],
-        'rg_c_alpha': [basic.rg_c_alpha,
-                          basic.rg_c_alpha.func_name],
-        'e2ed': [basic.e2ed,
-                 basic.e2ed.func_name],
-#         'e2ed_v': [basic.e2ed_v,
-#                    basic.e2ed_v.func_name],
-        'sequence_spacing': [basic.sequence_spacing,
-                             basic.sequence_spacing.func_name],
-        'dssp_E': [basic.dssp_E,
-                      basic.dssp_E.func_name],
-        'upup60': [interaction.upup60,
-                   interaction.upup60.func_name],
-        'unun': [interaction.unun,
-                 interaction.unun.func_name]
-        }
-    if options.toa in analysis_methods:
-        g_tool, g_tool_name = analysis_methods[options.toa]
+    args = parse_cmd()
+    if args.toa in ANALYSIS_METHODS:
+        g_tool = ANALYSIS_METHODS[args.toa]
     else:
-        raise ValueError('You must specify -a option, \n to see what command is gonna be parsed, use --test')
-    return g_tool, g_tool_name, OPTIONS
+        raise ValueError('You must specify -a option, \n to see what command is gonna be executed, use --test')
+    return g_tool, args
+
+if __name__ == "__main__":
+    # g_tool, args = target_the_type_of_analysis()
+    # print g_tool, type(g_tool)
+    # print g_tool.func_name, type(g_tool.func_name)
+    parse_cmd()
