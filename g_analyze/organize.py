@@ -4,7 +4,7 @@ import os
 import glob
 
 __all__ = ['check_inputdirs', 'eneconv', 'g_make_ndx', 'g_select',
-           'trjcat', 'g_trjconv_gro', 'g_trjconv_pro_xtc', 'g_trjconv_pro_gro',
+           'trjcat', 'trjconv_gro', 'trjconv_pro_xtc', 'trjconv_pro_gro',
            'copy_0_mdrun_sh', 'copy_0_mdrun_py']
 
 def check_inputdirs(input_args):
@@ -28,13 +28,13 @@ def eneconv(input_args):
     cmd = 'eneconv -f {fmt_edrfs} -o {edrf}'.format(**input_args)
     return cmd
 
-def g_trjconv_gro(input_args):          # used to extract the last frame
+def trjconv_gro(input_args):          # used to extract the last frame
     return "echo 'System' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {grof}".format(**input_args)
 
-def g_trjconv_pro_xtc(input_args):
+def trjconv_pro_xtc(input_args):
     return "echo 'Protein' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -o {proxtcf}".format(**input_args)
 
-def g_trjconv_pro_gro(input_args):
+def trjconv_pro_gro(input_args):
     return "echo '1' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {progrof}".format(**input_args)
 
 def g_make_ndx(input_args):
@@ -90,7 +90,7 @@ def trjcat_500ns(input_args):
     cmd = 'trjcat -f {xtcf_200ns} {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd
 
-def g_trjconv_centerxtc(input_args):
+def trjconv_centerxtc(input_args):
     # -center -pbc whole : protien is centered, but it's not surrounded by solvent
     # -center -pbc mol   : no tric box anymore, like a cuboid
     # -center -pbc atom  : doesn't correct pbc, not useful

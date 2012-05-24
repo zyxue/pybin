@@ -28,9 +28,9 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'check_inputdirs': organize.check_inputdirs,
     "trjcat":               organize.trjcat,
     "eneconv":	      organize.eneconv,
-    "g_trjconv_pro_xtc":      organize.g_trjconv_pro_xtc,
-    "g_trjconv_gro": 	      organize.g_trjconv_gro,
-    "g_trjconv_pro_gro":      organize.g_trjconv_pro_gro,
+    "trjconv_pro_xtc":      organize.trjconv_pro_xtc,
+    "trjconv_gro": 	      organize.trjconv_gro,
+    "trjconv_pro_gro":      organize.trjconv_pro_gro,
     "g_make_ndx": 	      organize.g_make_ndx,
     "g_select": 	      organize.g_select,
 
@@ -41,7 +41,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
     "trjcat_500ns":         organize.trjcat_500ns,
 
-    'g_trjconv_centerxtc':    organize.g_trjconv_centerxtc,
+    'trjconv_centerxtc':    organize.trjconv_centerxtc,
 
     "copy_0_mdrun_sh": 	      organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py": 	      organize.copy_0_mdrun_py,
