@@ -4,122 +4,85 @@ import os
 from configobj import ConfigObj
 
 from g_analyze import init as gai
-from g_analyze import organize as gao
+import argparse_action as aa
 
-def parse_conf():
-    pass
+VERSION = '2.0'
+AUTHOR = 'zyxue'
+EMAIL = 'zhuyi.xue@utoronto.ca'
 
-def parse_option():
-    pass
+def gen_input_files(target_dir, pf):
+    """
+    Generalizing input files specific for gromacs tools, default naming
+    """
 
-def gen_inputargs():
-    """loop throught all the directories and gen input args for each"""
-    pass
+    input_files = dict(
+        xtcf = os.path.join(
+            target_dir, '{pf}_md.xtc'.format(pf=pf)),
+        centerxtcf = os.path.join(
+            target_dir, '{pf}_center.xtc'.format(pf=pf)),
+        grof = os.path.join(
+            target_dir, '{pf}_md.gro'.format(pf=pf)),
+        proxtcf = os.path.join(
+            target_dir, '{pf}_pro.xtc'.format(pf=pf)),
+        progrof = os.path.join(
+            target_dir, '{pf}_pro.gro'.format(pf=pf)),
+        tprf = os.path.join(
+            target_dir, '{pf}_md.tpr'.format(pf=pf)),
+        edrf = os.path.join(
+            target_dir, '{pf}_md.edr'.format(pf=pf)),
+        ndxf = os.path.join(
+            target_dir, '{pf}.ndx'.format(pf=pf)))
 
-def dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
+    hb_tprf = os.path.join(
+        target_dir, '{pf}_md_hbond.tpr'.format(pf=pf)) # potentially needed
+    if os.path.isfile(hb_tprf):
+        input_files.update(dict(hb_tprf=hb_tprf))
+    return input_files
+
+def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
     """ generate the directory hierarchy"""
-    dirchy_dict = CONFIG_DICT['dirchy']
-    pwd = os.getenv('PWD')
     for seq in SEQS:
         for cdt in CDTS:
             for tmp in TMPS:
                 for num in NUMS:
-                    d1 = dirchy_dict['dirchy_d1'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d2 = dirchy_dict['dirchy_d2'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d3 = dirchy_dict['dirchy_d3'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
-                    d4 = dirchy_dict['dirchy_d4'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
+                    tropoinputdir = os.path.join(
+                        dirchy_dict['dirchy_d1'],
+                        dirchy_dict['dirchy_d2'],
+                        dirchy_dict['dirchy_d3'],
+                        dirchy_dict['dirchy_d4']
+                        )
+                    inputdir = tropoinputdir.format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     # all the following filenames will be named after pf
-                    pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num) 
-                    # where holds the xtcf, proxtcf, tprf, edrf, grof, ndxf
-                    inputdir = os.path.join(pwd, d1, d2, d3, d4)
+                    # i.e.  xtcf, proxtcf, tprf, edrf, grof, ndxf
+                    pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     if os.path.exists(inputdir):
                         yield inputdir, pf, seq, cdt, tmp, num
 
-def init_dirs(g_tool_name, OPTIONS, CONFIG_DICT):
+def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
+                   ftest, fcdb, toa, btime, etime, dt, CONFIG_DICT):
     """
-    initialize directories like outputdir, and outputdir/LOGS and
-    outputdir/LOGS/{g_tool_name_log} if OPTIONS.nolog is False
-    """
-
-    # Get the path for outpudir, if not specified either in your console or in
-    # the configuration file, 'R_OUTPUT" will be created in the current
-    # directory to avoid scinet creash.
-    if OPTIONS.outputdir:
-        outputdir = OPTIONS.outputdir
-    elif CONFIG_DICT.has_key('outputdir'):
-        outputdir = CONFIG_DICT['outputdir']
-    else:
-        outputdir = 'R_OUTPUT'
-
-    if not os.path.exists(outputdir):
-        os.mkdir(outputdir)
-
-    # parent_logd holds all the logs which will keep the output of the
-    # analysis tools you use
-    parent_logd = os.path.join(outputdir, 'LOGS') 
-    if not os.path.exists(parent_logd) and not OPTIONS.test: # if your testing, no point to mkdir
-        os.mkdir(parent_logd)
-                           
-    if OPTIONS.nolog:
-        logd = None
-    else:
-        logd = os.path.join(
-            outputdir, 'LOGS', '{0}_log'.format(g_tool_name))
-
-        if not os.path.exists(logd):
-            os.mkdir(logd)
-    
-    return outputdir, logd
-
-def init_seqs_cdts_tmps_nums(options, config_dict):
-    seqs = options.SEQS if options.SEQS else config_dict['SEQS']
-    cdts = options.CDTS if options.CDTS else config_dict['CDTS']
-    tmps = options.TMPS if options.TMPS else config_dict['TMPS']
-    nums = options.NUMS if options.NUMS else config_dict['NUMS']
-    print seqs, cdts, tmps, nums
-    return seqs, cdts, tmps, nums
-
-def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
-    """
-    generate input_args, which in a dictionary that holds all the varaibles
+    generate "input_args", which in a dictionary that holds all the varaibles
     needed for your commands
     """
-    outputdir, logd = init_dirs(g_tool_name, OPTIONS, CONFIG_DICT)
-
-    SEQS, CDTS, TMPS, NUMS = init_seqs_cdts_tmps_nums(OPTIONS, CONFIG_DICT)
-
-    # if any of SEQS, CDTS, TMPS, NUMS is None, read from .g_ana.cfg
-    if not SEQS:
-        SEQS = config_dict['SEQS'] 
-
-    if not CDTS:
-        CDTS = config_dict['CDTS']
-
-    if not TMPS:
-        TMPS = config_dict['TMPS']
-
-    if not NUMS:
-        NUMS = config_dict['NUMS']
-
-    # more will be appended in the future
-    non_organize_modules = ['g_analyze.basic', 'g_analyze.interaction']
-
-    for inputdir, pf, seq, cdt, tmp, num in dirchy(SEQS, CDTS, TMPS, NUMS, CONFIG_DICT):
+    for inputdir, pf, seq, cdt, tmp, num in directory_hierarchy:
         input_args = dict(inputdir=inputdir, pf=pf, seq=seq, cdt=cdt, num=num)
 
-        # gen paths for input files: xtcf, proxtcf, tprf, edrf, grof, ndxf
-        input_args.update(gai.gen_input_files(
-                inputdir, input_args['pf']))
+        # gen paths for input files:
+        # (when organizing, input files could also be outputfiles)
+        # xtcf, grof, proxtcf, progrof, tprf, edrf, ndxf
+        input_args.update(gen_input_files(inputdir, pf))
 
-        # gen outputdir, etc. if any output files are produced
-        if g_tool.__module__ in non_organize_modules: # if in organize module, no new dir needs to be created
-            anadir = os.path.join(outputdir, 'r_' + g_tool_name) # anadir should be a subfolder under outputdir
+        # if g_tool is from organize module, no new dir needs to be created
+        # to compare string, is doesn't work (confirmed)
+        if not g_tool.__module__ == 'g_analyze.organize':
+            # anadir should be a subfolder under outputdir
+            anadir = os.path.join(outputdir, 'r_' + g_tool_name)
             input_args['anadir'] = anadir
-            if not os.path.exists(anadir) and not OPTIONS.test:
+            if not os.path.exists(anadir) and not ftest:
                 os.mkdir(anadir)
         
         # this part will be improved later, particular when using a database
-        if OPTIONS.cdb:
+        if fcdb:
             import connect_db as cdb
             ss = cdb.connect_db(CONFIG_DICT['database'])
             query = ss.query(cdb.Cutoff_rg_alltrj).filter_by(sqid=seq)
@@ -129,41 +92,98 @@ def gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT):
             input_args['b'] = 0                                       # default
 
         # particular to make_ndx
-        if OPTIONS.toa == 'g_make_ndx':
+        if toa == 'g_make_ndx':
             ndx_id = CONFIG_DICT['ndx_input']                  # ndx_input_dict
             ndx_fd = CONFIG_DICT['ndx_format']                 # ndx_format_dict
-            from pprint import pprint as pp
-            # pp(locals())
-            input_args['ndx_input'] = ' '.join([ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd])
+            # from pprint import pprint as pp
+            input_args['ndx_input'] = ' '.join(
+                [ndx_id[ndx_fd[f].format(**locals())] for f in ndx_fd]
+                )
 
-        if OPTIONS.toa == 'sequence_spacing':
+        if toa == 'g_select':
+            input_args['g_select_select'] = ('"' +
+                                             CONFIG_DICT['g_select']["seq"] +
+                                             CONFIG_DICT['g_select'][ cdt ] +
+                                             '"')
+
+        # particular to sequence_spacing, maybe later toa need also to be
+        # checked for other analysis, as well.
+        if toa == 'sequence_spacing':
             from Mysys import read_mysys_dat
             mysys = read_mysys_dat()
             input_args['peptide_length'] = mysys[seq].len
 
-        if OPTIONS.btime:
-            input_args['b'] = OPTIONS.btime
+        input_args['b'] = btime                                   # beginning time
+        input_args['e'] = etime                                   # endding time
+        input_args['dt'] = dt                                   # endding time
 
+        # generate the command that is gonna be executed
         cmd = g_tool(input_args)
-        if logd:
-            logf = os.path.join(logd, '{0}.log'.format(input_args['pf']))
-        else:                                             # meaning logd is None
-            logf = None
-
+        logf = os.path.join(logd, '{0}.log'.format(pf)) if logd else None
         yield (cmd, logf)
 
-if __name__ == "__main__":
+def main():
     # determine which function to call
-    g_tool, g_tool_name, OPTIONS = gai.target_the_type_of_analysis()
+    g_tool, args = gai.target_the_type_of_analysis()
+    g_tool_name =  g_tool.func_name   # directory will be named after func_name
 
-    config_file = OPTIONS.config_file
-    CONFIG_DICT = ConfigObj(config_file)
+    config_file = args.config_file
+    if not os.path.exists(config_file):
+        raise ValueError('configuration file: {0} may not exist!'.format(config_file))
+    config_dict = ConfigObj(config_file)
 
-    x = gen_input_args(g_tool, g_tool_name, OPTIONS, CONFIG_DICT)
-    gai.runit(x, OPTIONS.numthread)
+    SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, config_dict['system'])
+    # SEQS = args.SEQS if args.SEQS else config_dict['system']['SEQS']
+    # CDTS = args.CDTS if args.CDTS else config_dict['system']['CDTS']
+    # TMPS = args.TMPS if args.TMPS else config_dict['system']['TMPS']
+    # NUMS = args.NUMS if args.NUMS else config_dict['system']['NUMS']
 
-    print "#" * 20
-    from pprint import pprint as pp
-    pp(OPTIONS)
-    print "#" * 20
+    dirchy_dict = config_dict['dirchy']
+    directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
+
+    # confirm outpudir path, if not specified either in cmd or in the
+    # configuration file, 'R_OUTPUT" will be used in the current directory
+    # to avoid scinet crash.
+    if args.outputdir:
+        outputdir = args.outputdir
+    elif config_dict['data'].has_key('outputdir'):
+        v = config_dict['data']['outputdir']
+        if len(v) > 0 and v:                     # make sure v is not '' or None
+            outputdir = v
+        else:
+            outputdir = 'R_OUTPUT'
+    else:
+        outputdir = 'R_OUTPUT'
+
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
+
+    # parent_logd holds all the logs which keep the output of analysis tools
+    parent_logd = os.path.join(outputdir, 'LOGS') 
+    # just mkdir parent_logd no matter testing or not
+    if not os.path.exists(parent_logd):
+        os.mkdir(parent_logd)
+                           
+    logd = os.path.join(
+        outputdir, 'LOGS', '{0}_log'.format(g_tool_name)
+        ) if not args.nolog else None
+
+    if logd and not os.path.exists(logd):
+        os.mkdir(logd)
+
+    # now you have g_tool, g_tool_name, outputdir, logd, directory_hierarchy
+    x = gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
+                       args.test, args.cdb, args.toa, args.btime, args.etime, args.dt, 
+                       config_dict)
+    gai.runit(x, args.numthread, args.test)
+
+    separator =  "#" * 79
+    print separator
+    dd = args.__dict__
+    for k in sorted(dd):
+        print "{0:>20s}:{1}".format(k, dd[k])
+    print separator
+
+if __name__ == "__main__":
+    main()
 

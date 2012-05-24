@@ -96,6 +96,7 @@ def backup_file(f):
                 dirname, '#' + basename + '.{0}#'.format(count))
         print "BACKING UP {0} to {1}".format(f, rn_to)
         shutil.copy(f, rn_to)
+        return rn_to
         print "BACKUP FINISHED"
 
 if __name__ == "__main__":

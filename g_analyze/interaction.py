@@ -15,45 +15,6 @@ OPTIONS FOR OUTPUT FILES:
 -hbm  # index for hbm, useful if you want to draw the map
 """
 
-__all__ = ['unun', 'upup', 'upun', 
-           'unvn', 'unvp', 'upvn', 'upvp', 
-           'vnvn', 'vpvn', 'vpvp',
-           'upup60']
-
-igmat = {                      # interaction groups matrix 
-    # commented means nolonger correct!
-    # 'upup':'"16\n16"',
-    # 'upun':'"16\n17"',
-    # 'unun':'"17\n17"',
-
-    'upvp': ' 1\n12',                                           # needs hydrogen to calculate HB
-    'upvn': '14\n17',
-    'unvp': '15\n16',
-    'unvn': '15\n17',
-    
-    # commented means nolonger correct!
-    # 'vpvp':'"14\n14"',
-    # 'vpvn':'"14\n15"',
-    # 'vnvn':'"15\n15'
-    }
-
-icmat = {                                            # interaction cutoff matrix
-    'upup':0.35,'upun':0.44,'unun':0.53,
-    'upvp':0.35,'upvn':0.44,'unvp':0.44,'unvn':0.53,
-    'vpvp':0.35,'vpvn':0.44,'vnvn':0.53
-    }
-
-hb_template = '-s {tprf} -b {b} -r {ic:.2f} -nonitacc -num {anadir}/{pf}_{tinter}.xvg'
-
-# uu_hb_template = 'printf "1\n1" | g_hbond -f {{proxtcf}} {hb_template}'.format(hb_template=hb_template)
-uv_hb_template = 'printf "{{igrp}}" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
-# vv_hb_template = 'printf "12\n12" | g_hbond -f {{xtcf}} {hb_template}'.format(hb_template=hb_template)
-
-
-# uu_nonhb_template = 'printf {igrp} | g_mindist_excl1 -f {proxtcf} -s {tprf} -n {ndxf} -b {b} -d {ic:.2f} -on {anadir}/{pf}_{tinter}.xvg -od {anadir}/tmp_{pf}.xvg'
-
-ux_nonhb_template = 'printf "{igrp}" | g_mindist -f {xtcf} -s {tprf} -n {ndxf} -b {b} -d {ic:.2f} -on {anadir}/{pf}_{tinter}.xvg -od {anadir}/tmp_{pf}.xvg'
-
 """THE FOLLOWING FUNCTIONS HAVE TO BE SEPARATED BECAUSE THEIR RETURN VALUES
 CONTAIN THE __NAME__ OF THE FUNCTION"""
 
@@ -70,45 +31,40 @@ def upup60(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default cr
 -hbm {anadir}/{pf}_upup60_hbm.xvg \
 -hbn {anadir}/{pf}_upup60_hbn.xvg'.format(**kwargs)
 
-def upun(kwargs):
-    return uu_nonhb_template.format(**kwargs)
+# def upun(kwargs):
+#     return uu_nonhb_template.format(**kwargs)
 
 def unun(kwargs):
-    return 'printf "UN3\nUN3\n" | g_mindist_excl1 -f {proxtcf} -s {progrof} -n {ndxf} -b {b} -d 0.55 -on {anadir}/{pf}_unun.xvg -od {anadir}/{pf}_mindist.xvg '.format(**kwargs)
+    return 'printf "UN3\nUN3\n" | g_mindist_excl1 -f {proxtcf} -s {progrof} -n {ndxf} -b {b}  -e {e} -d 0.55 -on {anadir}/{pf}_unun.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
     # return 'unun.py -f {proxtcf} -s {progrof} -b {b} -c 0.55 -o {anadir}/{pf}_unun.xvg'.format(**kwargs)
 
 ####################UVI####################
 def upvp(kwargs):
-    pass
+    return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
+
     # if kwargs.has_key('hb_tprf'):
     #     kwargs['tprf'] = kwargs['hb_tprf']
     # return uv_hb_template.format(**kwargs)
 
 def upvn(kwargs):
-    kwargs['igrp'] = igmat['upvn']
-    kwargs['tinter'] = 'upvn'
-    kwargs['ic'] = icmat['upvn']
-    return 'echo' if kwargs['cdt'] == 'w' else ux_nonhb_template.format(**kwargs)
+    if kwargs['cdt'] == 'w':
+        return 'pwd'
+    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvp(kwargs):
-    kwargs['igrp'] = igmat['unvp']
-    kwargs['tinter'] = 'unvp'
-    kwargs['ic'] = icmat['unvp']
-    # Check how pbc works in gromacs and then do this
-    return ux_nonhb_template.format(**kwargs)
+    return 'printf "UN\nVP\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_unvp.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvn(kwargs):
-    kwargs['igrp'] = igmat['unvn']
-    kwargs['tinter'] = 'unvn'
-    kwargs['ic'] = icmat['unvn']
-    return 'echo' if kwargs['cdt'] == 'w' else ux_nonhb_template .format(**kwargs) 
+    if kwargs['cdt'] == 'w':
+        return 'pwd'
+    return 'printf "UN\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_unvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 ####################VVI####################
 def vpvp(kwargs):
-    return vv_hb_template.format(**kwargs)
+    pass
 
 def vpvn(kwargs):
-    return 'pwd' if kwargs['cdt'] == 'w' else ux_nonhb_template.format(**kwargs)
+    pass
 
 def vnvn(kwargs):
-    return 'pwd' if kwargs['cdt'] == 'w' else ux_nonhb_template.format(**kwargs)
+    pass
