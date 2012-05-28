@@ -59,6 +59,7 @@ def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwarg
         }
         for cdt in CDTS:
             dd['upv'] = [float(mysys[seq + cdt].nm_upv), 'upv' ]
+            dd['unv'] = [float(mysys[seq + cdt].nm_unv), 'unv' ]
 
             tablename = ave_kwargs['tablenamepattern'].format(seq=seq, cdt=cdt)
             if tpostproc_group.__contains__(tablename):
