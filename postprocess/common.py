@@ -46,15 +46,17 @@ def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwarg
         'dssp_B': [float(mysys[seq].len), 'structure'],
         'dssp_C': [float(mysys[seq].len), 'structure'],
         'dssp_T': [float(mysys[seq].len), 'structure'],
-        'upup'  : [float(mysys[seq].hbg), 'num_upup' ],
-        'unun'  : [float(mysys[seq].scnpg),'num_unun'],
-        'upun'  : [1., 'num_upun'],
-        'upvp'  : [float(mysys[seq].hbg), 'num_upvp' ],
-        'upvn'  : [float(mysys[seq].hbg), 'num_upvn' ],
-        'unvp'  : [float(mysys[seq].scnpg), 'num_unvp' ],
-        'unvn'  : [float(mysys[seq].scnpg), 'num_unvn' ],
+        'upup'  : [float(mysys[seq].hbg), 'upup' ],
+        'unun'  : [float(mysys[seq].scnpg * 2),'unun'], # g_mindist_excl1 double counts the contact, so divided by 2
+        'upun'  : [1., 'upun'],
+        'upvp'  : [float(mysys[seq].hbg), 'upvp' ],
+        'upvn'  : [float(mysys[seq].hbg), 'upvn' ],
+        'unvp'  : [float(mysys[seq].scnpg), 'unvp' ],
+        'unvn'  : [float(mysys[seq].scnpg), 'unvn' ],
         'rg_c_alpha': [1., 'rg'],
+        'rg_whole_length': [1., 'rg'],
         'rg_backbone': [1., 'rg'],
+        'e2ed': [1., 'e2ed'],
         }
         for cdt in CDTS:
             tablename = ave_kwargs['tablenamepattern'].format(seq=seq, cdt=cdt)
@@ -95,6 +97,7 @@ def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwarg
         dd = {                       # ppty_name: [denominator, x_col, y_col]
             'rg_c_alpha' : [1, 'time', 'rg_c_alpha'],
             'dssp_E'     : [float(mysys[seq].len), 'time', 'structure'],
+            'conf_entropy' : [1, 'time', 'entropy'],
             # 'sequence_spacing' : ['dij', 'ave_d'],
             # 'rdf_upup': ['radius', 'rdf'],
             # 'rdf_upun': ['radius', 'rdf'],
@@ -110,6 +113,15 @@ def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwarg
             'rdf_un1vp': [1, 'radius', 'rdf'],
             'rdf_un2vp': [1, 'radius', 'rdf'],
             'rdf_un3vp': [1, 'radius', 'rdf'],
+
+            'rdf_c1vn': [1, 'radius', 'rdf'],
+            'rdf_c2vn': [1, 'radius', 'rdf'],
+            'rdf_c3vn': [1, 'radius', 'rdf'],
+            'rdf_c1vp': [1, 'radius', 'rdf'],
+            'rdf_c2vp': [1, 'radius', 'rdf'],
+            'rdf_c3vp': [1, 'radius', 'rdf'],
+
+            'rg_whole_length': [1., 'time', 'rg'],
 
             }
         for cdt in CDTS:

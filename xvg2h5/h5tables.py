@@ -78,6 +78,14 @@ class sequence_spacing(tables.IsDescription):
     std_d = tables.Float32Col(pos=2)
     num_data_points = tables.UInt32Col(pos=3)
 
+class entropy(tables.IsDescription):
+    time = tables.Float32Col(pos=0)
+    entropy = tables.Float32Col(pos=1)
+    # number of structure types vary, which is a headache!
+    # Coil = tables.UInt32Col(pos=2)
+    # b-sheet = tables.Float32Col(pos=3)
+    # rg_z = tables.Float32Col(pos=4)
+
 # itemsize : int
 # For types with a non-fixed size, this sets the size in bytes of individual items in the column.
 # shape : tuple
@@ -90,39 +98,39 @@ class sequence_spacing(tables.IsDescription):
 class upup(tables.IsDescription):
     """upup along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_upup = tables.UInt32Col(pos=1)
-    num_within_0_35nm = tables.UInt32Col(pos=2)
+    upup = tables.UInt32Col(pos=1)
+    within_0_35nm = tables.UInt32Col(pos=2)
 
 class upun(tables.IsDescription):
     """upun along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_upun = tables.UInt32Col(pos=1)
+    upun = tables.UInt32Col(pos=1)
 
 class unun(tables.IsDescription):
     """unun along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_unun = tables.UInt32Col(pos=1)
+    unun = tables.UInt32Col(pos=1)
 
 class upvp(tables.IsDescription):
     """upvp along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_upvp = tables.UInt32Col(pos=1)
-    num_upvp_within_0_35nm = tables.UInt32Col(pos=2)
+    upvp = tables.UInt32Col(pos=1)
+    upvp_within_0_35nm = tables.UInt32Col(pos=2)
 
 class upvn(tables.IsDescription):
     """upvn along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_upvn = tables.UInt32Col(pos=1)
+    upvn = tables.UInt32Col(pos=1)
 
 class unvn(tables.IsDescription):
     """unvn along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_unvn = tables.UInt32Col(pos=1)
+    unvn = tables.UInt32Col(pos=1)
 
 class unvp(tables.IsDescription):
     """unvp along the time trajectory"""
     time = tables.Float32Col(pos=0)
-    num_unvp = tables.UInt32Col(pos=1)
+    unvp = tables.UInt32Col(pos=1)
 
 #################### upv unv ####################
 
@@ -185,6 +193,15 @@ class Property(object):
             'rdf_un1vp': (rdf, 'rdf along the time trajectory'),
             'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
             'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
+
+            'rdf_c1vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_c2vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_c3vn': (rdf, 'rdf along the time trajectory'),
+            'rdf_c1vp': (rdf, 'rdf along the time trajectory'),
+            'rdf_c2vp': (rdf, 'rdf along the time trajectory'),
+            'rdf_c3vp': (rdf, 'rdf along the time trajectory'),
+
+            'conf_entropy': (entropy, 'entropy with increasing sampling'),
 
             }
         self.desc = d[property_name][1]

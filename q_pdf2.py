@@ -3,8 +3,8 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.path as path
+# import matplotlib.patches as patches
+# import matplotlib.path as path
 
 from xvg2png import xvg2array_data_points
 import q_acc
@@ -29,7 +29,12 @@ def ax_distri(inf, ax, bins):
     b = (b[:-1] + b[1:]) / 2.                               # to gain the same length as n
     n = n / len_y                                           # normalized by len_y
 
-    p = ax.plot(b, n, linewidth=2, label=inf)
+    import sys
+    for bi, ni in zip(b, n):
+        sys.stdout.write('{0:8.5f} {1:18.8f}\n'.format(bi, ni))
+
+    # p = ax.plot(b, n, linewidth=2, label=inf)
+    ax.plot(b, n, linewidth=2, label=inf)
     return id_, n, b
 
 def outline():

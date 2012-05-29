@@ -25,8 +25,8 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         elif marker:
             ax.plot(x, y, marker=marker, label=label) 
         else:
-            ax.plot(x, y, linewidth=2, label=label) 
-#             p = ax.plot(x, y, "o-", label=label) 
+            ax.plot(x, y, linewidth=1, label=label) 
+            # p = ax.plot(x, y, "o-", label=label) 
     return x, y
 
 def main(options):
@@ -41,7 +41,8 @@ def main(options):
 
     if options.overlap:
         overlap = options.overlap
-        assert len_infs % overlap== 0, "the num of infiles are not even to do overlap"
+        assert len_infs % overlap== 0, "the num of infiles ({0}) are not even to do overlap ({1})".format(
+            len_infs, overlap)
         row, col = q_acc.det_row_col(len_infs / overlap, options.morer)
     else:
         overlap = 1

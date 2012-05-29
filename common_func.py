@@ -94,7 +94,10 @@ def backup_file(f):
             count += 1
             rn_to = os.path.join(
                 dirname, '#' + basename + '.{0}#'.format(count))
+        print "BACKUPING {0} to {1}".format(f, rn_to)
         shutil.copy(f, rn_to)
+        return rn_to
+        print "BACKUP FINISHED"
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
