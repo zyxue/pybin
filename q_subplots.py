@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-import sys
-import glob
 import re
 
-import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
+# from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
 
 from xvg2png import xvg2array, xvg2array_eb
 import q_acc
@@ -22,14 +19,14 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         x, y = xvg2array(inf)
         x = x/1000. if options.nm else x
         if color and marker:
-            p = ax.plot(x, y, color=color, marker=marker, label=label) 
+            ax.plot(x, y, color=color, marker=marker, label=label) 
         elif color:
-            p = ax.plot(x, y, color=color, label=label) 
+            ax.plot(x, y, color=color, label=label) 
         elif marker:
-            p = ax.plot(x, y, marker=marker, label=label) 
+            ax.plot(x, y, marker=marker, label=label) 
         else:
-            # p = ax.plot(x, y, linewidth=2, label=label) 
-            p = ax.plot(x, y, "o-", label=label) 
+            ax.plot(x, y, linewidth=2, label=label) 
+#             p = ax.plot(x, y, "o-", label=label) 
     return x, y
 
 def main(options):
