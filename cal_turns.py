@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-import matplotlib.pyplot as plt
-import matplotlib
-import numpy as np
-import os
-import sys
+# import matplotlib.pyplot as plt
+# import matplotlib
+
 import glob
-from mpl_toolkits.axes_grid1 import ImageGrid
 from Process_grofile import Process_grofile
 from q_cluster import parse_cmd
 from Mysys import read_mysys_dat

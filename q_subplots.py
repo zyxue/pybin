@@ -17,7 +17,14 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         ax.errorbar(x, y, yerr=e, label=label)
     else:
         x, y = xvg2array(inf)
+
+        # print x, y
+        # print x.shape, y.shape        
+        # import sys
+        # sys.exit()
+
         x = x/1000. if options.nm else x
+
         if color and marker:
             ax.plot(x, y, color=color, marker=marker, label=label) 
         elif color:

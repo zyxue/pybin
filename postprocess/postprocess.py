@@ -1,10 +1,8 @@
 #! /usr/bin/env python
 
 import os
-import argparse
 
 import tables
-import numpy as np
 from configobj import ConfigObj
 
 # local system level

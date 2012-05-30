@@ -2,16 +2,11 @@
 
 import os
 import sys
-import glob
-import shutil
-import argparse
-
-import numpy as np
 import tables
 from configobj import ConfigObj
 
 from common_func import backup_file
-from argparse_action import my_basic_parser, convert_seq, convert_num, get_sctn
+import argparse_action as aa
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
 
@@ -30,7 +25,7 @@ def main():
         raise IOError("{0} cannot found".format(conf))
 
     conf_dict = ConfigObj(conf)
-    SEQS, CDTS, TMPS, NUMS = get_sctn(args, conf_dict['systems'])
+    SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, conf_dict['systems'])
 
     h5filename = conf_dict['data']['h5filename']
     title      = conf_dict['data']['title']
@@ -100,7 +95,7 @@ def zx_create_group(h5file, path, name, filters, title=''):
 
 def zx_create_table(h5file, grouppath, tablename, objxvg, property_table):
     # ugly code, reverse should be removed accordly
-    property_cols = property_table.columns.keys()           # get the column names(keys)
+    # property_cols = property_table.columns.keys()           # get the column names(keys)
     # property_cols.reverse()
     tablepath = os.path.join(grouppath, tablename)
     
@@ -121,7 +116,7 @@ def zx_create_table(h5file, grouppath, tablename, objxvg, property_table):
 def parse_cmd(cmd=None):
     """parse_cmd"""
 
-    parser = my_basic_parser()
+    parser = aa.my_basic_parser()
 
     parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(TABLES))
