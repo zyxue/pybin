@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 """
-This script is used to wrap the process of file transfer between remote clusters (i.e. SciNet, Collose, Mp2) and my local system.
+This script is used to wrap the process of file transfer between remote
+clusters (i.e. SciNet, Collose, Mp2) and my local system.
 
 CAVEAT: options must come at the end of the cmd
 """
 
-import sys
 import glob
 import subprocess
 import argparse
@@ -40,6 +40,8 @@ def main():
         'l': 'zyxue@lattice.westgrid.ca:',
         'g': 'zhuyxue12@guillimin.clumeq.ca:',
         'o': 'zyxue@orca.sharcnet.ca:',
+        't': 'zyxue@tera.research.sickkids.ca:',
+        't2': 'zyxue@t2.research.sickkids.ca:',
         }
 
     ARGS = parse_cmd()
