@@ -40,16 +40,16 @@ def ax_distri(inf, ax, bins):
 def outline():
     infs = options.fs
     print infs
-    l = len(infs)
+    lenf = len(infs)
 
     if options.overlap:
         olp = options.overlap
-        assert l % olp== 0, (
-            "the num of infiles (%d) cannot be divided exactly by overlap (%d)" % (l, olp))
-        row, col = q_acc.det_row_col(l/olp, options.morer)
+        assert lenf % olp== 0, (
+            "the num of infiles (%d) cannot be divided exactly by overlap (%d)" % (lenf, olp))
+        row, col = q_acc.det_row_col(lenf/olp, options.morer)
     else:
         olp = 1
-        row, col = q_acc.det_row_col(l, options.morer)
+        row, col = q_acc.det_row_col(lenf, options.morer)
 
     fig = plt.figure(figsize=(24, 11.6625))
     ns, bs, id_s, axes = {}, {}, [], []
@@ -77,4 +77,3 @@ if __name__ == '__main__':
     outline()
     e = time.time()
     print e - b
-
