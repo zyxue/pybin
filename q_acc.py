@@ -126,26 +126,11 @@ def decorate(keys, xps, yps, axes, blegend, xlb, ylb, xb, yb, xe, ye):
         if blegend:
             ax.legend(loc=0)
 
-# def convert_bins(option, opt_str, value, parser):
-#     v = value.split(',')
-#     if len(v) == 1:
-#         parser.values.bins = int(v[0])
-#     elif len(v) == 3:
-#         min_, max_, interval = [float(i) for i in v]
-#         parser.values.bins = np.arange(min_, max_, interval)
-
 class convert_bins(argparse.Action):
     def __call__(self, parser, namespace, values, optoin_string=None):
         assert len(values) == 3
         final_values = np.arange(*[float(i) for i in values])
         setattr(namespace, self.dest, final_values)        
-
-# def find_the_files(option, opt_str, value, parser):
-#     infiles = []
-#     infs = value.split()
-#     for f in infs:
-#         infiles.extend(glob.glob(f))
-#     setattr(parser.values, option.dest, infiles)
 
 def parse_cmd(cmd=None):
     parser = argparse.ArgumentParser('usage: %prog [options] **args')
@@ -172,7 +157,7 @@ def parse_cmd(cmd=None):
     parser.add_argument('--bins', type=str, default="100", dest='bins', nargs='+', action=convert_bins,
                         help=('specify this options if plotting histogram,'
                               'could be a number of bins or a string containing 3 values'
-                              '(i.e min, max, interval, e.g. "0.6, 2.0, 0.02")'))
+                              '(i.e min, max, interval, e.g. 0.6 2.0 0.02)'))
     parser.add_argument('-o', type=str, default=None, dest='of', 
                         help='specifly output file OPT.')
     parser.add_argument('--ap', action="store_true", default=None, dest='ap', 
