@@ -2,20 +2,27 @@
 
 """This script contains class that are expected to be commonly used for my other scripts"""
 
+import re
 import argparse
 
 class convert_seq(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         processed_values = []
         for v in values:
-            if '-' in v:
-                mi, ma = (int(i) for i in values[0].split('-'))
-                v = [str(i) for i in xrange(mi, ma + 1)]
+            # match = re.search("([a-z]+)\[?([0-9]+-?[0-9]*)\]?", v)
+            # bash will separate [1-4] autmatically, so commented out the above line
+            match = re.search("([a-z]+)([0-9]+-?[0-9]*)", v)
+            # print match.groups()
+            pf, index = match.groups()
+            if '-' in index:
+                mi, ma = (int(i) for i in index.split('-'))
+                v = [pf+str(i) for i in xrange(mi, ma + 1)]
                 processed_values.extend(v)
             else:
                 processed_values.append(v)
 
-        final_values = ['sq{0}'.format(i) for i in processed_values]
+            # final_values = ['{0}{1}'.format(pf,i) for i in processed_values]
+            final_values = processed_values
         setattr(namespace, self.dest, final_values)
 
 class convert_num(argparse.Action):

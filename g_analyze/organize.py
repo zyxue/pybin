@@ -2,6 +2,7 @@
 
 import os
 import glob
+import re
 
 def check_inputdirs(input_args):
     d = input_args['inputdir']
@@ -11,8 +12,12 @@ def check_inputdirs(input_args):
     return s
 
 def trjcat(input_args):
-    tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].xtc'.format(**input_args)
+    # tmpl = '{pf}_md(?:\.part[0-9][0-9][0-9][0-9])*.xtc'.format(**input_args)
+    tmpl = '*.xtc'
+    RE = '{pf}_md(?:\.part[0-9][0-9][0-9][0-9])*.xtc'.format(**input_args)
     xtcfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
+    xtcfs = [xtcf for xtcf in xtcfs if re.search(RE, xtcf)]
+    
     input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
     cmd = 'trjcat -f {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd

@@ -109,9 +109,10 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
         # particular to sequence_spacing, maybe later toa need also to be
         # checked for other analysis, as well.
         if toa == 'sequence_spacing':
-            from Mysys import read_mysys_dat
-            mysys = read_mysys_dat()
-            input_args['peptide_length'] = mysys[seq].len
+            from mysys import read_mysys
+            mysys = read_mysys.read()
+            # input_args['peptide_length'] = mysys[seq].len
+            input_args['peptide_length'] = mysys['sq1'].len # when analyzing ff_comparison
 
         input_args['b'] = btime                                   # beginning time
         input_args['e'] = etime                                   # endding time

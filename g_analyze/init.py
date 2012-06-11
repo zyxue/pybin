@@ -92,6 +92,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_c3vn':               rdf.rdf_c3vn,
 
     'sequence_spacing':       fancy.sequence_spacing,
+    'pi_angles':              fancy.pi_angles,
     'conf_entropy':           fancy.conf_entropy,
 
     }
@@ -136,17 +137,6 @@ def runit(cmd_logf_generator, numthread, ftest):
 def parse_cmd():
     """parse_cmd"""
     parser = aa.my_basic_parser()
-
-    # parser = argparse.ArgumentParser(usage="-s, -c, -t, -n (don't use quotes)")
-
-    # parser.add_argument('-s', dest='SEQS', nargs='+', action=convert_seq,
-    #                     help="specify it this way, i.e. 1 3 4 or 1-9 (don't include 'sq')")
-    # parser.add_argument('-c', dest='CDTS', nargs='+',
-    #                     help="specify it this way, i.e. w m o p e ")
-    # parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
-    #                     help='specify it this way, i.e "300 700", maybe improved later')
-    # parser.add_argument('-n', dest='NUMS', nargs='+', action=convert_num,
-    #                     help='specify the replica number, i.e. 1 2 3 or 1-20')
 
     parser.add_argument('--nt', type=int, dest='numthread', default=16,
                         help='specify the number of threads, default is 16')

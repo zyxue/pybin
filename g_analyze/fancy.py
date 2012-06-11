@@ -13,7 +13,10 @@ will still have output written to anadir
 
 def sequence_spacing(kwargs):
     """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""
-    return "sequence_spacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -l {peptide_length} -o {anadir}/{pf}_sequence_spacing.xvg".format(**kwargs)
+    return "sequence_spacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -e {e} -l {peptide_length} -o {anadir}/{pf}_sequence_spacing.xvg".format(**kwargs)
+
+def pi_angles(kwargs):
+    return "calc_pi_angle.py -f {proxtcf} -s {progrof} -b {b} -e {e} -o {anadir}/{pf}_pi_angles.xvg".format(**kwargs)
 
 def conf_entropy(kwargs):
     # tmp_dir is for storing the covar_e[0-9].* directories and files in it
