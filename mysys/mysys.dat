@@ -1,6 +1,6 @@
 # PEPTIDE-SPECIFIC:
 
-# sid seq     col marker hbg scnpg gptg len tex_seq order natoms seqitp KDhydropathy
+# sid seq     col marker hbg scnpg gptg len tex_seq order natom seqitp KDhydropathy
 @ sq1 (GVPGV)7 blue    ^ 63 63 0.4    35 (GVPGV)_7  0 429 sq1.itp   42.0
 @ sq2 (GGVGV)7 green   o 70 49 0.6    35 (GGVGV)_7  3 380 sq2.itp   50.4
 @ sq3 (PGV)12  red     v 60 72 0.3333 36 (PGV)_{12} 1 453 sq3.itp   26.4
@@ -27,23 +27,23 @@
 # len: length of the peptide
 # tex_seq: sequence formatted in latex
 # order: the order of output
-# natoms: number of atoms per molecule including hydrogen
+# natom: number of atoms per molecule including hydrogen
 
 # SOLVENT-SPECIFIC:
 
-# cid name col  solgro solitp maxsol box solname
-& w water     r tip4p_216.gro tip4p.itp 3700 5.8 SOL
-& m methanol   b meo_1728.gro  meo.itp   3300 7.3 MEO
-& e ethanol   g eth_1000.gro  eth.itp   2200 7.3 ETH
-& p propanol  m pol_512.gro   pol.itp   2000 7.8 POL
-& b butanol   - but_512.gro   but.itp   2000 8.0 BUT
-& n pentanol  - pen_512.gro   pen.itp   1800 8.2 PEN
-& x hexanol   - hex_512.gro   hex.itp   1700 8.5 HEX
-& h hepanol   - hep_512.gro   hep.itp   1400 8.3 HEP
-& c octanol   - oco_512.gro   oco.itp	900  8.0 OCO
-& o octane    c oct_512.gro   oct.itp   600  6.8 OCT
-& f tfe	      -	tfe_512.gro   tfe.itp	900  6	 TFE
-& v vacuo     k None          None      None None None
+# cid name col  solgro solitp maxsol box solname natom
+& w water     r tip4p_216.gro tip4p.itp 3700 5.8 SOL 4
+& m methanol  b meo_1728.gro  meo.itp   3300 7.3 MEO 6
+& e ethanol   g eth_1000.gro  eth.itp   2200 7.3 ETH 9
+& p propanol  m pol_512.gro   pol.itp   2000 7.8 POL 12
+& b butanol   - but_512.gro   but.itp   2000 8.0 BUT 15
+& n pentanol  - pen_512.gro   pen.itp   1800 8.2 PEN 18
+& x hexanol   - hex_512.gro   hex.itp   1700 8.5 HEX 21
+& h hepanol   - hep_512.gro   hep.itp   1400 8.3 HEP 24
+& c octanol   - oco_512.gro   oco.itp	900  8.0 OCO 27
+& o octane    c oct_512.gro   oct.itp   600  6.8 OCT 26
+& f tfe	      -	tfe_512.gro   tfe.itp	900  6	 TFE 9
+& v vacuo     k None          None      0 0 None 0
 
 # & o octane    c oct_512.gro   oct.itp   350  5.8 OCT
 # 350 could be occassionally too small for mono_su_as, so afterwards, try 500

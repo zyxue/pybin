@@ -24,6 +24,7 @@ class Solvent(object):
         self.maxsol = ssp[5]
         self.box = ssp[6]
         self.solname =ssp[7]
+        self.natom = int(ssp[8])
 
 class Mono_sys(object):
     def __init__(self, monosp):                # monosp: mono_system Specific Propertis
