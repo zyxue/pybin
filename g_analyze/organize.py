@@ -40,9 +40,24 @@ def md2part0001(input_args):
     pf = input_args['pf']
     inputdir = input_args['inputdir']
     md_xtc = os.path.join(inputdir, "{0}_md.xtc".format(pf))
+    if os.path.exists(md_xtc):
+        part0001_xtc = os.path.join(inputdir, "{0}_md.part0001.xtc".format(pf))
+        cmd = 'mv -v {0} {1}'.format(md_xtc, part0001_xtc)
+        return cmd
+    else:
+        return "pwd"
+
+def part00012md(input_args):
+    # this one is used when pf_md.xtc exists instead of pf_md.part0001.xtc
+    pf = input_args['pf']
+    inputdir = input_args['inputdir']
     part0001_xtc = os.path.join(inputdir, "{0}_md.part0001.xtc".format(pf))
-    cmd = 'mv -v {0} {1}'.format(md_xtc, part0001_xtc)
-    return cmd
+    if os.path.exists(part0001_xtc):
+        md_xtc = os.path.join(inputdir, "{0}_md.xtc".format(pf))
+        cmd = 'mv -v {0} {1}'.format(part0001_xtc, md_xtc)
+        return cmd
+    else:
+        return "pwd"
 
 def eneconv(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].edr'.format(**input_args)

@@ -27,6 +27,7 @@ import rdf
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs':       organize.check_inputdirs,
     'md2part0001':           organize.md2part0001,
+    'part00012md':           organize.part00012md,
     "trjcat":                organize.trjcat,
     "trjcat_plus":           organize.trjcat_plus,
     "eneconv":               organize.eneconv,
