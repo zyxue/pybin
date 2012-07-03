@@ -44,7 +44,7 @@ def my_basic_parser():
     my_basic_parser = argparse.ArgumentParser()
 
     my_basic_parser.add_argument('-s', dest='SEQS', default=None, nargs='+', action=convert_seq,
-                        help="specify it this way, i.e. 1 3 4 or 1-9 or 1, 3-5 (don't include 'sq')")
+                        help="specify it this way, i.e. sq1 sq3 sq4 or sq1-9 or sq1 sq3-5")
     my_basic_parser.add_argument('-c', dest='CDTS', default=None, nargs='+',
                         help="specify it this way, i.e. w m o p e ")
     my_basic_parser.add_argument('-t', dest='TMPS', default=None, nargs='+',
