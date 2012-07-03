@@ -26,15 +26,19 @@ import rdf
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
     'check_inputdirs':       organize.check_inputdirs,
+    'md2part0001':           organize.md2part0001,
     "trjcat":                organize.trjcat,
+    "trjcat_plus":           organize.trjcat_plus,
     "eneconv":               organize.eneconv,
+    "trjorder":              organize.trjorder,
     "trjconv_center_xtc":    organize.trjconv_center_xtc,
     "trjconv_center_gro":    organize.trjconv_center_gro,
     "trjconv_pro_xtc":       organize.trjconv_pro_xtc,
     "trjconv_pro_gro":       organize.trjconv_pro_gro,
     "g_make_ndx":            organize.g_make_ndx,
     "g_select":              organize.g_select,
-
+    "symlink_ndx":           organize.symlink_ndx,
+    
     "rename_tpr2old":        organize.rename_tpr2old,
     "generate_500ns_tpr":    organize.generate_500ns_tpr,
     "sed_0_mdrun_sh":        organize.sed_0_mdrun_sh,

@@ -20,6 +20,10 @@ def gen_input_files(target_dir, pf):
             target_dir, '{pf}_md.xtc'.format(pf=pf)),
         centerxtcf = os.path.join(
             target_dir, '{pf}_center.xtc'.format(pf=pf)),
+        orderxtcf = os.path.join(
+            target_dir, '{pf}_order.xtc'.format(pf=pf)),
+        ordergrof = os.path.join(
+            target_dir, '{pf}_order.gro'.format(pf=pf)),
         grof = os.path.join(
             target_dir, '{pf}_md.gro'.format(pf=pf)),
         proxtcf = os.path.join(
@@ -112,11 +116,17 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
             from mysys import read_mysys
             mysys = read_mysys.read()
             # input_args['peptide_length'] = mysys[seq].len
-            input_args['peptide_length'] = mysys['sq1'].len # when analyzing ff_comparison
+            input_args['peptide_length'] = mysys[seq].len # when analyzing ff_comparison
 
-        input_args['b'] = btime                                   # beginning time
-        input_args['e'] = etime                                   # endding time
-        input_args['dt'] = dt                                   # endding time
+        if toa == 'trjorder':
+            from mysys import read_mysys
+            mysys = read_mysys.read()
+            input_args['NA'] = mysys[cdt].natom # when analyzing ff_comparison
+
+        input_args['pwd'] = os.getenv('PWD')
+        input_args['b'] = btime                             # beginning time
+        input_args['e'] = etime                             # endding time
+        input_args['dt'] = dt                               # endding time
 
         # generate the command that is gonna be executed
         cmd = g_tool(input_args)
@@ -134,10 +144,6 @@ def main():
     config_dict = ConfigObj(config_file)
 
     SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, config_dict['system'])
-    # SEQS = args.SEQS if args.SEQS else config_dict['system']['SEQS']
-    # CDTS = args.CDTS if args.CDTS else config_dict['system']['CDTS']
-    # TMPS = args.TMPS if args.TMPS else config_dict['system']['TMPS']
-    # NUMS = args.NUMS if args.NUMS else config_dict['system']['NUMS']
 
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)

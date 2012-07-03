@@ -22,6 +22,28 @@ def trjcat(input_args):
     cmd = 'trjcat -f {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd
 
+def trjcat_plus(input_args):
+    # tmpl = 'sq[1-9]h[0-3][0-9]_md.part[0-9][0-9][0-9][0-9].xtc'
+    RE = '{pf}_md(?:\.part[0-9][0-9][0-9][0-9])+.xtc'.format(**input_args)
+    xtcfs = sorted(
+        glob.glob(
+            os.path.join(input_args['inputdir'], "*.xtc")
+            )
+        )
+    xtcfs = [xtcf for xtcf in xtcfs if re.search(RE, xtcf)]
+    input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
+    cmd = 'trjcat+.py -f {fmt_xtcfs} -s {tprf} -o {xtcf}'.format(**input_args)
+    return cmd
+
+def md2part0001(input_args):
+    # this one is used when pf_md.xtc exists instead of pf_md.part0001.xtc
+    pf = input_args['pf']
+    inputdir = input_args['inputdir']
+    md_xtc = os.path.join(inputdir, "{0}_md.xtc".format(pf))
+    part0001_xtc = os.path.join(inputdir, "{0}_md.part0001.xtc".format(pf))
+    cmd = 'mv -v {0} {1}'.format(md_xtc, part0001_xtc)
+    return cmd
+
 def eneconv(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].edr'.format(**input_args)
     edrfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
@@ -31,14 +53,26 @@ def eneconv(input_args):
 
 # -ur will be delt later, be customized in .g_ana.conf
 
+def trjorder(input_args):
+    input_args['tmporderf'] = os.path.join(
+        input_args['inputdir'],
+        '_{0}'.format(os.path.basename(input_args['orderxtcf']))
+        )
+    return """
+printf "Protein\nSystem\n" | trjconv  -f {xtcf}       -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
+printf "Protein\nSolvent\n"| trjorder -f {centerxtcf} -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
+printf "Sys_Ordered\n"     | trjconv  -f {tmporderf}  -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
+printf "Sys_Ordered\n"     | trjconv  -f {orderxtcf}  -s {tprf} -n {ndxf} -dump 0 -o {ordergrof}
+""".format(**input_args)
+
 def trjconv_center_xtc(input_args):
     # -center -pbc whole : protien is centered, but it's not surrounded by solvent
     # -center -pbc mol   : no tric box anymore, like a cuboid
     # -center -pbc atom  : doesn't correct pbc, not useful
     # -center -pbc mol -ur compact: solvent are ordered closest to the protein
     # -center -pbc mol -ur tric: most suitable in this case
-    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
+    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
 
 def trjconv_center_gro(input_args):          # used to extract the last frame
     return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b}  -dump 0 -o {grof}".format(**input_args)
@@ -53,7 +87,20 @@ def g_make_ndx(input_args):
     return "printf '{ndx_input}' | make_ndx -f {grof} -o {ndxf}".format(**input_args)
 
 def g_select(input_args):
-    return "g_select -f {grof} -s {tprf} -on {ndxf} -select {g_select_select}".format(**input_args)
+    input_args['repository_ndxf'] = os.path.join(
+            input_args['pwd'],
+            'repository',
+            '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
+            )
+    return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+
+def symlink_ndx(input_args):
+    input_args['repository_ndxf'] = os.path.join(
+            input_args['pwd'],
+            'repository',
+            '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
+            )
+    return "ln -s -f {repository_ndxf} {ndxf}".format(**input_args)
 
 def copy_0_mdrun_sh(input_args):
     return "sed -e 's/SEQ/{seq}/g' -e 's/CDT/{cdt}/g' -e 's/NUM/{num}/g' /scratch/p/pomes/zyxue/mono_su_as/repository/smp_0_mdrun.sh > {inputdir}/0_mdrun.sh".format(**input_args)
