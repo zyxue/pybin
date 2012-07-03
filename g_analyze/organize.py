@@ -24,7 +24,7 @@ def trjcat(input_args):
 
 def trjcat_plus(input_args):
     # tmpl = 'sq[1-9]h[0-3][0-9]_md.part[0-9][0-9][0-9][0-9].xtc'
-    RE = '{pf}_md(?:\.part[0-9][0-9][0-9][0-9])+.xtc'.format(**input_args)
+    RE = '{pf}_md\.part[0-9][0-9][0-9][0-9].xtc$'.format(**input_args)
     xtcfs = sorted(
         glob.glob(
             os.path.join(input_args['inputdir'], "*.xtc")
