@@ -35,7 +35,7 @@ def trjcat_plus(input_args):
     cmd = 'trjcat+.py -f {fmt_xtcfs} -s {tprf} -o {xtcf}'.format(**input_args)
     return cmd
 
-def md2part0001(input_args):
+def xtc2part0001(input_args):
     # this one is used when pf_md.xtc exists instead of pf_md.part0001.xtc
     pf = input_args['pf']
     inputdir = input_args['inputdir']
@@ -46,6 +46,19 @@ def md2part0001(input_args):
         return cmd
     else:
         return "pwd"
+
+def edr2part0001(input_args):
+    # this one is used when pf_md.edr exists instead of pf_md.part0001.edr
+    pf = input_args['pf']
+    inputdir = input_args['inputdir']
+    md_edr = os.path.join(inputdir, "{0}_md.edr".format(pf))
+    if os.path.exists(md_edr):
+        part0001_edr = os.path.join(inputdir, "{0}_md.part0001.edr".format(pf))
+        cmd = 'mv -v {0} {1}'.format(md_edr, part0001_edr)
+        return cmd
+    else:
+        return "pwd"
+
 
 def part00012md(input_args):
     # this one is used when pf_md.xtc exists instead of pf_md.part0001.xtc
@@ -115,7 +128,7 @@ def symlink_ndx(input_args):
             'repository',
             '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
             )
-    return "ln -s -f {repository_ndxf} {ndxf}".format(**input_args)
+    return "ln -s -f -v {repository_ndxf} {ndxf}".format(**input_args)
 
 def copy_0_mdrun_sh(input_args):
     return "sed -e 's/SEQ/{seq}/g' -e 's/CDT/{cdt}/g' -e 's/NUM/{num}/g' /scratch/p/pomes/zyxue/mono_su_as/repository/smp_0_mdrun.sh > {inputdir}/0_mdrun.sh".format(**input_args)
