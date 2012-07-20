@@ -9,7 +9,7 @@ from configobj import ConfigObj
 from argparse_action import get_sctn
 
 # local module level
-from common import tave, parse_cmd, loop_h5_alx, loop_h5_ave
+from util import parse_cmd, loop_h5_alx, loop_h5_ave
 
 def main():
     args = parse_cmd()
@@ -28,7 +28,7 @@ def main():
         raise IOError("{0} cannot found".format(h5filename))
 
     ppty = args.ppty
-    tpostproc = args.tpostproc                               # type of postprocess. i.e. ave
+    tpostproc = args.tpostproc                               # type of postprocess. i.e. ave, alx
 
     tpostproc_kwargs = conf_dict['postprocess'][tpostproc]
 
@@ -38,9 +38,11 @@ def main():
     h5file = tables.openFile(h5filename, 'a', rootUEP=rootUEP)
 
     tpostproc_group_path = os.path.join('/', tpostproc)
-    if h5file.__contains__(tpostproc_group_path): # means first time running tpostproc postprocess for this ppty
+
+    if h5file.__contains__(tpostproc_group_path):
         tpostproc_group = h5file.getNode(h5file.root, tpostproc)
     else:
+        # meaning it's the first time to run tpostproc postprocess for this ppty
         tpostproc_group = h5file.createGroup(h5file.root, tpostproc)
 
     if args.tpostproc in ['ave', 'ave10']:

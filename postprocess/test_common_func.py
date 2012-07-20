@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from common_func import parse_cmd
+from util_func import parse_cmd
 from argparse_action import convert_seq, convert_num
 
 import unittest

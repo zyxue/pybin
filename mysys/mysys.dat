@@ -1,15 +1,15 @@
 # PEPTIDE-SPECIFIC:
 
 # sid seq     col marker hbg scnpg gptg len tex_seq order natom seqitp KDhydropathy
-@ sq1 (GVPGV)7 blue    ^ 63 63 0.4    35 (GVPGV)_7  0 429 sq1.itp   42.0
-@ sq2 (GGVGV)7 green   o 70 49 0.6    35 (GGVGV)_7  3 380 sq2.itp   50.4
-@ sq3 (PGV)12  red     v 60 72 0.3333 36 (PGV)_{12} 1 453 sq3.itp   26.4
-@ sq4 (GVGVA)7 cyan    < 70 49 0.4    35 (GVGVA)_7  4 501 sq4.itp   65.8
-@ sq5 (G)35    black   * 70 35 1      35 (G)_{35}   6 254 sq5.itp  -14.0
-@ sq6 (GV)18   yellow  > 72 54 0.5    36 (GV)_{18}  5 423 sq6.itp   68.4
-@ sq7 (Q)35    magenta p 70 70 000000 35 (Q)_{35}   7 000 sq7.itp -122.5
-@ sq8 (A)35    orange  + 70 35 000000 35 (A)_{35}   8 000 sq8.itp   63.0
-@ sq9 (P)35    grey    8 35 105 000000 35 (P)_{35}   9 000 sq9.itp  -56.0
+@ sq1 (GVPGV)7 blue    ^ 63 63 0.4    35 (GVPGV)$_7$  0 429 sq1.itp   42.0
+@ sq2 (GGVGV)7 green   o 70 49 0.6    35 (GGVGV)$_7$  3 380 sq2.itp   50.4
+@ sq3 (PGV)12  red     v 60 72 0.3333 36 (PGV)$_{12}$ 1 453 sq3.itp   26.4
+@ sq4 (GVGVA)7 cyan    < 70 49 0.4    35 (GVGVA)$_7$  4 501 sq4.itp   65.8
+@ sq5 (G)35    black   * 70 35 1      35 (G)$_{35}$   6 254 sq5.itp  -14.0
+@ sq6 (GV)18   yellow  > 72 54 0.5    36 (GV)$_{18}$  5 423 sq6.itp   68.4
+@ sq7 (Q)35    magenta p 70 70 000000 35 (Q)$_{35}$   7 000 sq7.itp -122.5
+@ sq8 (A)35    orange  + 70 35 000000 35 (A)$_{35}$   8 000 sq8.itp   63.0
+@ sq9 (P)35    grey    8 35 105 000000 35 (P)$_{35}$   9 000 sq9.itp  -56.0
 
 # sid: sequence id
 # seq: sequence

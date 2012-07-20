@@ -7,10 +7,10 @@ import tables
 import numpy as np
 from configobj import ConfigObj
 
-from common_func import get_sctn
+from util_func import get_sctn
 from mysys import read_mysys
 
-from common import tave, parse_cmd
+from util import tave, parse_cmd
 
 # def main():
 #     args = parse_cmd()
