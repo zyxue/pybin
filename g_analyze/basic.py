@@ -15,7 +15,8 @@ def rg(kwargs):
     return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg.xvg'.format(**kwargs)
 
 def rg_whole_length(kwargs):
-    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
+    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b 0 -dt {dt} -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
+    # return "printf 'C-alpha' | g_gyrate -f {orderxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
 
 def rg_backbone(kwargs):
     """
@@ -33,10 +34,11 @@ def rg_c_alpha(kwargs):
 
 def e2ed(kwargs):
     """end to end distance"""
-    return "printf 'N_ter\nC_ter\n' | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
+    # return "printf 'N_ter\nC_ter\n' | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
+    return "printf 'N_ter\nC_ter\n' | myg_dist -f {orderxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
 
 def dssp(kwargs):
-    return 'printf "Protein" | ~/myg_tools/mydo_dssp/mydo_dssp -f {proxtcf} -s {tprf} -b {b} -sc {anadir}/{pf}_dssp.xvg'.format(**kwargs)
+    return 'printf "Protein" | mydo_dssp -f {orderxtcf} -s {tprf} -b {b} -sc {anadir}/{pf}_dssp.xvg'.format(**kwargs)
 
 def dssp_E(kwargs):
     # return 'printf "Protein" | mydo_dssp -f {xtcf} -s {tprf} -sss E -b {b} -sc {anadir}/{pf}_dssp_E.xvg -o {anadir}/{pf}_dssp_E.xpm'.format(**kwargs)

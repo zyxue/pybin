@@ -86,11 +86,13 @@ def trjorder(input_args):
         input_args['inputdir'],
         '_{0}'.format(os.path.basename(input_args['orderxtcf']))
         )
+
+# printf "Protein\nSystem\n" | trjconv  -f {xtcf} -b {b} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
     return """
-printf "Protein\nSystem\n" | trjconv  -f {xtcf}       -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
-printf "Protein\nSolvent\n"| trjorder -f {centerxtcf} -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
-printf "Sys_Ordered\n"     | trjconv  -f {tmporderf}  -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
-printf "Sys_Ordered\n"     | trjconv  -f {orderxtcf}  -s {tprf} -n {ndxf} -dump 0 -o {ordergrof}
+printf "Protein\nSystem\n" | trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
+printf "Protein\nSolvent\n"| trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
+printf "Sys_Ordered\n"     | trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
+printf "Sys_Ordered\n"     | trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
 """.format(**input_args)
 
 def trjconv_center_xtc(input_args):
@@ -120,7 +122,8 @@ def g_select(input_args):
             'repository',
             '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
             )
-    return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    # return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
 
 def symlink_ndx(input_args):
     input_args['repository_ndxf'] = os.path.join(
