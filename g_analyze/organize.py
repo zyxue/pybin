@@ -20,6 +20,7 @@ def trjcat(input_args):
     
     input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
     cmd = 'trjcat -f {fmt_xtcfs} -o {xtcf}'.format(**input_args)
+    print "trjcat is DEPRECATED, pleasee use trjcat_plus instead!!"
     return cmd
 
 def trjcat_plus(input_args):
