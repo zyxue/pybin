@@ -33,7 +33,7 @@ def main():
     # About the property
     ppty = args.ppty
     p_conf = conf_dict['properties'][ppty]         # property configuration
-    obj_property = h5t.Property(ppty)              # including table desc & schema
+    property_obj = h5t.Property(ppty)              # including table desc & schema
 
     try:
         ogd = p_conf['ogd']                    # contains xvg_name and table_name patterns
@@ -52,7 +52,7 @@ def main():
 
     # zx_create_group is redundant and ugly code, I amd looking for a way to
     # overwrite creatGroup in table.file.File 2012-03-16
-    ppty_group = zx_create_group(h5file, '/', ppty, filters=filters, title=obj_property.desc)   # property group
+    ppty_group = zx_create_group(h5file, '/', ppty, filters=filters, title=property_obj.desc)   # property group
     ogd_group = zx_create_group(h5file, ppty_group._v_pathname, 'ogd', filters)
     ogd_path = ogd_group._v_pathname # should == ogd_path = os.path.join('/', ppty, 'ogd')
 
@@ -60,12 +60,12 @@ def main():
     # ugly code!!! aaaaaahhh Should I learn loop? and make it more clear!
     # parsing so many args are really confusing
     loop_xvgs(SEQS, CDTS, TMPS, NUMS,
-              ppty, h5file, obj_property, ogd, ogd_path
+              ppty, h5file, property_obj, ogd, ogd_path
               )
 
 
 def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
-              ppty, h5file, obj_property, ogd, ogd_path):
+              ppty, h5file, property_obj, ogd, ogd_path):
     """
     Under one group which is the name of the property, each xvg file will be
     transformed to a table, dirchy is not implemented, seems useless,
@@ -79,10 +79,20 @@ def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
                     if not os.path.exists(xvgf):
                         print "ATTENTION: {0} doesn't exist! YOU SURELY YOU KNOW THIS, RIGHT?".format(xvgf)
                     else:
-                        objxvg = xvg.Xvg(xvgf)
                         tablename = ogd['tablename_pattern'].format(**locals())
-                        zx_create_table(h5file, ogd_path, tablename, 
-                                        objxvg, obj_property.schema)
+                        tablepath = os.path.join(ogd_path, tablename)
+                        if not h5file.__contains__(tablepath):
+                            # unless the target table does not exist, then process the xvg_obj
+                            xvg_obj = xvg.Xvg(xvgf)
+                            table = h5file.createTable(ogd_path, tablename, property_obj.schema, xvg_obj.desc)
+                            table.append(xvg_obj.data)
+                            print "{0} IS TRANSFORMED to {1}".format(xvg_obj.filename, h5file.filename)
+                        else:
+                            table = h5file.getNode(tablepath)
+                            # table.name is actually the same as tablename,
+                            # using it remove the red line created by pyflake
+                            print "{0} ALREADY EXIST in {1}".format(os.path.join(ogd_path, table.name), h5file.filename)
+
 
 def zx_create_group(h5file, path, name, filters, title=''):
     if isinstance(path, str):
@@ -93,25 +103,20 @@ def zx_create_group(h5file, path, name, filters, title=''):
         g = h5file.getNode(path, name)
     return g
 
-def zx_create_table(h5file, grouppath, tablename, objxvg, property_table):
+def zx_create_table(h5file, grouppath, tablename, xvg_obj, property_table):
+    """This function is deprecated, commented codes are for future reference only"""
+
     # ugly code, reverse should be removed accordly
     # property_cols = property_table.columns.keys()           # get the column names(keys)
     # property_cols.reverse()
-    tablepath = os.path.join(grouppath, tablename)
-    
-    if not h5file.__contains__(tablepath):
-        table = h5file.createTable(grouppath, tablename, property_table, title=objxvg.desc)
-        table.append(objxvg.data)
-        # row = table.row
-        # for row_values in data:
-        #     for k, v in enumerate(property_cols):
-        #         row[v] = row_values[k]
-        #     row.append()
-        # table.flush()
-        print "{0} IS TRANSFORMED".format(objxvg.filename)
-    else:
-        table = h5file.getNode(tablepath)
-    return table
+
+    # row = table.row
+    # for row_values in data:
+    #     for k, v in enumerate(property_cols):
+    #         row[v] = row_values[k]
+    #     row.append()
+    # table.flush()
+    return 
 
 def parse_cmd(cmd=None):
     """parse_cmd"""

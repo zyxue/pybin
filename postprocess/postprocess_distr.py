@@ -7,7 +7,7 @@ import numpy as np
 from configobj import ConfigObj
 
 from mysys import read_mysys
-from common_func import tave, parse_cmd
+from util_func import tave, parse_cmd
 
 # Modulize the code, and plot upup V.S. dssp_E
 

@@ -6,8 +6,11 @@ import numpy as np
 import tables
 
 import argparse_action as aa
-from mysys import read_mysys
+
+from setting import calc_ave_dd, calc_alx_dd
+
 from xvg2h5 import h5tables
+
 
 def parse_cmd(cmd=None):
     parser = aa.my_basic_parser()
@@ -35,31 +38,24 @@ class tave(tables.IsDescription):                           # table of average
 #     pf = tables.StringCol(itemsize=15, pos=0) # like an unique id                     
 #      = tables.Float32Col(pos=1)
 
+def calc_averages(NUMS, pfpattern, h5file, interested_col, denominator, seq, cdt):
+    aves = []                                         # average of each replica
+    for num in NUMS:
+        pf = pfpattern.format(seq=seq, cdt=cdt, num=num)
+        if h5file.root.ogd.__contains__(pf):
+            t = h5file.getNode(h5file.root.ogd, pf)
+            v = t.read(field=interested_col).mean()
+            v_normed = v / denominator
+            # append a tuple
+            aves.append((pf, v_normed.mean(), v_normed.std()))
+        else:
+            print "{0} doesn't exist in ogd, YOU KNOW THAT, RIGHT?".format(pf)
+    return aves
+
 def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwargs):
-    mysys = read_mysys.read()
     for seq in SEQS:
-        dd = {                                 # ppty_name: [denominator, interested_col]
-        'dssp_E': [float(mysys[seq].len), 'structure'],
-        'dssp_H': [float(mysys[seq].len), 'structure'],
-        'dssp_G': [float(mysys[seq].len), 'structure'],
-        'dssp_B': [float(mysys[seq].len), 'structure'],
-        'dssp_C': [float(mysys[seq].len), 'structure'],
-        'dssp_T': [float(mysys[seq].len), 'structure'],
-        'upup'  : [float(mysys[seq].hbg), 'upup' ],
-        'unun'  : [float(mysys[seq].scnpg * 2),'unun'], # g_mindist_excl1 double counts the contact, so divided by 2
-        'upun'  : [1., 'upun'],
-        'upvp'  : [float(mysys[seq].hbg), 'upvp' ],
-        'upvn'  : [float(mysys[seq].hbg), 'upvn' ],
-        'unvp'  : [float(mysys[seq].scnpg), 'unvp' ],
-        'unvn'  : [float(mysys[seq].scnpg), 'unvn' ],
-        'rg_c_alpha': [1., 'rg'],
-        'rg_whole_length': [1., 'rg'],
-        'rg_backbone': [1., 'rg'],
-        'e2ed': [1., 'e2ed'],
-        }
         for cdt in CDTS:
-            dd['upv'] = [float(mysys[seq + cdt].nm_upv), 'upv' ]
-            dd['unv'] = [float(mysys[seq + cdt].nm_unv), 'unv' ]
+            ave_dd = calc_ave_dd(seq, cdt)
 
             tablename = ave_kwargs['tablenamepattern'].format(seq=seq, cdt=cdt)
             if tpostproc_group.__contains__(tablename):
@@ -67,21 +63,10 @@ def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwarg
                 pass
             else:
                 # prepare for creating a new table
-                denominator, interested_col = dd[ppty]
+                denominator, interested_col = ave_dd[ppty]
                 pfpattern = ave_kwargs['pfpattern']
-
-                aves = []
-                for num in NUMS:
-                    pf = pfpattern.format(**locals())
-                    if h5file.root.ogd.__contains__(pf):
-                        t = h5file.getNode(h5file.root.ogd, pf)
-                        v = t.read(field=interested_col).mean()
-                        v_normed = v / denominator
-                        aves.append(
-                            (pf, v_normed.mean(), v_normed.std()) # append a tuple
-                            )
-                    else:
-                        print "{0} doesn't exist in ogd, YOU KNOW THAT, RIGHT?".format(pf)
+                # here useful keys in locals() include seq, cdt, etc.
+                aves = calc_averages(NUMS, pfpattern, h5file, interested_col, denominator, seq=seq, cdt=cdt)
 
                 t = h5file.createTable(
                     tpostproc_group._v_pathname, tablename, tave, title=(
@@ -91,47 +76,16 @@ def loop_h5_ave(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, ave_kwarg
     h5file.close()
 
 def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwargs):
-    mysys = read_mysys.read()
-
     arrayname_pattern = alx_kwargs['arraynamepattern']
 
     for seq in SEQS:
-        dd = {                       # ppty_name: [denominator, x_col, y_col]
-            'rg_c_alpha' : [1, 'time', 'rg_c_alpha'],
-            'dssp_E'     : [float(mysys[seq].len), 'time', 'structure'],
-            'conf_entropy' : [1, 'time', 'entropy'],
-            # 'sequence_spacing' : ['dij', 'ave_d'],
-            # 'rdf_upup': ['radius', 'rdf'],
-            # 'rdf_upun': ['radius', 'rdf'],
-            # 'rdf_unun': ['radius', 'rdf'],
-            # 'rdf_upvp': ['radius', 'rdf'],
-            # 'rdf_upvn': ['radius', 'rdf'],
-            # 'rdf_unvp': ['radius', 'rdf'],
-            # 'rdf_unvn': ['radius', 'rdf'],
-
-            'rdf_un1vn': [1, 'radius', 'rdf'],
-            'rdf_un2vn': [1, 'radius', 'rdf'],
-            'rdf_un3vn': [1, 'radius', 'rdf'],
-            'rdf_un1vp': [1, 'radius', 'rdf'],
-            'rdf_un2vp': [1, 'radius', 'rdf'],
-            'rdf_un3vp': [1, 'radius', 'rdf'],
-
-            'rdf_c1vn': [1, 'radius', 'rdf'],
-            'rdf_c2vn': [1, 'radius', 'rdf'],
-            'rdf_c3vn': [1, 'radius', 'rdf'],
-            'rdf_c1vp': [1, 'radius', 'rdf'],
-            'rdf_c2vp': [1, 'radius', 'rdf'],
-            'rdf_c3vp': [1, 'radius', 'rdf'],
-
-            'rg_whole_length': [1., 'time', 'rg'],
-
-            }
+        alx_dd = calc_alx_dd(seq)
         for cdt in CDTS:
             arrayname = arrayname_pattern.format(seq=seq, cdt=cdt)
             if tpostproc_group.__contains__(arrayname):
                 pass
             else:
-                denominator, xcoln, ycoln = dd[ppty]      # xcol, ycol name, respectively
+                denominator, xcoln, ycoln = alx_dd[ppty]      # xcol, ycol name, respectively
                 # pf is used to identify the tables in ogd
                 pfpattern = alx_kwargs['pfpattern']
 
@@ -187,7 +141,5 @@ def get_minimum_length(tables, xcoln):
                 min_xlen = len(xaxis)
                 xaxis_ref = xaxis
             if set(xaxis[:min_xlen]) != set(xaxis_ref):
-                raise ValueError(
-                    "ref: {0} and {1} have different x axes".format(t_ref, t.name)
-                    )
+                raise ValueError("ref: {0} and {1} have different x axes".format(t_ref, t.name))
     return min_xlen, xaxis_ref
