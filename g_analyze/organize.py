@@ -180,3 +180,11 @@ def trjcat_500ns(input_args):
 
     cmd = 'trjcat -f {xtcf_200ns} {fmt_xtcfs} -o {xtcf}'.format(**input_args)
     return cmd
+
+def autoremove(input_args):
+    to_be_removed = glob.glob(os.path.join(input_args['inputdir'], '*#'))
+    to_be_removed = to_be_removed + glob.glob(os.path.join(input_args['inputdir'], '*.[oe][0-9][0-9][0-9][0-9]*'))
+    if to_be_removed:
+        return "rm -v {0}".format('  '.join(to_be_removed))
+    else:
+        return "echo 'nothing to be removed'"
