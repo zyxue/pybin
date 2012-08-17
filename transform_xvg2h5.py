@@ -10,7 +10,7 @@ import argparse_action as aa
 from xvg2h5 import h5tables as h5t
 from xvg2h5 import xvg
 
-TABLES = h5t.__tables__
+TABLES = h5t.DD.keys()
 
 def main():
     """
@@ -62,7 +62,6 @@ def main():
     loop_xvgs(SEQS, CDTS, TMPS, NUMS,
               ppty, h5file, property_obj, ogd, ogd_path
               )
-
 
 def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
               ppty, h5file, property_obj, ogd, ogd_path):
@@ -123,7 +122,7 @@ def parse_cmd(cmd=None):
 
     parser = aa.my_basic_parser()
 
-    parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
+    parser.add_argument('-a', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(TABLES))
     parser.add_argument('-g', dest='conf', default=".h5.conf",
                         help='specify the configuration file')

@@ -83,6 +83,7 @@ def loop_h5_alx(SEQS, CDTS, TMPS, NUMS, h5file, ppty, tpostproc_group, alx_kwarg
         for cdt in CDTS:
             arrayname = arrayname_pattern.format(seq=seq, cdt=cdt)
             if tpostproc_group.__contains__(arrayname):
+                print "{0} HAS ALREADY EXISTED".format(arrayname)
                 pass
             else:
                 denominator, xcoln, ycoln = alx_dd[ppty]      # xcol, ycol name, respectively
