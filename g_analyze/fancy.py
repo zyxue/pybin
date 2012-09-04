@@ -16,8 +16,8 @@ def seqspacing(kwargs):
     # return "seqspacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -e {e} -l {peptide_length} -o {anadir}/{pf}_seqspacing.xvg".format(**kwargs)
     return "seqspacing.py --pf {pf} -f {orderxtcf} -s {ordergrof} -b {b} -e {e} -l {peptide_length} -o {anadir}/{pf}_seqspacing.xvg".format(**kwargs)
 
-def pi_angles(kwargs):
-    return "calc_pi_angle.py -f {proxtcf} -s {progrof} -b {b} -e {e} -o {anadir}/{pf}_pi_angles.xvg".format(**kwargs)
+def calc_omega(kwargs):
+    return "calc_omega.py -f {orderxtcf} -s {ordergrof} -b {b} -e {e} -o {anadir}/{pf}_omega_angles.xvg".format(**kwargs)
 
 def conf_entropy(kwargs):
     # tmp_dir is for storing the covar_e[0-9].* directories and files in it
