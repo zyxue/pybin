@@ -100,7 +100,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_c3vn':               rdf.rdf_c3vn,
 
     'seqspacing':             fancy.seqspacing,
-    'pi_angles':              fancy.pi_angles,
+    'calc_omega':             fancy.calc_omega,
     'conf_entropy':           fancy.conf_entropy,
 
     }

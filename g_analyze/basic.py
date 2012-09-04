@@ -15,8 +15,8 @@ def rg(kwargs):
     return 'printf "Protein" | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg.xvg'.format(**kwargs)
 
 def rg_whole_length(kwargs):
-    return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b 0 -dt {dt} -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
-    # return "printf 'C-alpha' | g_gyrate -f {orderxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
+    # return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b 0 -dt {dt} -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
+    return "printf 'C-alpha' | g_gyrate -f {orderxtcf} -s {tprf} -b 0 -o {anadir}/{pf}_rg_whole_length.xvg".format(**kwargs)
 
 def rg_backbone(kwargs):
     """
