@@ -26,12 +26,12 @@ def integrate_prob(data):
     return probability
 
 def integrate_trans_prob(data):
-    min_dg, max_dg = 0, 180
-    data = [d for d in data if max_dg >= d[0] > min_dg]
-    return integrate_prob(data)
+    data1 = [d for d in data if -90 >= d[0] > -180]
+    data2 = [d for d in data if 180 >= d[0] > 90]
+    return integrate_prob(data1) + integrate_prob(data2)
 
 def integrate_cis_prob(data):
-    min_dg, max_dg = -180, 0
+    min_dg, max_dg = -90, 90
     data = [d for d in data if max_dg >= d[0] > min_dg]
     return integrate_prob(data)
 

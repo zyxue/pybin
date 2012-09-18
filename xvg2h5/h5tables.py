@@ -53,6 +53,7 @@ class dssp(tables.IsDescription):
     G: 3-10 helix
     I: pi helix
     C: coil
+    S: Bend (ono-hydrogen-bond based assignment)
     """
     time = tables.Float32Col(pos=0)
     structure = tables.UInt32Col(pos=1)
