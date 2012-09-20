@@ -40,6 +40,9 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_make_ndx":             organize.g_make_ndx,
     "g_select":               organize.g_select,
     "symlink_ndx":            organize.symlink_ndx,
+    'symlink_progrof2ordergrof': organize.symlink_progrof2ordergrof,
+    'symlink_proxtcf2xtcf':  organize.symlink_proxtcf2xtcf,
+    'symlink_proxtcf2orderxtcf':  organize.symlink_proxtcf2orderxtcf,
 
     "rename_tpr2old":         organize.rename_tpr2old,
     "generate_500ns_tpr":     organize.generate_500ns_tpr,
