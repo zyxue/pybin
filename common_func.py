@@ -13,6 +13,8 @@ def runit(cmd_logf_generator, numthread, ftest):
     Putting each analyzing codes in a queue to use multiple cores simutaneously.
 
     The code is the same as runit in g_analyze/init2.py 2012-01-27
+
+    Just learned this is called load-balancing! 2012-09-25
     """
     def worker():
         while True:
