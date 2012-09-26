@@ -18,6 +18,9 @@ class e2ed(tables.IsDescription):
     """
     time = tables.Float32Col(pos=0)
     e2ed = tables.Float32Col(pos=1)
+    e2edx = tables.Float32Col(pos=2)
+    e2edy = tables.Float32Col(pos=3)
+    e2edz = tables.Float32Col(pos=4)
 
 class rama(tables.IsDescription):
     """
