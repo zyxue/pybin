@@ -1,15 +1,24 @@
 # PEPTIDE-SPECIFIC:
 
-# sid seq     col marker hbg scnpg gptg len tex_seq order natom seqitp KDhydropathy
-@ sq1 (GVPGV)7 blue    ^ 63 63 0.4    35 (GVPGV)$_7$  0 429 sq1.itp   42.0
-@ sq2 (GGVGV)7 green   o 70 49 0.6    35 (GGVGV)$_7$  3 380 sq2.itp   50.4
-@ sq3 (PGV)12  red     v 60 72 0.3333 36 (PGV)$_{12}$ 1 453 sq3.itp   26.4
-@ sq4 (GVGVA)7 cyan    < 70 49 0.4    35 (GVGVA)$_7$  4 501 sq4.itp   65.8
-@ sq5 (G)35    black   * 70 35 1      35 (G)$_{35}$   6 254 sq5.itp  -14.0
-@ sq6 (GV)18   yellow  > 72 54 0.5    36 (GV)$_{18}$  5 423 sq6.itp   68.4
-@ sq7 (Q)35    magenta p 70 70 000000 35 (Q)$_{35}$   7 000 sq7.itp -122.5
-@ sq8 (A)35    orange  + 70 35 000000 35 (A)$_{35}$   8 000 sq8.itp   63.0
-@ sq9 (P)35    grey    8 35 105 000000 35 (P)$_{35}$   9 000 sq9.itp  -56.0
+# sid seq     col marker hbg scnpg gptg len tex_seq order natom seqitp KDhydropathy nPro
+@ sq1  (GVPGV)7 blue    ^ 63 63  0.4    35 (GVPGV)$_7$   0  429 sq1.itp    42.0	    7
+@ sq2  (GGVGV)7 green   o 70 49  0.6    35 (GGVGV)$_7$   3  380 sq2.itp    50.4	    0
+@ sq3  (PGV)12  red     v 60 72  0.3333 36 (PGV)$_{12}$  1  453 sq3.itp    26.4	    12
+@ sq4  (GVGVA)7 cyan    < 70 49  0.4    35 (GVGVA)$_7$   4  501 sq4.itp    65.8	    0
+@ sq5  (G)35    black   * 70 35  1      35 (G)$_{35}$    6  254 sq5.itp   -14.0	    0
+@ sq6  (GV)18   yellow  > 72 54  0.5    36 (GV)$_{18}$   5  423 sq6.itp    68.4	    0
+@ sq7  (Q)35    magenta p 70 70  000000 35 (Q)$_{35}$    7  000 sq7.itp  -122.5	    0
+@ sq8  (A)35    orange  + 70 35  000000 35 (A)$_{35}$    8  000 sq8.itp    63.0	    0
+@ sq9  (P)35    grey    8 35 105 000000 35 (P)$_{35}$    18 000 sq9.itp   -56.0	    35
+
+@ sq11 (gp)18	#79BEDB	8 99  99 000000	36 (GP)$_{18}$	 13 000 sq11.itp  00	    18
+@ sq12 (ggp)12	#593E1A	8 99  99 000000	36 (GGP)$_{12}$	 12 000 sq12.itp  00	    12
+@ sq13 (gggp)9	#6B78B4	8 99  99 000000	36 (GGGP)$_{9}$	 11 000 sq13.itp  00	    9
+@ sq14 (ggggp)7	#266A2E	8 99  99 000000	35 (GGGGP)$_{7}$ 10 000 sq14.itp  00	    7
+@ sq15 (pg)18	#CC8752	8 99  99 000000	36 (PG)$_{18}$	 14 000 sq15.itp  00	    18
+@ sq16 (ppg)12	#CCCC00	8 99  99 000000	36 (PPG)$_{12}$	 15 000 sq16.itp  00	    24
+@ sq17 (pppg)9	#E5DBCF	8 99  99 000000	36 (PPPG)$_{9}$	 16 000 sq17.itp  00	    27
+@ sq18 (ppppg)7	#0F3B5F	8 99  99 000000	35 (PPPPG)$_{7}$ 17 000 sq18.itp  00	    28
 
 # sid: sequence id
 # seq: sequence

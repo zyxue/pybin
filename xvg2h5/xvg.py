@@ -23,6 +23,8 @@ def parse_xvg(xvgf, col=None):
                 if col:
                     # added col before the number of results for some property
                     # like do_dssp_E varies for different trajectories, headache!
+                    # This problem has been solved by processing the xvg file first 2010-10-05
+                    # but this line is left here for future potential usage
                     data.append(tuple(split_line[:col])) # tuple() necessary for table.append
                 else:
                     data.append(tuple(split_line))
@@ -33,10 +35,7 @@ def parse_xvg(xvgf, col=None):
 class Xvg(object):
     def __init__(self, xvgf):
         self.filename = xvgf
-        if 'dssp' in xvgf:
-            desc, data = parse_xvg(xvgf, col=2)
-        else:
-            desc, data = parse_xvg(xvgf)
+        desc, data = parse_xvg(xvgf)
         self.desc = desc
         self.data = data
 

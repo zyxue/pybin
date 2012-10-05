@@ -72,22 +72,38 @@ if __name__ == "__main__":
     #         }
     #     )
     
+    # seq_dd.update(
+    #     {
+    #         "sq11_gp18":   "GP" * 18,
+    #         "sq12_ggp12":  "GGP" * 12,
+    #         "sq13_gggp9":  "GGGP" * 9,
+    #         "sq14_ggggp7": "GGGGP" * 7,
+
+    #         "sq15_pg18":   "PG" * 18,
+    #         "sq16_ppg12":  "PPG"* 12,
+    #         "sq17_pppg9":  "PPPG" * 9,
+    #         "sq18_ppppg7": "PPPPG" * 7,
+    #         }
+    #     )
+
     seq_dd.update(
         {
-            "sq11_gp18":   "GP" * 18,
-            "sq12_ggp12":  "GGP" * 12,
-            "sq13_gggp9":  "GGGP" * 9,
-            "sq14_ggggp7": "GGGGP" * 7,
+            "sq21_vp18":   "VP" * 18,
+            "sq22_vvp12":  "VVP" * 12,
+            "sq23_vvvp9":  "VVVP" * 9,
+            "sq24_vvvvp7": "VVVVP" * 7,
 
-            "sq15_pg18":   "PG" * 18,
-            "sq16_ppg12":  "PPG"* 12,
-            "sq17_pppg9":  "PPPG" * 9,
-            "sq18_ppppg7": "PPPPG" * 7,
+            "sq25_pv18":   "PV" * 18,
+            "sq26_ppv12":  "PPV"* 12,
+            "sq27_pppv9":  "PPPV" * 9,
+            "sq28_ppppv7": "PPPPV" * 7,
             }
         )
-    
+
     outputfile = "___create_peptide.pml"
     with open(outputfile, 'w') as opf:
         for seq in sorted(seq_dd.keys()):
             pdb_outputfile = os.path.join("/home/zyxue/labwork/lala/", seq + '.pdb')
+            # if not os.path.exists(pdb_outputfile):
+            #     raise IOError("{0} doesn't exist".format(pdb_outputfile))
             construct_cmd_for_peptide_creation(seq_dd[seq], pdb_outputfile, opf)

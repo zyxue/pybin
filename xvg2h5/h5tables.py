@@ -42,6 +42,14 @@ class rg(tables.IsDescription):
     rg_y = tables.Float32Col(pos=3)
     rg_z = tables.Float32Col(pos=4)
 
+class omega(tables.IsDescription):
+    """
+    percentage of: cis trans peptide bonds
+    """
+    time = tables.Float32Col(pos=0)
+    trans_x_pro = tables.Float32Col(pos=1)
+    trans_non_x_pro = tables.Float32Col(pos=1)
+
 class dssp(tables.IsDescription):
     """
     # This table must be redesigned and do_dssp program modified if you want to
