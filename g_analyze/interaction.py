@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 """
 
 This file includes files that are relevant to analyzing different types of
@@ -41,6 +42,9 @@ def unun(kwargs):
 
 ####################UVI####################
 def upvp(kwargs):
+    # the following two lines are for temporary use
+    # kwargs['tprf'] = os.path.join(os.path.dirname(kwargs['tprf']), kwargs['pf'] + "_md_hbond.tpr")
+    # return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
     return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
 
     # if kwargs.has_key('hb_tprf'):
@@ -50,7 +54,8 @@ def upvp(kwargs):
 def upvn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'pwd'
-    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    # return 'printf "UP\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {xtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvp(kwargs):
     return 'printf "UN\nVP\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_unvp.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)

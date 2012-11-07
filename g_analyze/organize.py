@@ -102,8 +102,8 @@ def trjconv_center_xtc(input_args):
     # -center -pbc atom  : doesn't correct pbc, not useful
     # -center -pbc mol -ur compact: solvent are ordered closest to the protein
     # -center -pbc mol -ur tric: most suitable in this case
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
-    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
+    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
 
 def trjconv_center_gro(input_args):          # used to extract the last frame
     return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b}  -dump 0 -o {grof}".format(**input_args)
@@ -209,4 +209,18 @@ def symlink_proxtcf2orderxtcf(input_args):
         input_args['proxtcf']
         )
     return "ln -s -f -v {proxtcf_with_absolute_path} {orderxtcf} #USE IT WITH CARE".format(**input_args)
+
+def symlink_grof2ordergrof(input_args):
+    input_args['grof_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['grof']
+        )
+    return "ln -s -f -v {grof_with_absolute_path} {ordergrof} #USE IT WITH CARE".format(**input_args)
+
+def symlink_xtcf2orderxtcf(input_args):
+    input_args['xtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['xtcf']
+        )
+    return "ln -s -f -v {xtcf_with_absolute_path} {orderxtcf} #USE IT WITH CARE".format(**input_args)
 
