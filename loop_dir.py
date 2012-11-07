@@ -107,10 +107,10 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                 )
 
         if toa == 'g_select':
-            input_args['g_select_select'] = ('"' +
+            input_args['g_select_select'] = ("'" +
                                              CONFIG_DICT['g_select']["seq"] +
                                              CONFIG_DICT['g_select'][ cdt ] +
-                                             '"')
+                                             "'")
 
         # particular to sequence_spacing, maybe later toa need also to be
         # checked for other analysis, as well.
@@ -124,6 +124,15 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
             from mysys import read_mysys
             mysys = read_mysys.read()
             input_args['NA'] = mysys[cdt].natom # when analyzing ff_comparison
+
+        input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.0.5/exec/bin/")
+        if cdt in ['h', 'f']:                                    # Heptanol
+            input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.5.5/exec/bin/")
+
+        # if cdt in ['h', 'f']:                                    # Heptanol
+        #     os.environ['PATH'] = (os.path.join(os.environ['HOME'], 
+        #                                        "exec/gromacs-4.5.5/exec/bin/")
+        #                           + os.environ['PATH'])
 
         input_args['pwd'] = os.getenv('PWD')
         input_args['b'] = btime                             # beginning time
