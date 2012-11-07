@@ -61,6 +61,8 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                     pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     if os.path.exists(inputdir):
                         yield inputdir, pf, seq, cdt, tmp, num
+                    else:
+                        print "{0} doesn't exist".format(inputdir)
 
 def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                    ftest, fcdb, toa, btime, etime, dt, CONFIG_DICT):

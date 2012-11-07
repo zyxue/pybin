@@ -188,3 +188,25 @@ def autoremove(input_args):
         return "rm -v {0}".format('  '.join(to_be_removed))
     else:
         return "echo 'nothing to be removed in {0}'".format(input_args['inputdir'])
+
+
+def symlink_progrof2ordergrof(input_args):
+    input_args['progrof_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['progrof']
+        )
+    return "ln -s -f -v {progrof_with_absolute_path} {ordergrof} #USE IT WITH CARE".format(**input_args)
+
+def symlink_proxtcf2xtcf(input_args):
+    input_args['proxtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['proxtcf']
+        )
+    return "ln -s -f -v {proxtcf_with_absolute_path} {xtcf} #USE IT WITH CARE".format(**input_args)
+
+def symlink_proxtcf2orderxtcf(input_args):
+    input_args['proxtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['proxtcf']
+        )
+    return "ln -s -f -v {proxtcf_with_absolute_path} {orderxtcf} #USE IT WITH CARE".format(**input_args)
