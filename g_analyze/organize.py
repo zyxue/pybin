@@ -90,10 +90,10 @@ def trjorder(input_args):
 
 # printf "Protein\nSystem\n" | trjconv  -f {xtcf} -b {b} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
     return """
-printf "Protein\nSystem\n" | trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
-printf "Protein\nSolvent\n"| trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
-printf "Sys_Ordered\n"     | trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
-printf "Sys_Ordered\n"     | trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
+printf "Protein\nSystem\n" | {bin}/trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
+printf "Protein\nSolvent\n"| {bin}/trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
+printf "Sys_Ordered\n"     | {bin}/trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
+printf "Sys_Ordered\n"     | {bin}/trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
 """.format(**input_args)
 
 def trjconv_center_xtc(input_args):
@@ -106,7 +106,7 @@ def trjconv_center_xtc(input_args):
     # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
 
 def trjconv_center_gro(input_args):          # used to extract the last frame
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b}  -dump 0 -o {grof}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | {bin}/trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -ur tric -dump 0 -o {grof}".format(**input_args)
 
 def trjconv_pro_xtc(input_args):
     return "printf 'Protein\nProtein\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -o {proxtcf}".format(**input_args)
@@ -123,8 +123,8 @@ def g_select(input_args):
             'repository',
             '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
             )
-    # return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
-    return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    # return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    return "g_select -f {grof} -s {grof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
 
 def symlink_ndx(input_args):
     input_args['repository_ndxf'] = os.path.join(
@@ -187,4 +187,4 @@ def autoremove(input_args):
     if to_be_removed:
         return "rm -v {0}".format('  '.join(to_be_removed))
     else:
-        return "echo 'nothing to be removed'"
+        return "echo 'nothing to be removed in {0}'".format(input_args['inputdir'])
