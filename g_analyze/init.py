@@ -25,32 +25,39 @@ import rdf
 # AVAILABLE_ANALYSIS = organize.__all__ + basic.__all__ + interaction.__all__ + rdf.__all__
 
 ANALYSIS_METHODS = {                                    # this dict will keep increasing
-    'check_inputdirs':       organize.check_inputdirs,
+    'check_inputdirs':        organize.check_inputdirs,
     'xtc2part0001':           organize.xtc2part0001,
     'edr2part0001':           organize.edr2part0001,
-    'part00012md':           organize.part00012md,
-    "trjcat":                organize.trjcat,
-    "trjcat_plus":           organize.trjcat_plus,
-    "eneconv":               organize.eneconv,
-    "trjorder":              organize.trjorder,
-    "trjconv_center_xtc":    organize.trjconv_center_xtc,
-    "trjconv_center_gro":    organize.trjconv_center_gro,
-    "trjconv_pro_xtc":       organize.trjconv_pro_xtc,
-    "trjconv_pro_gro":       organize.trjconv_pro_gro,
-    "g_make_ndx":            organize.g_make_ndx,
-    "g_select":              organize.g_select,
-    "symlink_ndx":           organize.symlink_ndx,
-    
-    "rename_tpr2old":        organize.rename_tpr2old,
-    "generate_500ns_tpr":    organize.generate_500ns_tpr,
-    "sed_0_mdrun_sh":        organize.sed_0_mdrun_sh,
+    'part00012md':            organize.part00012md,
+    "trjcat":                 organize.trjcat,
+    "trjcat_plus":            organize.trjcat_plus,
+    "eneconv":                organize.eneconv,
+    "trjorder":               organize.trjorder,
+    "trjconv_center_xtc":     organize.trjconv_center_xtc,
+    "trjconv_center_gro":     organize.trjconv_center_gro,
+    "trjconv_pro_xtc":        organize.trjconv_pro_xtc,
+    "trjconv_pro_gro":        organize.trjconv_pro_gro,
+    "g_make_ndx":             organize.g_make_ndx,
+    "g_select":               organize.g_select,
+    "symlink_ndx":            organize.symlink_ndx,
+    'symlink_progrof2ordergrof': organize.symlink_progrof2ordergrof,
+    'symlink_proxtcf2xtcf':  organize.symlink_proxtcf2xtcf,
+    'symlink_proxtcf2orderxtcf':  organize.symlink_proxtcf2orderxtcf,
+    'symlink_grof2ordergrof':  organize.symlink_grof2ordergrof,
+    'symlink_xtcf2orderxtcf':  organize.symlink_xtcf2orderxtcf,
 
-    'rename_xtcf_200ns':     organize.rename_xtcf_200ns,
-    "trjcat_500ns":          organize.trjcat_500ns,
+    "rename_tpr2old":         organize.rename_tpr2old,
+    "generate_500ns_tpr":     organize.generate_500ns_tpr,
+    "sed_0_mdrun_sh":         organize.sed_0_mdrun_sh,
+
+    'rename_xtcf_200ns':      organize.rename_xtcf_200ns,
+    "trjcat_500ns":           organize.trjcat_500ns,
 
     "copy_0_mdrun_sh":        organize.copy_0_mdrun_sh,
     "copy_0_mdrun_py":        organize.copy_0_mdrun_py,
     "qsub_0_mdrun_py":        organize.qsub_0_mdrun_py,
+
+    "autoremove":             organize.autoremove,
 
     "g_energy":               basic.g_energy,
     'rg':                     basic.rg,
@@ -97,8 +104,8 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_c2vn':               rdf.rdf_c2vn,
     'rdf_c3vn':               rdf.rdf_c3vn,
 
-    'sequence_spacing':       fancy.sequence_spacing,
-    'pi_angles':              fancy.pi_angles,
+    'seqspacing':             fancy.seqspacing,
+    'calc_omega':             fancy.calc_omega,
     'conf_entropy':           fancy.conf_entropy,
 
     }
