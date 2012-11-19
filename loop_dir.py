@@ -61,6 +61,8 @@ def dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict):
                     pf = dirchy_dict['prefix'].format(seq=seq, tmp=tmp, cdt=cdt, num=num)
                     if os.path.exists(inputdir):
                         yield inputdir, pf, seq, cdt, tmp, num
+                    else:
+                        print "{0} doesn't exist".format(inputdir)
 
 def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                    ftest, fcdb, toa, btime, etime, dt, CONFIG_DICT):
@@ -105,10 +107,10 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
                 )
 
         if toa == 'g_select':
-            input_args['g_select_select'] = ('"' +
+            input_args['g_select_select'] = ("'" +
                                              CONFIG_DICT['g_select']["seq"] +
                                              CONFIG_DICT['g_select'][ cdt ] +
-                                             '"')
+                                             "'")
 
         # particular to sequence_spacing, maybe later toa need also to be
         # checked for other analysis, as well.
@@ -122,6 +124,15 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
             from mysys import read_mysys
             mysys = read_mysys.read()
             input_args['NA'] = mysys[cdt].natom # when analyzing ff_comparison
+
+        input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.0.5/exec/bin/")
+        if cdt in ['h', 'f']:                                    # Heptanol
+            input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.5.5/exec/bin/")
+
+        # if cdt in ['h', 'f']:                                    # Heptanol
+        #     os.environ['PATH'] = (os.path.join(os.environ['HOME'], 
+        #                                        "exec/gromacs-4.5.5/exec/bin/")
+        #                           + os.environ['PATH'])
 
         input_args['pwd'] = os.getenv('PWD')
         input_args['b'] = btime                             # beginning time
@@ -144,7 +155,7 @@ def main():
     config_dict = ConfigObj(config_file)
 
     SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, config_dict['system'])
-
+    
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
 
@@ -187,6 +198,11 @@ def main():
     separator =  "#" * 79
     print separator
     dd = args.__dict__
+    # update variables that are read from the config file
+    dd['SEQS'] = SEQS
+    dd['CDTS'] = CDTS
+    dd['TMPS'] = TMPS
+    dd['NUMS'] = NUMS
     for k in sorted(dd):
         print "{0:>20s}:{1}".format(k, dd[k])
     print separator

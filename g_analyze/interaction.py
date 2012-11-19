@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 """
 
 This file includes files that are relevant to analyzing different types of
@@ -20,7 +21,8 @@ CONTAIN THE __NAME__ OF THE FUNCTION"""
 
 ####################UUI####################
 def upup(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default criteria in gromacs 4.0.7
-    return 'printf "Protein_no_end\nProtein_no_end\n" | g_hbond -f {proxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upup.xvg'.format(**kwargs)
+    # return 'printf "Protein_no_end\nProtein_no_end\n" | g_hbond -f {proxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upup.xvg'.format(**kwargs)
+    return 'printf "Protein_no_end\nProtein_no_end\n" | g_hbond -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upup.xvg'.format(**kwargs)
 
 def upup60(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default criteria in gromacs 4.0.7
     return 'printf "1\n1" | myg_hbond -f {xtcf} -s {tprf} -b {b} -r 3.5 -a 60 -nonitacc \
@@ -35,12 +37,15 @@ def upup60(kwargs): # dDA < 3.5nm & angle ADH<30 degree, which is the default cr
 #     return uu_nonhb_template.format(**kwargs)
 
 def unun(kwargs):
-    return 'printf "UN3\nUN3\n" | g_mindist_excl1 -f {proxtcf} -s {progrof} -n {ndxf} -b {b}  -e {e} -d 0.55 -on {anadir}/{pf}_unun.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
-    # return 'unun.py -f {proxtcf} -s {progrof} -b {b} -c 0.55 -o {anadir}/{pf}_unun.xvg'.format(**kwargs)
+    # return 'printf "UN3\nUN3\n" | g_mindist_excl1 -f {proxtcf} -s {progrof} -n {ndxf} -b {b}  -e {e} -d 0.55 -on {anadir}/{pf}_unun.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UN\nUN\n" | g_mindist_excl1 -f {orderxtcf} -s {progrof} -n {ndxf} -b {b} -d 0.55 -on {anadir}/{pf}_unun.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 ####################UVI####################
 def upvp(kwargs):
-    return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
+    # the following two lines are for temporary use
+    # kwargs['tprf'] = os.path.join(os.path.dirname(kwargs['tprf']), kwargs['pf'] + "_md_hbond.tpr")
+    # return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
+    return 'printf "Protein_no_end\nSolvent\n" | g_hbond -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -r 0.35 -nonitacc -num {anadir}/{pf}_upvp.xvg'.format(**kwargs)
 
     # if kwargs.has_key('hb_tprf'):
     #     kwargs['tprf'] = kwargs['hb_tprf']
@@ -49,16 +54,17 @@ def upvp(kwargs):
 def upvn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'pwd'
-    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    # return 'printf "UP\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {xtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvp(kwargs):
-    return 'printf "UN\nVP\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.45 -on {anadir}/{pf}_unvp.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UN\nVP\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_unvp.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'pwd'
     # TESTED, in the "uv" case, g_mindist_excl1 and g_mindist produce the same result
-    return 'printf "UN\nVN\n" | g_mindist_excl1 -f {centerxtcf} -s {tprf} -n {ndxf} -b {b} -e {e} -d 0.55 -on {anadir}/{pf}_unvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UN\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.55 -on {anadir}/{pf}_unvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 ####################VVI####################
 def vpvp(kwargs):
