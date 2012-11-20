@@ -34,6 +34,11 @@ def calc_ave_dd(seq, cdt):
                 'upvn'  : [float(MYSYS[seq].hbg), 'upvn' ],
                 'unvp'  : [float(MYSYS[seq].scnpg), 'unvp' ],
                 'unvn'  : [float(MYSYS[seq].scnpg), 'unvn' ],
+
+                'cis_x_pro'  : [1, 'cis_x_pro' ],
+                'cis_non_x_pro'  : [1, 'cis_non_x_pro' ],
+                'trans_x_pro'  : [1, 'trans_x_pro' ],
+                'trans_non_x_pro'  : [1, 'trans_non_x_pro' ],
                 }
             )
         

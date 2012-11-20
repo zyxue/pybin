@@ -6,9 +6,7 @@ import numpy as np
 import tables
 
 import argparse_action as aa
-
 from setting import calc_ave_dd, calc_alx_dd
-
 from xvg2h5 import h5tables
 
 
@@ -142,5 +140,5 @@ def get_minimum_length(tables, xcoln):
                 min_xlen = len(xaxis)
                 xaxis_ref = xaxis
             if set(xaxis[:min_xlen]) != set(xaxis_ref):
-                raise ValueError("ref: {0} and {1} have different x axes".format(t_ref, t.name))
+                raise ValueError("ref: {0} and {1} have different x axes".format(t_ref, table.name))
     return min_xlen, xaxis_ref

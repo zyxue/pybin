@@ -42,13 +42,15 @@ class rg(tables.IsDescription):
     rg_y = tables.Float32Col(pos=3)
     rg_z = tables.Float32Col(pos=4)
 
-class omega(tables.IsDescription):
+class omega_percent(tables.IsDescription):
     """
     percentage of: cis trans peptide bonds
     """
-    time = tables.Float32Col(pos=0)
+    replica_id  = tables.StringCol(itemsize=10, pos=0)
     trans_x_pro = tables.Float32Col(pos=1)
-    trans_non_x_pro = tables.Float32Col(pos=1)
+    cis_x_pro = tables.Float32Col(pos=2)
+    trans_y_x = tables.Float32Col(pos=3)
+    cis_y_x = tables.Float32Col(pos=4)
 
 class dssp(tables.IsDescription):
     """
@@ -168,6 +170,7 @@ DD = {
     'rg_whole_length': (rg, "along the whole length of trjectory, usually used to determine the cutoff for collecting data"),
     'seqspacing': (seqspacing, 'sequence_spacing'),
     'pmf_e2ed': (pmf, 'potential_of_mean_force'),
+    'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
     
     'dssp_E': (dssp, 'dssp_E (b-sheet)'),
     'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
