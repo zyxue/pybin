@@ -54,8 +54,7 @@ def upvp(kwargs):
 def upvn(kwargs):
     if kwargs['cdt'] == 'w':
         return 'pwd'
-    # return 'printf "UP\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
-    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {xtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
+    return 'printf "UP\nVN\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_upvn.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
 
 def unvp(kwargs):
     return 'printf "UN\nVP\n" | g_mindist_excl1 -f {orderxtcf} -s {tprf} -n {ndxf} -b {b} -d 0.45 -on {anadir}/{pf}_unvp.xvg -od {anadir}/{pf}_mindist.xvg'.format(**kwargs)
