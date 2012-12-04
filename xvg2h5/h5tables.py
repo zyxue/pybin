@@ -11,14 +11,6 @@ than modify the h5.conf in the directory you are working on
 
 import tables
 
-__tables__ = ['e2ed', 'rg_c_alpha', 'sequence_spacing', 
-              'dssp_E', 'dssp_H', 'dssp_G', 'dssp_B', 'dssp_C', 'dssp_T',
-              'upup', 'upun', 'unun', 'upvp', 'upvn', 'unvn', 'unvp',
-              'upv', 'unv',
-              'rdf_upup', 'rdf_upun', 'rdf_unun',
-              'rdf_upvp', 'rdf_upvn', 'rdf_unvp', 'rdf_unvn',
-              'rama']
-
 class e2ed(tables.IsDescription):
     """
     end-to-end distance data along the time trjectory
