@@ -18,6 +18,9 @@ class e2ed(tables.IsDescription):
     """
     time = tables.Float32Col(pos=0)
     e2ed = tables.Float32Col(pos=1)
+    e2edx = tables.Float32Col(pos=2)
+    e2edy = tables.Float32Col(pos=3)
+    e2edz = tables.Float32Col(pos=4)
 
 class rama(tables.IsDescription):
     """
@@ -39,6 +42,16 @@ class rg(tables.IsDescription):
     rg_y = tables.Float32Col(pos=3)
     rg_z = tables.Float32Col(pos=4)
 
+class omega_percent(tables.IsDescription):
+    """
+    percentage of: cis trans peptide bonds
+    """
+    replica_id  = tables.StringCol(itemsize=10, pos=0)
+    trans_x_pro = tables.Float32Col(pos=1)
+    cis_x_pro = tables.Float32Col(pos=2)
+    trans_y_x = tables.Float32Col(pos=3)
+    cis_y_x = tables.Float32Col(pos=4)
+
 class dssp(tables.IsDescription):
     """
     # This table must be redesigned and do_dssp program modified if you want to
@@ -53,6 +66,7 @@ class dssp(tables.IsDescription):
     G: 3-10 helix
     I: pi helix
     C: coil
+    S: Bend (ono-hydrogen-bond based assignment)
     """
     time = tables.Float32Col(pos=0)
     structure = tables.UInt32Col(pos=1)
@@ -61,7 +75,7 @@ class dssp(tables.IsDescription):
     # b-sheet = tables.Float32Col(pos=3)
     # rg_z = tables.Float32Col(pos=4)
 
-class sequence_spacing(tables.IsDescription):
+class seqspacing(tables.IsDescription):
     """
     sequence_spacing
     """
@@ -69,6 +83,11 @@ class sequence_spacing(tables.IsDescription):
     ave_d = tables.Float32Col(pos=1)
     std_d = tables.Float32Col(pos=2)
     num_data_points = tables.UInt32Col(pos=3)
+
+class pmf(tables.IsDescription):
+    """potential of mean force"""
+    x = tables.Float32Col(pos=0)
+    pmf = tables.Float32Col(pos=1)
 
 class entropy(tables.IsDescription):
     time = tables.Float32Col(pos=0)
@@ -143,61 +162,69 @@ class rdf(tables.IsDescription):
     radius = tables.Float32Col(pos=0)
     rdf = tables.Float32Col(pos=1)
 
+
+DD = {
+    'e2ed' : (e2ed, "end-to-end distance data along the time trjectory"),
+    'rg_c_alpha': (rg, "Radius of gyration of C alpha along the time trjectory"),
+    'rg_backbone': (rg, "Radius of gyration of C alpha along the time trjectory"),
+    'rg_whole_length': (rg, "along the whole length of trjectory, usually used to determine the cutoff for collecting data"),
+    'seqspacing': (seqspacing, 'sequence_spacing'),
+    'pmf_e2ed': (pmf, 'potential_of_mean_force'),
+    'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
+    
+    'dssp_E': (dssp, 'dssp_E (b-sheet)'),
+    'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
+    'dssp_T': (dssp, 'dssp_T (hydrogen bonded turn)'),
+    'dssp_G': (dssp, 'dssp_G (3-helix)'),
+    'dssp_I': (dssp, 'dssp_I (5-helix)'),
+    'dssp_B': (dssp, 'dssp_B (residue in isolated beta-bridge)'),
+    'dssp_C': (dssp, 'dssp_C (coil)'),
+    'dssp_S': (dssp, 'dssp_S (Bend)'),
+    'dssp_X': (dssp, 'dssp_X (Bend)'),
+
+    'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
+    'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
+    'upun': (upun, 'upun along the time trajectory'),
+    'unun': (unun, 'unun along the time trajectory'),
+    'upvp': (upvp, 'upvp (i.e. intermolecular hbond) along the time trajectory'),
+    'upvn': (upvn, 'upvn along the time trajectory'),
+    'unvn': (unvn, 'unvn along the time trajectory'),
+    'unvp': (unvp, 'unvp along the time trajectory'),
+    
+    'upv':  (upv, 'upv along the time trajectory'),
+    'unv':  (unv, 'unv along the time trajectory'),
+    
+    'rdf_upup': (rdf, 'rdf along the time trajectory'),
+    'rdf_upun': (rdf, 'rdf along the time trajectory'),
+    'rdf_unun': (rdf, 'rdf along the time trajectory'),
+    'rdf_upvp': (rdf, 'rdf along the time trajectory'),
+    'rdf_upvn': (rdf, 'rdf along the time trajectory'),
+    'rdf_unvp': (rdf, 'rdf along the time trajectory'),
+    'rdf_unvn': (rdf, 'rdf along the time trajectory'),
+    
+    'rdf_un1vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_un2vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_un3vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_un1vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
+    
+    'rdf_c1vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_c2vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_c3vn': (rdf, 'rdf along the time trajectory'),
+    'rdf_c1vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_c2vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_c3vp': (rdf, 'rdf along the time trajectory'),
+    
+    'conf_entropy': (entropy, 'entropy with increasing sampling'),
+    
+    }
+
 class Property(object):
     def __init__(self, property_name):
         """values of d contain two parts: the table class & its description"""
-        d = {
-            'e2ed' : (e2ed, "end-to-end distance data along the time trjectory"),
-            'rg_c_alpha': (rg, "Radius of gyration of C alpha along the time trjectory"),
-            'rg_backbone': (rg, "Radius of gyration of C alpha along the time trjectory"),
-            'rg_whole_length': (rg, "along the whole length of trjectory, usually used to determine the cutoff for collecting data"),
-            'sequence_spacing': (sequence_spacing, 'sequence_spacing'),
-            'dssp_E': (dssp, 'dssp_E (b-sheet)'),
-            'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
-            'dssp_G': (dssp, 'dssp_G (3-helix)'),
-            'dssp_B': (dssp, 'dssp_B (residue in isolated beta-bridge)'),
-            'dssp_C': (dssp, 'dssp_C (coil)'),
-            'dssp_T': (dssp, 'dssp_T (hydrogen bonded turn)'),
-
-            'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
-            'upup': (upup, 'upup (i.e. intramolecular hbond) along the time trajectory'),
-            'upun': (upun, 'upun along the time trajectory'),
-            'unun': (unun, 'unun along the time trajectory'),
-            'upvp': (upvp, 'upvp (i.e. intermolecular hbond) along the time trajectory'),
-            'upvn': (upvn, 'upvn along the time trajectory'),
-            'unvn': (unvn, 'unvn along the time trajectory'),
-            'unvp': (unvp, 'unvp along the time trajectory'),
-
-            'upv':  (upv, 'upv along the time trajectory'),
-            'unv':  (unv, 'unv along the time trajectory'),
-
-            'rdf_upup': (rdf, 'rdf along the time trajectory'),
-            'rdf_upun': (rdf, 'rdf along the time trajectory'),
-            'rdf_unun': (rdf, 'rdf along the time trajectory'),
-            'rdf_upvp': (rdf, 'rdf along the time trajectory'),
-            'rdf_upvn': (rdf, 'rdf along the time trajectory'),
-            'rdf_unvp': (rdf, 'rdf along the time trajectory'),
-            'rdf_unvn': (rdf, 'rdf along the time trajectory'),
-
-            'rdf_un1vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_un2vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_un3vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_un1vp': (rdf, 'rdf along the time trajectory'),
-            'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
-            'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
-
-            'rdf_c1vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_c2vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_c3vn': (rdf, 'rdf along the time trajectory'),
-            'rdf_c1vp': (rdf, 'rdf along the time trajectory'),
-            'rdf_c2vp': (rdf, 'rdf along the time trajectory'),
-            'rdf_c3vp': (rdf, 'rdf along the time trajectory'),
-
-            'conf_entropy': (entropy, 'entropy with increasing sampling'),
-
-            }
-        self.desc = d[property_name][1]
-        self.schema = d[property_name][0]
+        self.desc = DD[property_name][1]
+        self.schema = DD[property_name][0]
 
 if __name__ == "__main__":
     a = e2ed

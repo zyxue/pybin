@@ -77,7 +77,7 @@ def eneconv(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].edr'.format(**input_args)
     edrfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
     input_args.update(dict(fmt_edrfs=' '.join(edrfs)))
-    cmd = 'eneconv -f {fmt_edrfs} -o {edrf}'.format(**input_args)
+    cmd = 'eneconv -f {fmt_edrfs} -dt 10 -o {edrf}'.format(**input_args)
     return cmd
 
 # -ur will be delt later, be customized in .g_ana.conf
