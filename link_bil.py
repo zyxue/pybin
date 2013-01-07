@@ -2,9 +2,18 @@
 
 import os
 import sys
+import argparse
 
 home = os.getenv('HOME')
-def link(path):
+
+def link_or_unlink(relf, f, funlink=False):
+    if funlink:
+        os.unlink(f)
+    else:
+        print relf
+        os.symlink(relf, f)
+
+def link(path, funlink=False):
     # path: e.g. xx/yy/pkg/include, pkg/include
     path = os.path.abspath(path)
     bn = os.path.basename(path)                             # bn: basename
@@ -14,8 +23,7 @@ def link(path):
         for f in os.listdir(path):
             if f.endswith('.h'):
                 relf = os.path.relpath(os.path.join(path, f))
-                print relf
-                os.symlink(relf, f)
+                link_or_unlink(relf, f, funlink)
         os.chdir(home)
 
     elif bn == 'lib':
@@ -24,8 +32,7 @@ def link(path):
         for f in os.listdir(path):            # f just contains a filename
             if f.startswith('lib'):
                 relf = os.path.relpath(os.path.join(path, f))
-                print relf
-                os.symlink(relf, f)
+                link_or_unlink(relf, f, funlink)
         os.chdir(home)
 
     elif bn == 'bin':
@@ -33,19 +40,28 @@ def link(path):
         os.chdir(target_dir)
         for f in os.listdir(path):            # f just contains a filename
             relf = os.path.relpath(os.path.join(path, f))
-            print relf
-            os.symlink(relf, f)
+            link_or_unlink(relf, f, funlink)
         os.chdir(home)
     else:
         print 'unrecognized path: {0}, exit..'.format(path)
 
 if __name__ == "__main__":
-    try:
-        pkg_dir = sys.argv[1]
-    except IndexError:
-        print 'no pkg specified, exit..'
-        sys.exit(-1)
-        
+    parser = argparse.ArgumentParser(
+        description='link or unlink newly installed package, mini pkg manager. just need to specify the dir')
+    parser.add_argument('-l', type=str, dest='lpkg', help='link package')
+    parser.add_argument('-u', type=str, dest='upkg', help='unlink package')
+    parser.parse_args()
+    args = parser.parse_args()
+    if args.lpkg:
+        funlink = False
+        pkg_dir = args.lpkg
+    elif args.upkg:
+        funlink = True
+        pkg_dir = args.upkg
+    else:
+        print 'No option specified, exit..'
+        sys.exit(1)
+
     bin_dir = os.path.join(pkg_dir, 'bin')
     lib_dir = os.path.join(pkg_dir, 'lib')
     inc_dir = os.path.join(pkg_dir, 'include')
