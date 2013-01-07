@@ -161,7 +161,7 @@ def main():
     config_dict = ConfigObj(config_file)
 
     SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, config_dict['system'])
-
+    
     dirchy_dict = config_dict['dirchy']
     directory_hierarchy = dirchy(SEQS, CDTS, TMPS, NUMS, dirchy_dict)
 
@@ -204,6 +204,11 @@ def main():
     separator =  "#" * 79
     print separator
     dd = args.__dict__
+    # update variables that are read from the config file
+    dd['SEQS'] = SEQS
+    dd['CDTS'] = CDTS
+    dd['TMPS'] = TMPS
+    dd['NUMS'] = NUMS
     for k in sorted(dd):
         print "{0:>20s}:{1}".format(k, dd[k])
     print separator

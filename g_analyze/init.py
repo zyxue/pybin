@@ -43,6 +43,8 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'symlink_progrof2ordergrof': organize.symlink_progrof2ordergrof,
     'symlink_proxtcf2xtcf':  organize.symlink_proxtcf2xtcf,
     'symlink_proxtcf2orderxtcf':  organize.symlink_proxtcf2orderxtcf,
+    'symlink_grof2ordergrof':  organize.symlink_grof2ordergrof,
+    'symlink_xtcf2orderxtcf':  organize.symlink_xtcf2orderxtcf,
 
     "rename_tpr2old":         organize.rename_tpr2old,
     "generate_500ns_tpr":     organize.generate_500ns_tpr,

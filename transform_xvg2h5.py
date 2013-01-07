@@ -5,12 +5,12 @@ import sys
 import tables
 from configobj import ConfigObj
 
-from common_func import backup_file
-import argparse_action as aa
-from xvg2h5 import h5tables as h5t
+import argparse_action
 from xvg2h5 import xvg
+from xvg2h5 import h5tables as h5t
+from common_func import backup_file
 
-TABLES = h5t.__tables__
+TABLES = h5t.DD.keys()
 
 def main():
     """
@@ -25,7 +25,7 @@ def main():
         raise IOError("{0} cannot found".format(conf))
 
     conf_dict = ConfigObj(conf)
-    SEQS, CDTS, TMPS, NUMS = aa.get_sctn(args, conf_dict['systems'])
+    SEQS, CDTS, TMPS, NUMS = argparse_action.get_sctn(args, conf_dict['systems'])
 
     h5filename = conf_dict['data']['h5filename']
     title      = conf_dict['data']['title']
@@ -62,7 +62,6 @@ def main():
     loop_xvgs(SEQS, CDTS, TMPS, NUMS,
               ppty, h5file, property_obj, ogd, ogd_path
               )
-
 
 def loop_xvgs(SEQS, CDTS, TMPS, NUMS,
               ppty, h5file, property_obj, ogd, ogd_path):
@@ -121,9 +120,8 @@ def zx_create_table(h5file, grouppath, tablename, xvg_obj, property_table):
 def parse_cmd(cmd=None):
     """parse_cmd"""
 
-    parser = aa.my_basic_parser()
-
-    parser.add_argument('-p', '--property-name', type=str, dest='ppty', required=True,
+    parser = argparse_action.my_basic_parser()
+    parser.add_argument('-a', '--property-name', type=str, dest='ppty', required=True,
                         help='you must specify the --property-name option from {0!r}'.format(TABLES))
     parser.add_argument('-g', dest='conf', default=".h5.conf",
                         help='specify the configuration file')
