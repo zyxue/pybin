@@ -51,6 +51,8 @@ def my_basic_parser():
                         help='specify it this way, i.e "300 700", maybe improved later')
     my_basic_parser.add_argument('-n', dest='NUMS', default=None, nargs='+', action=convert_num,
                         help='specify the replica number, i.e. 1 2 3 or 1-20 or 1, 3, 4-7')
+    my_basic_parser.add_argument('-v', dest='gmx_ver', default=None, 
+                        help='gromacs version: in the format of 405, 455, etc')
     return my_basic_parser
 
 def get_sctn(args, configuration):

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import sys
 import os
 import StringIO
 import subprocess
@@ -33,7 +34,7 @@ def gmxcheck_batch():
         if p.returncode == 0:
             pass
         else:
-            print '!!! %s is corrupted' % inf
+            sys.stdout.write('!!! %s is corrupted\n' % inf)
         stderrdata = StringIO.StringIO(stderrdata)
 
         for line in stderrdata:
@@ -46,13 +47,14 @@ def gmxcheck_batch():
                     # e.g. '\rLast frame      20000 time 200000.016'
                     # e.g. '\rLast frame      -1 time 200000.016'
                     # e.g. '\rLast frame         -1 time    8.940'
-                    print '%s # Last_frame %s\n' % (inf, match.group(1)),
+                    sys.stdout.write('%s # Last_frame %s\n' % (inf, match.group(1)))
                 elif options.time in line:
                     # when t is specified 
                     pass
                 elif options.time != '-1' and not options.time in line:
-                    print '%s # %s # %s' % (os.path.dirname(inf),
-                                            inf, line.replace('\r','')),
+                    sys.stdout.write('%s # %s # %s\n' % (os.path.dirname(inf),
+                                                         inf, line.replace('\r','')))
+        sys.stdout.flush()
 
 if __name__ == '__main__':
     gmxcheck_batch()

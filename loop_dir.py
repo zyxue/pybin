@@ -123,9 +123,15 @@ def gen_input_args(g_tool, g_tool_name, outputdir, logd, directory_hierarchy,
         if toa == 'trjorder':
             from mysys import read_mysys
             mysys = read_mysys.read()
-            input_args['NA'] = mysys[cdt].natom # when analyzing ff_comparison
+            try:
+                input_args['NA'] = mysys[cdt].natom # when analyzing ff_comparison
+            except KeyError:
+                print "ASSUME NUMBER OF ATOMS PER SOLVENT MOLECULE IS THAT OF WATER: {0}".format(mysys['w'].natom)
+                input_args['NA'] = mysys['w'].natom
 
-        input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.0.5/exec/bin/")
+        # input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.0.5/exec/bin/")
+        # dirty, fix later!
+        input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.5.5/exec/bin/")
         if cdt in ['h', 'f']:                                    # Heptanol
             input_args['bin'] = os.path.join(os.environ['HOME'], "exec/gromacs-4.5.5/exec/bin/")
 
