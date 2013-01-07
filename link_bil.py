@@ -8,10 +8,18 @@ home = os.getenv('HOME')
 
 def link_or_unlink(relf, f, funlink=False):
     if funlink:
-        os.unlink(f)
+        if os.path.exists(f):
+            print 'unlinking... {0}'.format(relf)
+            os.unlink(f)
+        else:
+            print 'Not found {0}'.format(f)
     else:
-        print relf
-        os.symlink(relf, f)
+        if not os.path.exists(f):
+            print 'linking... {0}'.format(relf)
+            os.symlink(relf, f)
+        else:
+            print 'already found {0} exiting.. please unlink first'.format(f)
+            sys.exit(-1)
 
 def link(path, funlink=False):
     # path: e.g. xx/yy/pkg/include, pkg/include
@@ -70,4 +78,4 @@ if __name__ == "__main__":
     for f in flags:
         print '####', f[0], f[1]
         if f[1]:
-            link(f[0])
+            link(f[0], funlink)
