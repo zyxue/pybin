@@ -103,6 +103,8 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'pi_angles':              fancy.pi_angles,
     'conf_entropy':           fancy.conf_entropy,
 
+    'g_angle_pi':             fancy.g_angle_pi,
+
     }
 
 def runit(cmd_logf_generator, numthread, ftest):

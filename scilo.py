@@ -38,6 +38,7 @@ def main():
         'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:',
         'n': 'zyxue@nestor.westgrid.ca:',
         'l': 'zyxue@lattice.westgrid.ca:',
+        'p': 'zyxue@parallel.westgrid.ca:',
         'g': 'zhuyxue12@guillimin.clumeq.ca:',
         'o': 'zyxue@orca.sharcnet.ca:',
         't': 'zyxue@tera.research.sickkids.ca:',

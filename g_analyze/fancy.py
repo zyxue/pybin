@@ -80,3 +80,7 @@ rm -rfv ${{tmp_dir}}
 # echo "returncode: 0"
 #    # rm -rf ${{tmp_dir}}
 # """.format(**kwargs)
+
+
+def g_angle_pi(kwargs):
+    return 'g_angle -f {xtcf} -n {inputdir}/pi.ndx -type dihedral -od {anadir}/{pf}_pi_dist.xvg'.format(**kwargs)
