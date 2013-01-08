@@ -25,7 +25,15 @@ def link(path, funlink=False):
     # path: e.g. xx/yy/pkg/include, pkg/include
     path = os.path.abspath(path)
     bn = os.path.basename(path)                             # bn: basename
-    if bn == 'include':
+    if bn == 'bin':
+        target_dir = os.path.join(home, 'zx_local/bin')
+        os.chdir(target_dir)
+        for f in os.listdir(path):            # f just contains a filename
+            relf = os.path.relpath(os.path.join(path, f))
+            link_or_unlink(relf, f, funlink)
+        os.chdir(home)
+
+    elif bn == 'include':
         target_dir = os.path.join(home, 'zx_local/include')
         os.chdir(target_dir)
         for f in os.listdir(path):
@@ -43,12 +51,17 @@ def link(path, funlink=False):
                 link_or_unlink(relf, f, funlink)
         os.chdir(home)
 
-    elif bn == 'bin':
-        target_dir = os.path.join(home, 'zx_local/bin')
+    elif bn == 'man': 
+        target_dir = os.path.join(home, 'zx_local/man')
         os.chdir(target_dir)
-        for f in os.listdir(path):            # f just contains a filename
-            relf = os.path.relpath(os.path.join(path, f))
-            link_or_unlink(relf, f, funlink)
+        for m in os.listdir(path):            # e.g. man1, man2, mann
+            if not os.path.exists(m):
+                os.mkdir(m)
+            os.chdir(m)
+            for f in os.listdir(os.path.join(path, m)):
+                relf = os.path.relpath(os.path.join(path, m, f))
+                link_or_unlink(relf, f, funlink)
+            os.chdir('..')
         os.chdir(home)
     else:
         print 'unrecognized path: {0}, exit..'.format(path)
@@ -63,9 +76,15 @@ if __name__ == "__main__":
     if args.lpkg:
         funlink = False
         pkg_dir = args.lpkg
+        if not os.path.exists(pkg_dir):
+            print '{0} does not exist'.format(pkg_dir)
+            sys.exit(1)
     elif args.upkg:
         funlink = True
         pkg_dir = args.upkg
+        if not os.path.exists(pkg_dir):
+            print '{0} does not exist'.format(pkg_dir)
+            sys.exit(1)
     else:
         print 'No option specified, exit..'
         sys.exit(1)
@@ -73,8 +92,9 @@ if __name__ == "__main__":
     bin_dir = os.path.join(pkg_dir, 'bin')
     lib_dir = os.path.join(pkg_dir, 'lib')
     inc_dir = os.path.join(pkg_dir, 'include')
+    man_dir = os.path.join(pkg_dir, 'man')
 
-    flags = [(i, os.path.exists(i)) for i in [bin_dir, lib_dir, inc_dir]]
+    flags = [(i, os.path.exists(i)) for i in [bin_dir, lib_dir, inc_dir, man_dir]]
     for f in flags:
         print '####', f[0], f[1]
         if f[1]:
