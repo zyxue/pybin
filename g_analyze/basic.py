@@ -30,12 +30,26 @@ def rg_c_alpha(kwargs):
     Radius of Gyration: backbone heavy atoms only. e.g. for (GVPGV)7, there would be 107 atoms,
     which is 35 * 3 + 2 (modified ends)
     """
-    return "printf 'C-alpha' | g_gyrate -f {orderxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg_c_alpha.xvg".format(**kwargs)
+    if kwargs['cdt'] != 'v':
+        return "printf 'C-alpha' | g_gyrate -f {orderxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg_c_alpha.xvg".format(**kwargs)
+    else:
+        return "printf 'C-alpha' | g_gyrate -f {proxtcf} -s {tprf} -b {b} -o {anadir}/{pf}_rg_c_alpha.xvg".format(**kwargs)
 
 def e2ed(kwargs):
     """end to end distance"""
+    # 2012-09-18
+    # myg_dist & g_dist, the results are different for sq4m00 in mono_su_as.
+
+    # By comparing the results in vmd, g_dist and myg_dist, as well as that
+    # from g_dist on proxtcf and orderxtcf, the results returned by g_dist is
+    # found to be unreliable.
+
+    # Since my analysis is all based on orderxtcf, using g_dist would be good,
+    # there is not problem concerning PBC any more.
+
     # return "printf 'N_ter\nC_ter\n' | myg_dist -f {proxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
-    return "printf 'N_ter\nC_ter\n' | myg_dist -f {orderxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
+    # return "printf 'N_ter\nC_ter\n' | myg_dist -f {orderxtcf} -s {tprf} -b {b} -n {ndxf} -noxvgr -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
+    return "printf 'N_ter\nC_ter\n' | g_dist -f {orderxtcf} -s {tprf} -b {b} -n {ndxf} -xvg none -o {anadir}/{pf}_e2ed.xvg".format(**kwargs)
 
 def dssp(kwargs):
     return 'printf "Protein" | mydo_dssp -f {orderxtcf} -s {tprf} -b {b} -sc {anadir}/{pf}_dssp.xvg'.format(**kwargs)

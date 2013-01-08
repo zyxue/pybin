@@ -34,6 +34,7 @@ def parse_cmd():
 def main():
     DD = {
         's': 'zyxue@login.scinet.utoronto.ca:',
+        'b': 'zyxue@bgqdev.scinet.utoronto.ca:',
         'c': 'zhuyxue12@colosse.clumeq.ca:',
         'm': 'xuezhuyi@pomes-mp2.ccs.usherbrooke.ca:',
         'n': 'zyxue@nestor.westgrid.ca:',

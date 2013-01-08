@@ -40,6 +40,11 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "g_make_ndx":             organize.g_make_ndx,
     "g_select":               organize.g_select,
     "symlink_ndx":            organize.symlink_ndx,
+    'symlink_progrof2ordergrof': organize.symlink_progrof2ordergrof,
+    'symlink_proxtcf2xtcf':  organize.symlink_proxtcf2xtcf,
+    'symlink_proxtcf2orderxtcf':  organize.symlink_proxtcf2orderxtcf,
+    'symlink_grof2ordergrof':  organize.symlink_grof2ordergrof,
+    'symlink_xtcf2orderxtcf':  organize.symlink_xtcf2orderxtcf,
 
     "rename_tpr2old":         organize.rename_tpr2old,
     "generate_500ns_tpr":     organize.generate_500ns_tpr,
@@ -100,7 +105,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     'rdf_c3vn':               rdf.rdf_c3vn,
 
     'seqspacing':             fancy.seqspacing,
-    'pi_angles':              fancy.pi_angles,
+    'calc_omega':             fancy.calc_omega,
     'conf_entropy':           fancy.conf_entropy,
 
     'g_angle_pi':             fancy.g_angle_pi,

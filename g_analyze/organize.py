@@ -20,6 +20,7 @@ def trjcat(input_args):
     
     input_args.update(dict(fmt_xtcfs=' '.join(xtcfs)))
     cmd = 'trjcat -f {fmt_xtcfs} -o {xtcf}'.format(**input_args)
+    print "trjcat is DEPRECATED, pleasee use trjcat_plus instead!!"
     return cmd
 
 def trjcat_plus(input_args):
@@ -76,7 +77,7 @@ def eneconv(input_args):
     tmpl = '{pf}_md.part[0-9][0-9][0-9][0-9].edr'.format(**input_args)
     edrfs = sorted(glob.glob(os.path.join(input_args['inputdir'], tmpl)))
     input_args.update(dict(fmt_edrfs=' '.join(edrfs)))
-    cmd = 'eneconv -f {fmt_edrfs} -o {edrf}'.format(**input_args)
+    cmd = 'eneconv -f {fmt_edrfs} -dt 10 -o {edrf}'.format(**input_args)
     return cmd
 
 # -ur will be delt later, be customized in .g_ana.conf
@@ -89,10 +90,10 @@ def trjorder(input_args):
 
 # printf "Protein\nSystem\n" | trjconv  -f {xtcf} -b {b} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
     return """
-printf "Protein\nSystem\n" | trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
-printf "Protein\nSolvent\n"| trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
-printf "Sys_Ordered\n"     | trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
-printf "Sys_Ordered\n"     | trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
+printf "Protein\nSystem\n" | {bin}/trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
+printf "Protein\nAll_Solvent\n"| {bin}/trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
+printf "Ordered_Sys\n"     | {bin}/trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
+printf "Ordered_Sys\n"     | {bin}/trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
 """.format(**input_args)
 
 def trjconv_center_xtc(input_args):
@@ -101,11 +102,11 @@ def trjconv_center_xtc(input_args):
     # -center -pbc atom  : doesn't correct pbc, not useful
     # -center -pbc mol -ur compact: solvent are ordered closest to the protein
     # -center -pbc mol -ur tric: most suitable in this case
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
-    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
+    # return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -ur tric -o {centerxtcf}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -b {b} -center -pbc mol -o {centerxtcf}".format(**input_args)
 
 def trjconv_center_gro(input_args):          # used to extract the last frame
-    return "printf 'Protein\nsystem\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b}  -dump 0 -o {grof}".format(**input_args)
+    return "printf 'Protein\nsystem\n' | {bin}/trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -ur tric -dump 0 -o {grof}".format(**input_args)
 
 def trjconv_pro_xtc(input_args):
     return "printf 'Protein\nProtein\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -o {proxtcf}".format(**input_args)
@@ -122,8 +123,8 @@ def g_select(input_args):
             'repository',
             '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
             )
-    # return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
-    return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    # return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    return "g_select -f {grof} -s {grof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
 
 def symlink_ndx(input_args):
     input_args['repository_ndxf'] = os.path.join(
@@ -186,4 +187,41 @@ def autoremove(input_args):
     if to_be_removed:
         return "rm -v {0}".format('  '.join(to_be_removed))
     else:
-        return "echo 'nothing to be removed'"
+        return "echo 'nothing to be removed in {0}'".format(input_args['inputdir'])
+
+
+def symlink_progrof2ordergrof(input_args):
+    input_args['progrof_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['progrof']
+        )
+    return "ln -s -f -v {progrof_with_absolute_path} {ordergrof} #USE IT WITH CARE".format(**input_args)
+
+def symlink_proxtcf2xtcf(input_args):
+    input_args['proxtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['proxtcf']
+        )
+    return "ln -s -f -v {proxtcf_with_absolute_path} {xtcf} #USE IT WITH CARE".format(**input_args)
+
+def symlink_proxtcf2orderxtcf(input_args):
+    input_args['proxtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['proxtcf']
+        )
+    return "ln -s -f -v {proxtcf_with_absolute_path} {orderxtcf} #USE IT WITH CARE".format(**input_args)
+
+def symlink_grof2ordergrof(input_args):
+    input_args['grof_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['grof']
+        )
+    return "ln -s -f -v {grof_with_absolute_path} {ordergrof} #USE IT WITH CARE".format(**input_args)
+
+def symlink_xtcf2orderxtcf(input_args):
+    input_args['xtcf_with_absolute_path'] = os.path.join(
+        input_args['pwd'],
+        input_args['xtcf']
+        )
+    return "ln -s -f -v {xtcf_with_absolute_path} {orderxtcf} #USE IT WITH CARE".format(**input_args)
+
