@@ -91,9 +91,9 @@ def trjorder(input_args):
 # printf "Protein\nSystem\n" | trjconv  -f {xtcf} -b {b} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
     return """
 printf "Protein\nSystem\n" | {bin}/trjconv  -f {xtcf} -s {tprf} -center -pbc mol -ur tric -o {centerxtcf}
-printf "Protein\nSolvent\n"| {bin}/trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
-printf "Sys_Ordered\n"     | {bin}/trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
-printf "Sys_Ordered\n"     | {bin}/trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
+printf "Protein\nAll_Solvent\n"| {bin}/trjorder -f {centerxtcf}  -s {tprf} -n {ndxf} -na {NA} -o {tmporderf};         rm {centerxtcf}
+printf "Ordered_Sys\n"     | {bin}/trjconv  -f {tmporderf}   -s {tprf} -n {ndxf} -o {orderxtcf};                  rm {tmporderf}
+printf "Ordered_Sys\n"     | {bin}/trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -dump {b} -o {ordergrof}
 """.format(**input_args)
 
 def trjconv_center_xtc(input_args):
