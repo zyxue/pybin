@@ -3,24 +3,15 @@
 import os
 from Bio import SeqIO
 
-<<<<<<< HEAD
-#   Primary        Secondary        Tertiary      scnC            bbpC      
-# G 		   1(Ca)                          0               3(N, C, O)
-# P		   3(Cb, Cy, Cd)    1(Ca)         3(Cb, Cy, Cd)   3(N, C, O)
-# A 1(Cb)			    1(Ca)         1(Cb)           3(N, C, O)
-# V 2(Cy1, Cy2)			    2(Ca, Cb)     3(Cb, Cy1, Cy2) 3(N, C, O)
-# Q 	           2(Cb, Cy)	    1(Ca)         2(Cb, Cy)       3(N, C, O)
-
-# bbpC: backbone polar Carbon
-# scnC: sidechain nonpolar Carbon
-=======
 #   Primary        Secondary        Tertiary        bbpC        scnC            
 # G 		   1(Ca)                            3(N, C, O)  0
 # V 2(Cy1, Cy2)			    2(Ca, Cb)       3(N, C, O)  3(Cb, Cy1, Cy2)
 # P		   3(Cb, Cy, Cd)    1(Ca)           3(N, C, O)  3(Cb, Cy, Cd)
 # A 1(Cb)			    1(Ca)           3(N, C, O)  1(Cb)
 # Q 	           2(Cb, Cy)	    1(Ca)           3(N, C, O)  2(Cb, Cy)
->>>>>>> 45480b85cd625c763b1b8dce0fa72851b366dbca
+
+# bbpC: backbone polar Carbon
+# scnC: sidechain nonpolar Carbon
 
 atoms_dd = {
     'primary'  : {'A': 1,                                     # Cb
@@ -59,13 +50,8 @@ HYDROPATHY_DD = {
     }
 
 def main():
-<<<<<<< HEAD
-    seq_file = os.path.join(os.environ['HOME'], 'pybin/myseqs.fasta')
-    primary, secondary, tertiary, HBgroup, patoms, scnC, hydropathy = {}, {}, {}, {}, {}, {}, {}
-=======
     seq_file = os.path.join(os.environ['HOME'], 'pybin/mysys/myseqs.fasta')
-    primary, secondary, tertiary, HBgroup, patoms, scnC = {}, {}, {}, {}, {}, {}
->>>>>>> 45480b85cd625c763b1b8dce0fa72851b366dbca
+    primary, secondary, tertiary, HBgroup, patoms, scnC, hydropathy = {}, {}, {}, {}, {}, {}, {}
     for seq in SeqIO.parse(seq_file, 'fasta'):
         primary[seq.description] = sum(
             atoms_dd['primary'].get(aa, 0) * seq.seq.count(aa)
