@@ -38,6 +38,7 @@ printf "Protein_no_end\nProtein_no_end\n" | g_hbond \
 -hbn {anal_dir}/{id_}_upup_map.ndx \
 -hbm {anal_dir}/{id_}_upup_map.xpm'''.format(**kw)
     return cmd
+<<<<<<< HEAD
 
 def unun_map(**kw):
     # dDA < 3.5nm & angle ADH<30 degree, which is the default criteria in
@@ -50,3 +51,5 @@ unun_map.py \
 -c 0.55 \
 --h5 {h5_filename} '''.format(**kw)
 
+=======
+>>>>>>> e9846a814d4c4842b55ff058b2aee9e790b113c8

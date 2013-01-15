@@ -31,9 +31,15 @@ def gen_cmds(A, C, core_vars):
             os.mkdir(anal_dir)
         kw.update(anal_dir=anal_dir)
 
+<<<<<<< HEAD
         kw.update(h5_filename=C['hdf5']['filename'])
 
         anal_func = getattr(methods, A.analysis)
+=======
+
+        anal_func = getattr(methods, A.analysis)
+        print 'using function: {0}'.format(anal_func)
+>>>>>>> e9846a814d4c4842b55ff058b2aee9e790b113c8
         cmd = anal_func(**kw) 
 
         if not A.nolog:
