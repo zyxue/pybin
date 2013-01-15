@@ -111,6 +111,9 @@ def trjconv_center_gro(input_args):          # used to extract the last frame
 def trjconv_pro_xtc(input_args):
     return "printf 'Protein\nProtein\n' | trjconv -f {xtcf} -s {tprf} -pbc mol -center -b {b} -o {proxtcf}".format(**input_args)
 
+def trjconv_md_gro(input_args):
+    return "echo '0' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {grof}".format(**input_args)
+
 def trjconv_pro_gro(input_args):
     return "echo '1' | trjconv -f {xtcf} -s {tprf} -pbc whole -b {b} -dump 0 -o {progrof}".format(**input_args)
 
@@ -124,7 +127,7 @@ def g_select(input_args):
             '{0}{1}.ndx'.format(input_args['seq'], input_args['cdt'])
             )
     # return "g_select -f {ordergrof} -s {ordergrof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
-    return "g_select -f {grof} -s {grof} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
+    return "g_select -f {grof} -s {tprf} -on {repository_ndxf} -select {g_select_select}".format(**input_args)
 
 def symlink_ndx(input_args):
     input_args['repository_ndxf'] = os.path.join(
