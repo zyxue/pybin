@@ -16,12 +16,12 @@ def simple_bar(grps, A, C, **kw):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    means = [i.mean for i in grps.values()]
-    sems  = [i.sem  for i in grps.values()]
+    means = [i[0] for i in grps.values()]
+    sems  = [i[1]  for i in grps.values()]
 
     D = C['plot'][A.analysis][A.plot_type]
     print xlocs, means, sems
-    ax.bar(xlocs, means, bar_width, yerr=sems)
+    ax.bar(xlocs, means, bar_width, yerr=sems, color='white', hatch="\\")
 
     # decorate a bit
     ax.set_xlim((0 - 2 *space), (len(grps.items()) * (bar_width * type_of_bars + space) + space))

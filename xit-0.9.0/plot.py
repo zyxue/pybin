@@ -40,7 +40,8 @@ def plot(A, C, core_vars):
                 h5.createArray(where=path, name=ar_name, object=data[gk])
                 print 'Group: {0} is done'.format(gk)
         ptp.alx(data, A, C)
-    elif A.plot_type == 'map':
+
+    elif A.plot_type == 'simple_bar':
         data = OrderedDict()
         for gk in grps:
             path = os.path.join('/', gk)
@@ -54,11 +55,36 @@ def plot(A, C, core_vars):
                     _ = h5.getNode(ar_path)
                     print 'overwriting {0}'.format(ar_path)
                     _.remove()
-                    ar = calc_map(grps, pt_obj, data, gk, h5)
+                    ar = calc_simple_bar(grps, pt_obj, data, gk, h5)
                     data[gk] = h5.createArray(where=path, name=ar_name, object=ar)
             else:
-                ar = calc_map(grps, pt_obj, data, gk, h5)
+                print 'Calculating: {0}...'.format(gk)
+                ar = calc_simple_bar(grps, pt_obj, data, gk, h5)
                 data[gk] = h5.createArray(where=path, name=ar_name, object=ar)
+        ptp.simple_bar(data, A, C)
+
+    elif A.plot_type == 'map':
+        data = OrderedDict()
+        for gk in grps:
+            path = os.path.join('/', gk)
+            ar_name = '{0}_{1}'.format(A.plot_type, A.analysis) # array name
+            ar_path = os.path.join(path, ar_name)
+            if h5.__contains__(ar_path):
+                if not A.overwrite:
+                    data[gk] = h5.getNode(ar_path).read()
+                    print 'Group: {0} fetched from previous result'.format(gk)
+                else:
+                    _ = h5.getNode(ar_path)
+                    print 'overwriting {0}'.format(ar_path)
+                    _.remove()
+                    ar = calc_map(grps, pt_obj, data, gk, h5)
+                    arr = h5.createArray(where=path, name=ar_name, object=ar)
+                    data[gk] = arr.read()
+            else:
+                print 'Calculating: {0}...'.format(gk)
+                ar = calc_map(grps, pt_obj, data, gk, h5)
+                arr = h5.createArray(where=path, name=ar_name, object=ar)
+                data[gk] = arr.read()
         ptp.map_(data, A, C)
 
 def calc_map(grps, pt_obj, data, gk, h5):
@@ -84,6 +110,14 @@ def calc_alx(grp, pt_obj, data, gk, h5):
             _a.mean(axis=0),
             [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
     data[gk] = block_average(_aa)
+
+def calc_simple_bar(grps, pt_obj, data, gk, h5):
+    grp = grps[gk]
+    _l = []
+    for tb in grp:
+        _ = tb.read(field=pt_obj.ifield).mean()
+        _l.append(_)
+    return np.array([np.mean(_l), utils.sem(_l)])
 
 def block_average(a, n=100):
     """a is a mutliple dimension array, n is the max number of data points desired"""

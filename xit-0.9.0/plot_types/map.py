@@ -18,21 +18,22 @@ def map_(data, A, C, **kw):
                      add_all=True, label_mode = "L")
 
     print 'col: {0}, row; {1}'.format(col, row)
-    # D = C['plot'][A.analysis][A.plot_type]
+    D = C['plot'][A.analysis][A.plot_type]
+    normalize(data)
     max_ = get_max(data)
     for k, gk in enumerate(data.keys()):
         ax = grid[k]
 
         da = data[gk]
-        im = ax.imshow(da, origin="lower", cmap="cool",      # cmap could also be Greys
+        im = ax.imshow(da, origin="lower", cmap="Oranges",      # cmap could also be Greys
                   vmin=0, vmax=1, interpolation="nearest")
         im.set_clim(0, max_)
         ax.grid()
-        ax.set_xlabel('C')
-        ax.set_ylabel('N')
+        if 'x_label' in D: ax.set_xlabel(D['x_label'])
+        if 'y_label' in D: ax.set_ylabel(D['y_label'])
         ax.set_title(C['legends'][gk])
 
-    plt.colorbar(im, shrink=.5, orientation='vertical', anchor=(1.3, 0), format='%.1e')
+    plt.colorbar(im, shrink=.5, orientation='vertical', anchor=(1.3, 0))
     if A.output:
         plt.savefig(A.output)
     else:
@@ -43,6 +44,10 @@ def map_(data, A, C, **kw):
 def get_max(data):
     max_ = []
     for i in data:
-        max_.append(data[i].read().max(axis=0).max())
+        max_.append(data[i].max(axis=0).max())
     return max(max_)
                     
+
+def normalize(data):
+    for i in data:
+        data[i] = data[i] / np.sum(data[i])
