@@ -35,6 +35,7 @@ ANALYSIS_METHODS = {                                    # this dict will keep in
     "trjorder":               organize.trjorder,
     "trjconv_center_xtc":     organize.trjconv_center_xtc,
     "trjconv_center_gro":     organize.trjconv_center_gro,
+    "trjconv_md_gro":         organize.trjconv_md_gro,
     "trjconv_pro_xtc":        organize.trjconv_pro_xtc,
     "trjconv_pro_gro":        organize.trjconv_pro_gro,
     "g_make_ndx":             organize.g_make_ndx,
