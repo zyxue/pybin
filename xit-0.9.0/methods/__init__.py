@@ -14,3 +14,4 @@ unun_map    = I.unun_map
 
 g_select    = O.g_select
 symlink_ndx = O.symlink_ndx
+extend_tpr  = O.extend_tpr

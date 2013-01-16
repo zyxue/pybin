@@ -3,6 +3,7 @@ import os
 
 import utils
 import methods
+L = utils.L
 
 def analyze(A, C, core_vars):
     x = gen_cmds(A, C, core_vars)
@@ -26,15 +27,18 @@ def gen_cmds(A, C, core_vars):
         root=os.path.dirname(os.path.abspath(C.filename))
         kw.update(root=root)
 
-        anal_dir = os.path.join(root, C['data']['analysis'], 'r_{0}'.format(A.analysis))
-        if not os.path.exists(anal_dir):
-            os.mkdir(anal_dir)
-        kw.update(anal_dir=anal_dir)
-
         kw.update(h5_filename=C['hdf5']['filename'])
 
         anal_func = getattr(methods, A.analysis)
-        print 'using function: {0}'.format(anal_func)
+
+        if anal_func.__module__ != methods.org.__name__:
+            # methods.org.__name__: 'methods.org'
+            anal_dir = os.path.join(root, C['data']['analysis'], 'r_{0}'.format(A.analysis))
+            if not os.path.exists(anal_dir):
+                os.mkdir(anal_dir)
+            kw.update(anal_dir=anal_dir)
+
+        L('using function: "{0}" from module "{1}"'.format(anal_func.__name__, anal_func.__module__))
         cmd = anal_func(**kw) 
 
         if not A.nolog:
