@@ -23,6 +23,8 @@ def alx(data, A, C, **kw):
         if 'xlabel' in D: ax.set_xlabel(D['xlabel'])
         if 'ylabel' in D: ax.set_ylabel(D['ylabel'], labelpad=10)
 
+        if 'xscale' in D: ax.set_xscale(D['xscale'])
+
     if A.output:
         plt.savefig(A.output)
     else:

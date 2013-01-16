@@ -3,6 +3,7 @@
 
 import os
 import sys
+import logging
 
 # from scipy import stats
 from configobj import ConfigObj
@@ -10,14 +11,16 @@ from configobj import ConfigObj
 import utils
 
 def main():
-    print 'parsing arguments...'
+    print 'INIT: parsing arguments...'
     A = utils.get_args()
+    print 'INIT: got loglevel: {0}'.format(A.loglevel.upper())
+    logging.basicConfig(level=getattr(logging, A.loglevel.upper()))
 
     config = A.config
     if not os.path.exists(config):
         raise IOError("{0} cannot found".format(config))
 
-    print 'reading configuration file: {0}'.format(config)
+    logging.info('reading configuration file: {0}'.format(config))
     C = ConfigObj(config)                                  # config_params
     vars_ = utils.get_vars(A, C)
     dir_tmpls = utils.get_dir_tmpls(A, C)

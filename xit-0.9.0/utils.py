@@ -1,15 +1,54 @@
 import re
 import os
+import time
 import shutil
 import argparse
 import subprocess
 import Queue
 import logging
+L = logging.info
 from threading import Thread
 from collections import OrderedDict
+from functools import update_wrapper
 
 import tables
 import numpy as np
+
+def decorator(d):
+    "Make function d a decorator: d wraps a function fn."
+    def _d(fn):
+        return update_wrapper(d(fn), fn)
+    update_wrapper(_d, d)
+    return _d
+
+@decorator
+def memo(f):
+    """Decorator that caches the return value for each call to f(args).
+    Then when called again with same args, we can just look it up."""
+    cache = {}
+    def _f(*args):
+        try:
+            return cache[args]
+        except KeyError:
+            cache[args] = result = f(*args)
+            return result
+        except TypeError:
+            # some element of args can't be a dict key
+            return f(args)
+    return _f
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        res = method(*args, **kw)
+        te = time.time()
+        # cannot use logging.info: guess due to namespacing problem
+        print '--- spent: {0:.1e}s on {1}'.format(te - ts, method.__name__)
+        # print '--- spent: {0}    on {1}\n'.format(
+        #         time.strftime('%H:%M:%S', time.gmtime(delta_time)),
+        #         method.__name__)
+        return res
+    return timed
 
 def backup_file(f):
     if os.path.exists(f):
@@ -58,16 +97,17 @@ class convert_vars(argparse.Action):
             final.append(subfinal)
         setattr(namespace, self.dest, final)
 
-
-def get_args(args_to_parse=None):
+def add_global_args(p):
     # f is used to add global_args, it does not work with argparse to put
     # --vars in right after argparse.ArgumentParser, which is strange
-    def add_global_args(p):
-        p.add_argument('-v', '--vars', nargs='+', action=convert_vars,
-                       help='list of vars, as defined in the .xit file, command line options override .xit')
-        p.add_argument('-g', '--config', default='.xitconfig', help='specify the config option if not default')
-        p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
+    p.add_argument('-v', '--vars', nargs='+', action=convert_vars,
+                   help='list of vars, as defined in the .xit file, command line options override .xit')
+    p.add_argument('-g', '--config', default='.xitconfig', help='specify the config option if not default')
+    p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
+    p.add_argument('--loglevel', default='info', help="don't back the file to speed up analysis")
 
+@timeit
+def get_args(args_to_parse=None):
     parser = argparse.ArgumentParser(description="xit helps you prepare, manage and analyze your simulations")
     subparsers = parser.add_subparsers(title='subcommands')
 
@@ -98,7 +138,8 @@ def get_args(args_to_parse=None):
                                                       'and illustrate it via plotting'))
     plot_parser.add_argument('--normid', help='var1, etc')
     plot_parser.add_argument('--plot_type', help='simple_bar, alx, etc')
-    plot_parser.add_argument('--grpid_key', default='mena', help='e.g. path2')
+    plot_parser.add_argument('--grptoken', default='mena', help='e.g. path2')
+    plot_parser.add_argument('--merge', action='store_true', help='merge all plots in one ax')
     plot_parser.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
     # plot_parser.add_argument('--scale', action='store_true', help='scale to 1, when map plotting is not obvious')
     plot_parser.add_argument('-o', '--output', help='output file')
@@ -253,6 +294,7 @@ def get_dpp(cv):              # get deepest path
 
 def get_h5(C):
     hdf5 = C['hdf5']['filename']
+    L('reading h5: {0}'.format(hdf5))
     if not os.path.exists(hdf5):
         hdf5_title = C['hdf5']['filename']
         h5 = tables.openFile(hdf5, mode="w", title=hdf5_title)
@@ -267,6 +309,14 @@ def sem(vals):
     p3 = p2 - 1
     return np.sqrt(p1 / p2) / np.sqrt(p3)
 
+def sem3(ar):
+    # equivalent to stats.sem(ar, axis=0) for 3D array
+    A = np.zeros(ar.shape[1:])
+    for i in range(ar.shape[1]): 
+        for j in range(ar.shape[2]): 
+            A[i][j]=sem(ar[:,i,j])
+    return A
+
 def gen_rc(n):
     c = int(np.sqrt(n))
     r = c
@@ -278,3 +328,13 @@ def gen_rc(n):
             return c, r+1, 
         else:
             return c, r
+
+def split(l, n):
+    """split a list into n chunks"""
+    if len(l) <= n:
+        return l
+    else:
+        idx = len(l) / n
+        if idx * n < len(l):
+            idx += 1                           # asure to include the remainder
+        return [l[i:idx * (i+1)] for i in xrange(idx)]

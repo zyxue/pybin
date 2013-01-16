@@ -163,6 +163,7 @@ class rdf(tables.IsDescription):
 
 SCHEMA_DICT = {
     'e2ed'       : e2ed,
+    'e2ed_wl'    : e2ed,
     'rg_c_alpha' : rg,
     'rg_wl'      : rg,
 
@@ -190,6 +191,7 @@ SCHEMA_DICT = {
     'upup': upup,
     # 'upun': upun
     'unun': unun,
+    'unun_wl': unun,
     # 'upvp': (upvp, 'upvp (i.e. intermolecular hbond) along the time trajectory'),
     # 'upvn': (upvn, 'upvn along the time trajectory'),
     # 'unvn': (unvn, 'unvn along the time trajectory'),
@@ -226,10 +228,12 @@ SCHEMA_DICT = {
 
 INTERESTED_FIELDS = {
     'e2ed'             : 'e2ed',
+    'e2ed_wl'          : 'e2ed',
     'rg_c_alpha'       : 'rg',
     'rg_wl'            : 'rg',
     'upup'             : 'upup',
     'unun'             : 'unun',
+    'unun_wl'          : 'unun',
     }
 
 from mysys import read_mysys

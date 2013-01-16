@@ -134,6 +134,7 @@ class HBNdx(object):
                         ref.extend(int(i) for i in sl.split())
                     elif flag == "hbonds":
                         sls = sl.split()
+                        # order: [donor, acceptor]
                         ref.append([int(sls[0]), int(sls[-1])])
 
     def _map_ubline(self, ubline):

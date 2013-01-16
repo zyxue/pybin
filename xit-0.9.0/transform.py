@@ -78,13 +78,16 @@ def gen_hbond_map(xpm, ndx, grof):
 
     hblist = []
     for i, j in zip(hbonds_by_resid, xpm.color_count):
-        # -1 is because index in python starts from zero
-        # j[1] is the probability of hbonds, which j[0] = 1 - j[1]
+        # j[1] is the probability of hbonds, while j[0] = 1 - j[1]
+        # format: [resid of donor, resid of acceptor]
+        # -1 is because resid in MDAnalysis starts from 1, minus so as to fit
+        # -into hb_map initialized by hb_map
         hblist.append([i[0]-1, i[1]-1, j[1]])
 
     # +1: for missing resname ACE, such that it's easier to proceed in the next
     # step
-    hb_map = np.zeros((pl+1, pl+1))
+    pl1 = pl + 1
+    hb_map = np.zeros((pl1, pl1))
     for _ in hblist:
         hb_map[_[0]][_[1]] = _[2]
 

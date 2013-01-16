@@ -1,11 +1,13 @@
-import bar as B
+from utils import timeit
+
 import alx as A
-import map as M
+import bar as B
+import distr as D
+import map_ as M
 
 # here it controls what kind of bar will the data be parsed to
-
-simple_bar = B.simple_bar
-
 alx = A.alx
-
-map_ = M.map_
+simple_bar = B.simple_bar
+distr = D.distr
+pmf   = D.pmf
+map   = timeit(M.map_)
