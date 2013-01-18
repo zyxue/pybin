@@ -2,6 +2,8 @@ import os
 import pwd
 import grp
 
+"""this script tries to generate a list of members in my group"""
+
 my_gid = pwd.getpwnam(os.environ['LOGNAME']).pw_gid
 users = grp.getgrgid(my_gid).gr_mem
 if users:
@@ -11,4 +13,3 @@ else:                       # on some clusters, this could be []. e.g. orca
 
 for i in users:
     print i
-
