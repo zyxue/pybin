@@ -41,6 +41,7 @@ def main():
         'l': 'zyxue@lattice.westgrid.ca:',
         'g': 'zhuyxue12@guillimin.clumeq.ca:',
         'o': 'zyxue@orca.sharcnet.ca:',
+        'i': 'zyxue@orcinus.westgrid.ca:',
         't': 'zyxue@tera.research.sickkids.ca:',
         't2': 'zyxue@t2.research.sickkids.ca:',
         }
