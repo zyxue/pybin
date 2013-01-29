@@ -2,6 +2,7 @@
 
 import re
 
+import numpy as np
 import matplotlib.pyplot as plt
 # from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
 
@@ -16,7 +17,9 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         x = x/1000. if options.nm else x
         ax.errorbar(x, y, yerr=e, label=label)
     else:
-        x, y = xvg2array(inf)
+        print 'block_averaging...'
+        x, y = block_average(xvg2array(inf))
+        print 'block_averaged'
 
         # print x, y
         # print x.shape, y.shape        
@@ -35,6 +38,19 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
             ax.plot(x, y, linewidth=1, label=label) 
             # p = ax.plot(x, y, "o-", label=label) 
     return x, y
+
+def block_average(a, n=100):
+    """copied from xit-0.9.0/plot.py"""
+    if a.shape[1] < n:
+        return a
+    else:
+        bs = int(a.shape[1] / n)                            # bs: block size
+        print a.shape[1]
+        if bs * n < a.shape[1] - 1:                         # -1 is math detail
+            bs = bs + 1
+        print 'block size: {0}, # of blocks: {1}'.format(bs, n)
+        return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
+                         for i in xrange(1, n+1)]).transpose()
 
 def main(options):
     infs = options.fs
