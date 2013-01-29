@@ -6,11 +6,12 @@ import numpy as np
 from MDAnalysis import Universe
 
 import utils
+L = utils.L
 import objs
 import prop
 
 def transform(A, C, core_vars):
-    h5 = utils.get_h5(C)
+    h5 = utils.get_h5(A, C)
 
     if A.init_hdf5:
         init_hdf5(h5, core_vars)
@@ -25,25 +26,26 @@ def transform(A, C, core_vars):
             raise IOError('{0}'.format("doesn't exist, please double check.".format(adir)))
         afile = os.path.join(adir, '{0}_{1}.{2}'.format(id_, A.analysis, A.filetype)) # af: anal file
         if not os.path.exists(afile):
-            print "ATTENTION: {0} doesn't exist!".format(afile)
+            L("ATTENTION: {0} doesn't exist!".format(afile))
         else:
             tb_name = A.analysis
             tb_path = os.path.join(path, tb_name)
             if h5.__contains__(tb_path):
                 tb = h5.getNode(tb_path)
                 if not A.overwrite:
-                    print "{0} ALREADY EXIST in {1}".format(os.path.join(path, tb.name), h5.filename)
+                    L("{0} ALREADY EXISTS in {1}".format(os.path.join(path, tb.name), h5.filename))
                 else:
+                    # overwrite with new data
                     tb.remove()
                     put_data(A.filetype, afile, 
                              prop.Property(A.analysis).schema,
                              h5, path, tb_name, cv)
-                    print "{0} is overwritten with new data".format(tb_path)
+                    L("{0} is overwritten with new data".format(tb_path))
             else:
                 put_data(A.filetype, afile, 
                          prop.Property(A.analysis).schema,
                          h5, path, tb_name, cv)
-                print "{0} IS TRANSFORMED to {1}".format(afile, tb_path)
+                L("{0} IS TRANSFORMED to {1}".format(afile, tb_path))
 
 def put_data(ft, f, schema, h5 ,path, tb_name, cv):
     if ft == 'xvg':
@@ -109,5 +111,7 @@ def init_hdf5(h5, core_vars):
             dirname = os.path.dirname(p)
             basename = os.path.basename(os.path.join('/', p))
             if not h5.__contains__(p):
-                print 'creating... {0}'.format(p)
+                L('creating... {0}'.format(p))
                 h5.createGroup(where=dirname, name=basename, filters=filters)
+            else:
+                L('{0} Already existed'.format(p))

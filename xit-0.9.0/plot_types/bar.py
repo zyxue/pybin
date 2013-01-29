@@ -20,7 +20,7 @@ def simple_bar(grps, A, C, **kw):
     sems  = [i[1]  for i in grps.values()]
 
     D = C['plot'][A.analysis][A.plot_type]
-    print xlocs, means, sems
+    # print xlocs, means, sems
     ax.bar(xlocs, means, bar_width, yerr=sems, color='white', hatch="\\")
 
     # decorate a bit

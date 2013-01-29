@@ -14,91 +14,49 @@ class UnrecoganizedPlotTypeError(Exception):
     pass
 
 def plot(A, C, core_vars):
-    h5 = utils.get_h5(C)
+    h5 = utils.get_h5(A, C)
     pt_obj = prop.Property(A.analysis)
     grps = groupit(A, C, core_vars, h5)
     L("Groups: {0}".format(grps.keys()))
-    if A.plot_type == 'alx':
-        data = OrderedDict()
-        for gk in grps:
-            path = os.path.join('/', gk)
-            ar_name = '{0}_{1}'.format(A.plot_type, A.analysis) # array name
-            ar_path = os.path.join(path, ar_name)
-            if h5.__contains__(ar_path):
-                if not A.overwrite:
-                    data[gk] = h5.getNode(ar_path)
-                    print 'Group: {0} fetched from previous result'.format(gk)
-                else:
-                    _ = h5.getNode(ar_path)
-                    print 'overwriting {0}'.format(ar_path)
-                    _.remove()
-                    grp = grps[gk]
-                    calc_alx(grp, pt_obj, data, gk, h5)
-                    h5.createArray(where=path, name=ar_name, object=data[gk])
-            else:
-                grp = grps[gk]
-                calc_alx(grp, pt_obj, data, gk, h5)
-                h5.createArray(where=path, name=ar_name, object=data[gk])
-                print 'Group: {0} is done'.format(gk)
-        ptp.alx(data, A, C)
 
-    elif A.plot_type == 'simple_bar':
-        data = OrderedDict()
-        for gk in grps:
-            path = os.path.join('/', gk)
-            ar_name = '{0}_{1}'.format(A.plot_type, A.analysis) # array name
-            ar_path = os.path.join(path, ar_name)
-            if h5.__contains__(ar_path):
-                if not A.overwrite:
-                    data[gk] = h5.getNode(ar_path)
-                    print 'Group: {0} fetched from previous result'.format(gk)
-                else:
-                    _ = h5.getNode(ar_path)
-                    print 'overwriting {0}'.format(ar_path)
-                    _.remove()
-                    ar = calc_simple_bar(grps, pt_obj, data, gk, h5)
-                    data[gk] = h5.createArray(where=path, name=ar_name, object=ar)
+    data = OrderedDict()
+    for k, gk in enumerate(grps):
+        L('processing Group {0}: {1}'.format(k, gk))
+        # ar: array
+        ar_where = os.path.join('/', gk)
+        ar_name = '{0}_{1}'.format(A.plot_type, A.analysis)
+        ar_whname = os.path.join(ar_where, ar_name)
+        if h5.__contains__(ar_whname):
+            if not A.overwrite:
+                L('fetching subdata from precalculated result')
+                sda = h5.getNode(ar_whname).read()     # sda: subdata
             else:
-                print 'Calculating: {0}...'.format(gk)
-                ar = calc_simple_bar(grps, pt_obj, data, gk, h5)
-                data[gk] = h5.createArray(where=path, name=ar_name, object=ar)
-        ptp.simple_bar(data, A, C)
-
-    else:
-        data = OrderedDict()
-        for k, gk in enumerate(grps):
-            L('processing Group {0}: {1}'.format(k, gk))
-            # ar: array
-            ar_where = os.path.join('/', gk)
-            ar_name = '{0}_{1}'.format(A.plot_type, A.analysis)
-            ar_whname = os.path.join(ar_where, ar_name)
-            if h5.__contains__(ar_whname):
-                if not A.overwrite:
-                    L('fetching subdata from precalculated result')
-                    sda = h5.getNode(ar_whname).read()     # sda: subdata
-                else:
-                    L('overwriting old subdata with new')
-                    _ = h5.getNode(ar_whname)
-                    _.remove()
-                    ar = calcit(grps[gk], pt_obj, gk, A, C)
-                    h5.createArray(where=ar_where, name=ar_name, object=ar)
-                    sda = ar
-            else:
-                L('Calculating subdata...')
+                L('overwriting old subdata with new')
+                _ = h5.getNode(ar_whname)
+                _.remove()
                 ar = calcit(grps[gk], pt_obj, gk, A, C)
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
                 sda = ar
-            data[gk] = sda
+        else:
+            L('Calculating subdata...')
+            ar = calcit(grps[gk], pt_obj, gk, A, C)
+            h5.createArray(where=ar_where, name=ar_name, object=ar)
+            sda = ar
+        data[gk] = sda
 
-        getattr(ptp, A.plot_type)(data, A, C)
+    getattr(ptp, A.plot_type)(data, A, C)
 
 def calcit(grp, pt_obj, gk, A, C):
-    if A.plot_type == 'map':
+    if A.plot_type == 'simple_bar':
+        return calc_simple_bar(grp, pt_obj)
+    elif A.plot_type == 'alx':
+        return calc_alx(grp, pt_obj)
+    elif A.plot_type == 'map':
         return calc_map(grp, pt_obj)
     elif A.plot_type == 'distr':
-        return calc_distr(grp, pt_obj, gk, A, C)
+        return calc_distr(grp, pt_obj, A, C)
     elif A.plot_type == 'pmf':
-        return calc_pmf(grp, pt_obj, gk, A, C)
+        return calc_pmf(grp, pt_obj, A, C)
 
 def calc_map(grp, pt_obj):
     _l = []
@@ -108,7 +66,7 @@ def calc_map(grp, pt_obj):
     # norm  = pt_obj.norm('sq1') # dirty
     return np.array(_l).mean(axis=0)
 
-def calc_alx(grp, pt_obj, data, gk, h5):
+def calc_alx(grp, pt_obj):
     _l = []
     ref_col = grp[0].read(field='time')
     for tb in grp:
@@ -121,7 +79,8 @@ def calc_alx(grp, pt_obj, data, gk, h5):
             ref_col / 1000,                         # ps => ns
             _a.mean(axis=0),
             [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
-    data[gk] = block_average(_aa)
+    res = block_average(_aa)
+    return res
 
 def block_average(a, n=100):
     """a is a mutliple dimension array, n is the max number of data points desired"""
@@ -136,15 +95,14 @@ def block_average(a, n=100):
         return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
                          for i in xrange(1, n+1)]).transpose()
 
-def calc_simple_bar(grps, pt_obj, gk, h5, A, C):
-    grp = grps[gk]
+def calc_simple_bar(grp, pt_obj):
     _l = []
     for tb in grp:
         _ = tb.read(field=pt_obj.ifield).mean()
         _l.append(_)
     return np.array([np.mean(_l), utils.sem(_l)])
 
-def calc_distr(grp, pt_obj, gk, A, C):
+def calc_distr(grp, pt_obj, A, C, **kw):
     _l = []
     for tb in grp:
         _l.append(tb.read(field=pt_obj.ifield))
@@ -171,14 +129,14 @@ def calc_distr(grp, pt_obj, gk, A, C):
     pse = np.array(pse)
     return np.array([bn, psm, pse])
 
-def calc_pmf(grp, pt_obj, gk, A, C):
+def calc_pmf(grp, pt_obj, A, C):
     D = C['plot'][A.analysis][A.plot_type]
     if 'bins' not in D:
         raise ValueError('bins not found in {0}, but be specified when plotting pmf'.format(C.name))
     subgrps = utils.split(grp, 4)                         # split into 4 chunks
     da = []
     for sp in subgrps:
-        bn, psm, pse = calc_distr(sp, pt_obj, gk, A, C)
+        bn, psm, pse = calc_distr(sp, pt_obj, A, C)
         pmf, pmf_e = prob2pmf(psm, max(psm), pse)
         sub_da = np.array([bn, pmf, pmf_e])
         da.append(sub_da)

@@ -3,7 +3,7 @@
 import os
 import re
 import sys
-from argparse_action import my_basic_parser
+from utils_argparse import my_basic_parser
 
 """needs to be substantially improved"""
 
@@ -69,17 +69,21 @@ def convert_line_to_ss_count(line, dssp_count, col_map):
             dssp_count[ss].append([sl[0], '0'])
 
 if __name__ == "__main__":
-    parser = my_basic_parser()
-    parser.add_argument('--fpp', dest='fpp', required=True, # fpp: file path pattern
-                        help=("specify the file path pattern, e.g. r_dssp/{s}{c}{n}_dssp.xvg,"
-                              "{s}{c}{n} are the variables"))
-    args = parser.parse_args()
-    for s in args.SEQS:
-        for c in args.CDTS:
-            for n in args.NUMS:
-                infile = args.fpp.format(s=s, c=c, n=n)
-                if not os.path.exists(infile):
-                    print "{0} doesn't exist, YOU KONW THIS, RIGHT? ".format(infile)
-                else:
-                    main(infile)
-                    print "{0} is done".format(infile)
+    infiles = sys.argv[1:]
+    for infile in infiles:
+        print infile
+        main(infile)
+    # parser = my_basic_parser()
+    # parser.add_argument('--fpp', dest='fpp', required=True, # fpp: file path pattern
+    #                     help=("specify the file path pattern, e.g. r_dssp/{s}{c}{n}_dssp.xvg,"
+    #                           "{s}{c}{n} are the variables"))
+    # args = parser.parse_args()
+    # for s in args.SEQS:
+    #     for c in args.CDTS:
+    #         for n in args.NUMS:
+    #             infile = args.fpp.format(s=s, c=c, n=n)
+    #             if not os.path.exists(infile):
+    #                 print "{0} doesn't exist, YOU KONW THIS, RIGHT? ".format(infile)
+    #             else:
+    #                 main(infile)
+    #                 print "{0} is done".format(infile)

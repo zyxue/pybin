@@ -15,11 +15,14 @@ def distr(data, A, C, **kw):
         ax = fig.add_subplot(111)
         for k, gk in enumerate(data.keys()):
             da = data[gk]
-            ax.errorbar(da[0], da[1], yerr=da[2], label=C['legends'][gk])
+            # ax.errorbar(da[0], da[1], yerr=da[2], label=C['legends'][gk])
+            ax.plot(da[0], da[1], color=C['colors'][gk], label=C['legends'][gk])
+            ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
+                            where=None, facecolor=C['colors'][gk], alpha=.3)
         decorate_ax(ax, D)
     else:
         col, row = utils.gen_rc(len(data.keys()))
-        print 'col: {0}, row; {1}'.format(col, row)
+        L('col: {0}, row; {1}'.format(col, row))
         for k, gk in enumerate(data.keys()):
             ax = fig.add_subplot(row, col, k+1)
             da = data[gk]
@@ -34,13 +37,17 @@ def distr(data, A, C, **kw):
     plt.savefig(opf)
 
 def decorate_ax(ax, D):
-    ax.legend(loc='best')
+    leg = ax.legend(loc='best')
+    if 'legend_linewidth' in D:
+        for l in leg.legendHandles:
+            l.set_linewidth(float(D['legend_linewidth']))
     ax.grid(which="major")
     if 'xlim' in D: ax.set_xlim([float(i) for i in D['xlim']])
     if 'ylim' in D: ax.set_ylim([float(i) for i in D['ylim']])
     if 'xlabel' in D: ax.set_xlabel(D['xlabel'])
     if 'ylabel' in D: ax.set_ylabel(D['ylabel'], labelpad=10)
     if 'xscale' in D: ax.set_xscale(D['xscale'])
+
 
 def sliceit(l, b, e):
     l_t = l.transpose()          # (n,3) multi-dimensional data
@@ -55,60 +62,111 @@ def pmf(data, A, C, **kw):
     fs = (float(i) for i in D['figsize']) if 'figsize' in D else (12,9)
     fig = plt.figure(figsize=fs)
 
-    col, row = utils.gen_rc(len(data.keys()))
-    L('col: {0}, row; {1}'.format(col, row))
-    for k, gk in enumerate(data.keys()):
-        ax = fig.add_subplot(row, col, k+1)
-        # DIM of da: (x, 3, y), where x: # of replicas; y: # of bins
-        da = data[gk]
-        pre_pmfm = da.mean(axis=0)                  # means over x, DIM: (3, y)
-        pre_pmfe = utils.sem3(da)                   # sems  over x, DIM: (3, y)
+    if A.merge:
+        ax = fig.add_subplot(111)
+        for k, gk in enumerate(data.keys()):
+            # DIM of da: (x, 3, y), where x: # of replicas; y: # of bins
+            da = data[gk]
+            pre_pmfm = da.mean(axis=0)                  # means over x, DIM: (3, y)
+            pre_pmfe = utils.sem3(da)                   # sems  over x, DIM: (3, y)
 
-        if 'pmf_cuttoff' in D:
-            cf = float(D['pmf_cuttoff'])
-            bs, es = filter_pmf_data(pre_pmfm, cf)       # get slicing indices
-        else:
-            bs, es = filter_pmf_data(pre_pmfm)
+            if 'pmf_cutoff' in D:
+                cf = float(D['pmf_cutoff'])
+                bs, es = filter_pmf_data(pre_pmfm, cf)       # get slicing indices
+            else:
+                bs, es = filter_pmf_data(pre_pmfm)
 
-        bn, pmfm, _ = sliceit(pre_pmfm, bs, es)
-        bne, pmfe, _ = sliceit(pre_pmfe, bs, es)
+            bn, pmfm, _ = sliceit(pre_pmfm, bs, es)             # bn: bin; pmfm: pmf mean
+            bne, pmfe, _ = sliceit(pre_pmfe, bs, es)            # bne: bin err; pmfe: pmf err
 
-        print bn, bne
+            # pmf sem, equivalent to stats.sem(da, axis=0)
+            pmfe = sliceit(pre_pmfe, bs, es)[1] # tricky: 1 corresponds err of pmf mean
 
-        # pmf sem, equivalent to stats.sem(da, axis=0)
-        pmfe = sliceit(pre_pmfe, bs, es)[1] # tricky: 1 corresponds err of pmf mean
+            # now, prepare the errobars for the fit
+            _pfits, _ks, _l0s = [], [], []
+            for subda in da:
+                sliced = sliceit(subda, bs, es)
+                bn, pm, pe = sliced
+                a, b, c = np.polyfit(bn, pm, deg=2)
+                _pfv = parabola(bn, a, b, c)                    # pfv: pmf fit values
+                _pfits.append(_pfv)
+                _ks.append(convert_k(a))
+                _l0s.append(-b/(2*a))
 
-        # now, prepare the errobars for the fit
-        _pfits, _ks, _l0s = [], [], []
-        for subda in da:
-            sliced = sliceit(subda, bs, es)
-            bn, pm, pe = sliced
-            a, b, c = np.polyfit(bn, pm, deg=2)
-            _pfv = parabola(bn, a, b, c)                    # pfv: pmf fit values
-            _pfits.append(_pfv)
-            _ks.append(convert_k(a))
-            _l0s.append(-b/(2*a))
+            _pfit = np.mean(_pfits, axis=0)
+            _k    = np.mean(_ks)                   # prefix it with _ to avoid confusion
+            _ke   = utils.sem(_ks)
+            _l0   = np.mean(_l0s)
+            _l0e  = utils.sem(_l0s)
+            _r2   = calc_r2(pmfm, _pfit)
+            _lb   = C['legends'][gk]
+            _ky, _kye  = ky(_k, _l0, _ke, _l0e)
 
-        _pfit = np.mean(_pfits, axis=0)
-        _k    = np.mean(_ks)                                   # prefix it with _ to avoid mess
-        _ke    = utils.sem(_ks)                                   # prefix it with _ to avoid mess
-        _l0   = np.mean(_l0s)
-        _l0e  = utils.sem(_l0s)
-        _r2   = calc_r2(pmfm, _pfit)
-        _lb   = C['legends'][gk]
-        _ky, _kye  = ky(_k, _l0, _ke, _l0e)
+        # _txtx, _txty = [float(i) for i in D['text_coord']]
+        # ax.text(_txtx, _txty, '\n'.join(['k   = {0:.1f} +/- {1:.1f} pN/nm'.format(_k, _ke),
+        #                                  'l0  = {0:.1f} +/- {1:.2f} nm'.format(_l0, _l0e),
+        #                                  'r^2 = {0:.2f}'.format(_r2),
+        #                                  'ky  = {0:.1f} +/- {1:.1f} MPa'.format(_ky, _kye)]))
 
-        _txtx, _txty = [float(i) for i in D['text_coord']]
-        ax.text(_txtx, _txty, '\n'.join(['k   = {0:.1f} +/- {1:.1f} pN/nm'.format(_k, _ke),
-                                         'l0  = {0:.1f} +/- {1:.1f} nm'.format(_l0, _l0e),
-                                         'r^2 = {0:.2f}'.format(_r2),
-                                         'ky  = {0:.1f} +/- {1:.1f} MPa'.format(_ky, _kye)]))
-
-        ax.plot(bn, pmfm, label=_lb)
-        ax.fill_between(bn, pmfm-pmfe, pmfm+pmfe, 
-                        where=None, facecolor='blue', alpha=.3)
-        ax.plot(bn, _pfit, '--')
+            ax.plot(bn, pmfm, color=C['colors'][gk], label=_lb)
+            ax.fill_between(bn, pmfm-pmfe, pmfm+pmfe, 
+                            where=None, facecolor=C['colors'][gk], alpha=.3)
+            ax.plot(bn, _pfit, '--')
         decorate_ax(ax, D)
+
+    else:
+        col, row = utils.gen_rc(len(data.keys()))
+        L('col: {0}, row; {1}'.format(col, row))
+        for k, gk in enumerate(data.keys()):
+            ax = fig.add_subplot(row, col, k+1)
+            # DIM of da: (x, 3, y), where x: # of replicas; y: # of bins
+            da = data[gk]
+            pre_pmfm = da.mean(axis=0)                  # means over x, DIM: (3, y)
+            pre_pmfe = utils.sem3(da)                   # sems  over x, DIM: (3, y)
+
+            if 'pmf_cutoff' in D:
+                cf = float(D['pmf_cutoff'])
+                bs, es = filter_pmf_data(pre_pmfm, cf)       # get slicing indices
+            else:
+                bs, es = filter_pmf_data(pre_pmfm)
+
+            bn, pmfm, _ = sliceit(pre_pmfm, bs, es)             # bn: bin; pmfm: pmf mean
+            bne, pmfe, _ = sliceit(pre_pmfe, bs, es)            # bne: bin err; pmfe: pmf err
+
+            # pmf sem, equivalent to stats.sem(da, axis=0)
+            pmfe = sliceit(pre_pmfe, bs, es)[1] # tricky: 1 corresponds err of pmf mean
+
+            # now, prepare the errobars for the fit
+            _pfits, _ks, _l0s = [], [], []
+            for subda in da:
+                sliced = sliceit(subda, bs, es)
+                bn, pm, pe = sliced
+                a, b, c = np.polyfit(bn, pm, deg=2)
+                _pfv = parabola(bn, a, b, c)                    # pfv: pmf fit values
+                _pfits.append(_pfv)
+                _ks.append(convert_k(a))
+                _l0s.append(-b/(2*a))
+
+            _pfit = np.mean(_pfits, axis=0)
+            _k    = np.mean(_ks)                   # prefix it with _ to avoid confusion
+            _ke   = utils.sem(_ks)
+            _l0   = np.mean(_l0s)
+            _l0e  = utils.sem(_l0s)
+            _r2   = calc_r2(pmfm, _pfit)
+            _lb   = C['legends'][gk]
+            _ky, _kye  = ky(_k, _l0, _ke, _l0e)
+
+            _txtx, _txty = [float(i) for i in D['text_coord']]
+            ax.text(_txtx, _txty, '\n'.join(['k   = {0:.1f} +/- {1:.1f} pN/nm'.format(_k, _ke),
+                                             'l0  = {0:.1f} +/- {1:.2f} nm'.format(_l0, _l0e),
+                                             'r^2 = {0:.2f}'.format(_r2),
+                                             'ky  = {0:.1f} +/- {1:.1f} MPa'.format(_ky, _kye)]))
+
+            ax.plot(bn, pmfm, label=_lb)
+            ax.fill_between(bn, pmfm-pmfe, pmfm+pmfe, 
+                            where=None, facecolor='blue', alpha=.3)
+            ax.plot(bn, _pfit, '--')
+            decorate_ax(ax, D)
 
     opf = A.output if A.output else os.path.join(
         C['data']['plots'], 
@@ -174,6 +232,7 @@ def filter_pmf_data(pmf_data, cutoff=2.49):
 
     flag = 1                                                # used as a flag
     slices = []
+    # label the data as 1 (wanted) or 0 (unwanted)
     for k, d in enumerate(pdt):
         if flag:
             if d[1] < cutoff:                          # pmf is the second item
@@ -183,16 +242,17 @@ def filter_pmf_data(pmf_data, cutoff=2.49):
             if d[1] >= cutoff:
                 slices.append(k)
                 flag = 1
+    print slices
     if len(slices) == 0:
-        r = [0, -1]
+        res = [0, -1]
     elif len(slices) == 1:
         n = slices[0]
         if abs(n - len(pdt)) > len(pdt) / 2.:
-            r = [n, -1]
+            res = [n, -1]
         else:
-            r = [0, n]
+            res = [0, n]
     elif len(slices) == 2:
-        r = slices
+        res = slices
     elif len(slices) > 2:
         ds = []
         for k, s in enumerate(slices):
@@ -202,6 +262,6 @@ def filter_pmf_data(pmf_data, cutoff=2.49):
                 ds.append(slices[k] - slices[k-1])
         b = ds.index(max(ds))
         e = b + 1
-        r = [b, e]
-    print "beg slice: {0}, end slice: {1}".format(*r)
-    return r
+        res = [slices[b], slices[e]]
+    L("beg slice: {0}, end slice: {1}".format(*res))
+    return res
