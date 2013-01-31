@@ -15,6 +15,7 @@ def gen_cmds(A, C, core_vars):
         io_files = utils.gen_io_files(dpp, cv['id_'])
 
         kw = {}
+        kw.update(inputdir=dpp)
         kw.update(cv)
         kw.update(io_files)
         kw.update(C=C)
@@ -29,6 +30,11 @@ def gen_cmds(A, C, core_vars):
 
         kw.update(h5_filename=C['hdf5']['filename'])
 
+###########here you add analysis specific arguments as in .xitconfig###########
+        if A.analysis == 'trjorder':
+            kw['NA'] = C['trjorder'][kw[A.opt_arg]]
+###########here you add analysis specific arguments as in .xitconfig###########
+
         anal_func = getattr(methods, A.analysis)
 
         if anal_func.__module__ != methods.org.__name__:
@@ -38,7 +44,9 @@ def gen_cmds(A, C, core_vars):
                 os.mkdir(anal_dir)
             kw.update(anal_dir=anal_dir)
 
-        L('using function: "{0}" from module "{1}"'.format(anal_func.__name__, anal_func.__module__))
+        L('using function: "{0}" from module "{1}"'.format(anal_func.__name__, 
+                                                           anal_func.__module__))
+
         cmd = anal_func(**kw) 
 
         if not A.nolog:

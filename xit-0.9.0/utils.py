@@ -126,6 +126,7 @@ def get_args(args_to_parse=None):
     anal_parser.add_argument('--nolog', action='store_true', help='disable logging, output to stdout')
     anal_parser.add_argument('--extend', help='for extending tpr, should be time in ps, not # of steps')
     anal_parser.add_argument('-b', default=0, help='gromacs -b')
+    anal_parser.add_argument('--opt_arg', help='this is used for tool specific arguments specified in the .xitconfig file')
 
     transform_parser = subparsers.add_parser('transform', help=('transform the file formats from analysis step '
                                                                 '(e.g. xvg) to hdf5 format, '
@@ -150,6 +151,7 @@ def get_args(args_to_parse=None):
 
     for p in [anal_parser, transform_parser, plot_parser]:
         p.add_argument('-a' , '--analysis', help='self-explained, e.g. rg_c_alpha')
+        p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
 
     args = parser.parse_args(args_to_parse)
     return args
@@ -293,8 +295,11 @@ def get_dpp(cv):              # get deepest path
               key=lambda x: int(x[4:]))
     return cv[dpk]
 
-def get_h5(C):
-    hdf5 = C['hdf5']['filename']
+def get_h5(A, C):
+    if A.hdf5:
+        hdf5 = A.hdf5
+    else:
+        hdf5 = C['hdf5']['filename']
     L('reading h5: {0}'.format(hdf5))
     if not os.path.exists(hdf5):
         hdf5_title = C['hdf5']['filename']

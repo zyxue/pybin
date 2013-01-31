@@ -2,9 +2,9 @@ from methods import org as O
 from methods import basic as B
 from methods import interactions as I
 
-rg_c_alaph      = B.rg_c_alpha
-rg_wl           = B.rg_wl
-e2ed            = B.e2ed
+rg_c_alpha  = B.rg_c_alpha
+rg_wl       = B.rg_wl
+e2ed        = B.e2ed
 
 upup            = I.upup
 unun            = I.unun
@@ -16,3 +16,5 @@ g_select        = O.g_select
 symlink_ndx     = O.symlink_ndx
 extend_tpr      = O.extend_tpr
 trjconv_progrof = O.trjconv_progrof
+trjorder    = O.trjorder
+
