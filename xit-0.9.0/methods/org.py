@@ -29,6 +29,15 @@ def extend_tpr(**kw):
     kw.update(oldtprf=os.path.join(os.path.dirname(T), renamed))
     return 'mv -v {tprf} {oldtprf}; tpbconv -s {oldtprf} -extend {extend} -o {tprf}'.format(**kw)
 
+def trjconv_progrof(**kw):
+    return """printf 'Protein\nProtein\n' | trjconv \
+-f {xtcf} \
+-s {tprf} \
+-pbc mol \
+-center \
+-dump 0 \
+-o {progrof}""".format(**kw)
+
 def get_tpr_time(tprfile):
     proc = subprocess.Popen(['gmxdump', '-s', tprfile],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
