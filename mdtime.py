@@ -53,20 +53,37 @@ def get_tpr_time(tprfile):
 def parse_cmd():
     parser = argparse.ArgumentParser(
         prog='specify the gmxcheck version, and cpt file as input')
-    parser.add_argument('-f', type=str, dest='inputfile', required=True,
+    parser.add_argument('-f', type=str, dest='inputfile',
                         help='specify the inputfile')
+    parser.add_argument('--comp', nargs='+', dest='fs',
+                        help='for comparison, order: return cpt < tpr')
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_cmd()
-    if args.inputfile[-3:] == "cpt":
-        sys.stdout.write(get_cpt_time(args.inputfile))
-    elif args.inputfile[-3:] == "tpr":
-        sys.stdout.write(get_tpr_time(args.inputfile))
+    if args.inputfile:
+        if args.inputfile[-3:] == "cpt":
+            sys.stdout.write(get_cpt_time(args.inputfile))
+        elif args.inputfile[-3:] == "tpr":
+            sys.stdout.write(get_tpr_time(args.inputfile))
+        else:
+            raise ValueError("Unrecoganized file type: {0}\n".format(args.inputfile))
     else:
-        sys.stderr.write("Unrecoganized file type\n")
-        sys.exit(1)
+        cpt, tpr = args.fs
+        msg_cpt = get_cpt_time(cpt)
+        msg_tpr = get_tpr_time(tpr)
+        try:
+            t_cpt = float(msg_cpt)
+            t_tpr = float(msg_tpr)
+        except ValueError:
+            sys.stdout.write(msg_cpt)
+            sys.stdout.write(msg_tpr)
+
+        if t_cpt <= t_tpr:
+            sys.stdout.write('1')
+        else:
+            sys.stdout.write('0')
 
 if __name__ == "__main__":
     main()
