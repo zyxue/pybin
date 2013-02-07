@@ -4,6 +4,7 @@ L = logging.info
 from collections import OrderedDict
 
 import numpy as np
+from tables.exceptions import NoSuchNodeError
 
 import prop
 import utils
@@ -67,14 +68,15 @@ def calc_map(grp, pt_obj):
     return np.array(_l).mean(axis=0)
 
 def calc_alx(grp, pt_obj):
+    min_len = min(tb.read(field='time').shape[0] for tb in grp)
     _l = []
-    ref_col = grp[0].read(field='time')
+    ref_col = grp[0].read(field='time')[:min_len]
     for tb in grp:
-        col1 = tb.read(field='time')
+        col1 = tb.read(field='time')[:min_len]
         assert (col1 == ref_col).all() == True
-        col2 = tb.read(field=pt_obj.ifield)
+        col2 = tb.read(field=pt_obj.ifield)[:min_len]
         _l.append(col2)
-    _a = np.array(_l)
+        _a = np.array(_l)
     _aa = np.array([
             ref_col / 1000,                         # ps => ns
             _a.mean(axis=0),
@@ -103,9 +105,10 @@ def calc_simple_bar(grp, pt_obj):
     return np.array([np.mean(_l), utils.sem(_l)])
 
 def calc_distr(grp, pt_obj, A, C, **kw):
+    min_len = min(tb.read(field='time').shape[0] for tb in grp)
     _l = []
     for tb in grp:
-        _l.append(tb.read(field=pt_obj.ifield))
+        _l.append(tb.read(field=pt_obj.ifield)[:min_len])
     _la = np.array(_l)
 
     D = C['plot'][A.analysis][A.plot_type]
@@ -182,6 +185,9 @@ def groupit(A, C, core_vars, h5):
         if grpid not in grps:
             grps[grpid] = []
         where = os.path.join('/', utils.get_dpp(cv))
-        tb = h5.getNode(where, A.analysis)
-        grps[grpid].append(tb)
+        try:
+            tb = h5.getNode(where, A.analysis)
+            grps[grpid].append(tb)
+        except NoSuchNodeError:
+            L('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(os.path.join(where, A.analysis)))
     return grps

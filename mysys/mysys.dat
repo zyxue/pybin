@@ -41,17 +41,17 @@
 # SOLVENT-SPECIFIC:
 
 # cid name col  solgro solitp maxsol box solname natom
-& w water     r       tip4p_216.gro tip4p.itp 3700 5.8 SOL 4
-& m methanol  b	      meo_1728.gro  meo.itp   3300 7.3 MEO 6
-& e ethanol   g	      eth_1000.gro  eth.itp   2200 7.3 ETH 9
-& p propanol  m	      pol_512.gro   pol.itp   2000 7.8 POL 12
-& b butanol   c	      but_512.gro   but.itp   2000 8.0 BUT 15
-& n pentanol  #FF9900 pen_512.gro   pen.itp   1800 8.2 PEN 18
-& x hexanol   #FFDE00 hex_512.gro   hex.itp   1700 8.5 HEX 21
-& h hepanol   #097054 hep_512.gro   hep.itp   1400 8.3 HEP 24
-& c octanol   #666666 oco_512.gro   oco.itp	900  8.0 OCO 27
-& o octane    c	      oct_512.gro   oct.itp   600  6.8 OCT 26
-& f tfe	      -	      tfe_512.gro   tfe.itp	900  6	 TFE 9
+& w water     r       tip4p_216.gro tip4p.itp 3700 5.8  SOL 4
+& m methanol  b	      meo_1728.gro  meo.itp   3300 7.3  MEO 6
+& e ethanol   g	      eth_1000.gro  eth.itp   2200 7.0  ETH 9
+& p propanol  m	      pol_512.gro   pol.itp   2000 7.4  POL 12
+& b butanol   c	      but_512.gro   but.itp   2000 7.95 BUT 15
+& n pentanol  #FF9900 pen_512.gro   pen.itp   1800 8.1  PEN 18
+& x hexanol   #FFDE00 hex_512.gro   hex.itp   1480 8.0  HEX 21
+& h hepanol   #097054 hep_512.gro   hep.itp   1300 8.05 HEP 24
+& c octanol   #666666 oco_512.gro   oco.itp   990  7.75 OCO 27
+& o octane    c	      oct_512.gro   oct.itp   600  6.7  OCT 26
+& f tfe	      -	      tfe_512.gro   tfe.itp	900  6  TFE 9
 & v vacuo     k	      None          None      0 0 None 0
 
 # & o octane    c oct_512.gro   oct.itp   350  5.8 OCT

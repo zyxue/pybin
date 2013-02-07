@@ -3,6 +3,7 @@
 """This is script is incomplete, it's used to produce the itp file for opls,
 given the input of all bonds"""
 
+import sys
 import re
 import copy
 from Bio.PDB.Polypeptide import three_to_one
@@ -30,6 +31,7 @@ def read_atoms(itpfile):
             else:
                 sl = line.split()
                 atoms[int(sl[0])] = sl[3]
+    print atoms
     return atoms
 
 def read_bond_pairs(itpfile, ff):
@@ -50,6 +52,7 @@ def read_bond_pairs(itpfile, ff):
         # "martini": [";backbone-backbone bonds", "^(?!;).*\[ *angles *\]"],
         # MARTINI has the "[ constraints ]" section and it only counts BBBB dihedrals
         "opls"   : ["^(?!;).*\[ *bonds *\]", "^(?!;).*\[ *pairs *\]"],
+        "cgenff" : ["^(?!;).*\[ *bonds *\]", "^(?!;).*\[ *pairs *\]"],
         }
 
     bonds = []
@@ -71,6 +74,7 @@ def read_bond_pairs(itpfile, ff):
             else:
                 bonds.append([int(i) for i in line.split()[:2]])
                 # bonds.append([int(i) for i in line.split()[:2]])
+    print bonds
     return bonds
 
 
@@ -156,18 +160,19 @@ def print_martini_dihedrals(dihedrals, atoms, params):
 
 # params = 
 
-from pprint import pprint as pp
 # this has been verified that my created [dihedrals] is exactly the same as Mikyung's 
 # itpfile = '/home/zyxue/Dropbox/labwork/CG_param/CG_pgv12_WDihePot.itp'
 
-itpfile = 'sq1_cg_dih.itp'
+itpfile = sys.argv[1]
 
 atoms = read_atoms(itpfile)
 # pp(atoms)
 
 # bonds = read_bond_pairs('hep.itp', ff='opls')               # tested, the result is correct
-bonds = read_bond_pairs(itpfile, ff='martini')
+# bonds = read_bond_pairs(itpfile, ff='martini')
+bonds = read_bond_pairs(itpfile, ff='cgenff')
 # pp(bonds)
 
 dihedrals = collect_dihedrals(bonds)
-print_martini_dihedrals(dihedrals, atoms, params=cg_params)
+print_dihedrals(dihedrals, ft=9)
+# print_martini_dihedrals(dihedrals, atoms, params=cg_params)
