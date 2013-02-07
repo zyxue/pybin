@@ -124,6 +124,7 @@ def get_args(args_to_parse=None):
     anal_parser.add_argument('--numthreads', default=16, help='number of threads')
     anal_parser.add_argument('--test', action='store_true', help='if test, print the cmd without executing it')
     anal_parser.add_argument('--nolog', action='store_true', help='disable logging, output to stdout')
+    anal_parser.add_argument('--extend', help='for extending tpr, should be time in ps, not # of steps')
     anal_parser.add_argument('-b', default=0, help='gromacs -b')
     anal_parser.add_argument('--opt_arg', help='this is used for tool specific arguments specified in the .xitconfig file')
 
