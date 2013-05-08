@@ -180,15 +180,15 @@ SCHEMA_DICT = {
     # 'pmf_e2ed': (pmf, 'potential_of_mean_force'),
     # 'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
     
-    # 'dssp_E': (dssp, 'dssp_E (b-sheet)'),
-    # 'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
-    # 'dssp_T': (dssp, 'dssp_T (hydrogen bonded turn)'),
-    # 'dssp_G': (dssp, 'dssp_G (3-helix)'),
-    # 'dssp_I': (dssp, 'dssp_I (5-helix)'),
-    # 'dssp_B': (dssp, 'dssp_B (residue in isolated beta-bridge)'),
-    # 'dssp_C': (dssp, 'dssp_C (coil)'),
-    # 'dssp_S': (dssp, 'dssp_S (Bend)'),
-    # 'dssp_X': (dssp, 'dssp_X (Bend)'),
+    'dssp_E': dssp,                  # dssp_E (b-sheet)
+    'dssp_H': dssp,                  # dssp_H (alpha-helix)
+    'dssp_T': dssp,                  # dssp_T (hydrogen bonded turn)
+    'dssp_G': dssp,                  # dssp_G (3-helix)
+    'dssp_I': dssp,                  # dssp_I (5-helix)
+    'dssp_B': dssp,                  # dssp_B (residue in isolated beta-bridge)
+    'dssp_C': dssp,                  # dssp_C (coil)
+    'dssp_S': dssp,                  # dssp_S (Bend)
+    'dssp_X': dssp,                  # dssp_X (Bend)
 
     # 'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
     'upup': upup,
@@ -237,6 +237,7 @@ INTERESTED_FIELDS = {
     'upup'             : 'upup',
     'unun'             : 'unun',
     'unun_wl'          : 'unun',
+    'dssp_E'           : 'structure',
     }
 
 from mysys import read_mysys

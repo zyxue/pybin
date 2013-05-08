@@ -1,6 +1,6 @@
 import os
 import logging
-L = logging.info
+logger = logging.getLogger(__name__)
 from collections import OrderedDict
 
 import numpy as np
@@ -9,7 +9,7 @@ from tables.exceptions import NoSuchNodeError
 import prop
 import utils
 
-import plot_types as ptp
+import plot_types
 
 class UnrecoganizedPlotTypeError(Exception):
     pass
@@ -18,37 +18,40 @@ def plot(A, C, core_vars):
     h5 = utils.get_h5(A, C)
     pt_obj = prop.Property(A.analysis)
     grps = groupit(A, C, core_vars, h5)
-    L("Groups: {0}".format(grps.keys()))
+    logger.info("Groups: {0}".format(grps.keys()))
 
     data = OrderedDict()
     for k, gk in enumerate(grps):
-        L('processing Group {0}: {1}'.format(k, gk))
+        logger.info('processing Group {0}: {1}'.format(k, gk))
         # ar: array
         ar_where = os.path.join('/', gk)
         ar_name = '{0}_{1}'.format(A.plot_type, A.analysis)
         ar_whname = os.path.join(ar_where, ar_name)
         if h5.__contains__(ar_whname):
             if not A.overwrite:
-                L('fetching subdata from precalculated result')
+                logger.info('fetching subdata from precalculated result')
                 sda = h5.getNode(ar_whname).read()     # sda: subdata
             else:
-                L('overwriting old subdata with new')
+                logger.info('overwriting old subdata with new ones')
                 _ = h5.getNode(ar_whname)
                 _.remove()
                 ar = calcit(grps[gk], pt_obj, gk, A, C)
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
                 sda = ar
         else:
-            L('Calculating subdata...')
+            logger.info('Calculating subdata...')
             ar = calcit(grps[gk], pt_obj, gk, A, C)
             h5.createArray(where=ar_where, name=ar_name, object=ar)
             sda = ar
         data[gk] = sda
 
-    getattr(ptp, A.plot_type)(data, A, C)
+    func = plot_types.PLOT_TYPES[A.plot_type]
+    func(data, A, C)
 
 def calcit(grp, pt_obj, gk, A, C):
-    if A.plot_type == 'simple_bar':
+    # the name for plot_types MUST follow those function names in files in
+    # ./plot_types
+    if A.plot_type in ['simple_bar', 'grped_bars']:
         return calc_simple_bar(grp, pt_obj)
     elif A.plot_type == 'alx':
         return calc_alx(grp, pt_obj)
@@ -58,7 +61,9 @@ def calcit(grp, pt_obj, gk, A, C):
         return calc_distr(grp, pt_obj, A, C)
     elif A.plot_type == 'pmf':
         return calc_pmf(grp, pt_obj, A, C)
-
+    else:
+        raise IOError('Do not know how to calculate "{0}"'.format(A.plot_type))
+    
 def calc_map(grp, pt_obj):
     _l = []
     for tb in grp:                              # it could be array
@@ -177,7 +182,7 @@ def prob2pmf(p, max_p, e=None):
 @utils.timeit
 def groupit(A, C, core_vars, h5):
     """grouping all the tables by grptoken (group token) specified in the commnand line"""
-    L('grouping... by token: {0}'.format(A.grptoken))
+    logger.info('grouping... by token: {0}'.format(A.grptoken))
     grptoken = A.grptoken
     grps = OrderedDict()                                    # grped data
     for cv in core_vars:
@@ -189,5 +194,6 @@ def groupit(A, C, core_vars, h5):
             tb = h5.getNode(where, A.analysis)
             grps[grpid].append(tb)
         except NoSuchNodeError:
-            L('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(os.path.join(where, A.analysis)))
+            logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
+                    os.path.join(where, A.analysis)))
     return grps

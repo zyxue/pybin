@@ -348,3 +348,24 @@ def split(l, n):
         if idx * n < len(l):
             idx += 1                           # asure to include the remainder
         return [l[i:idx * (i+1)] for i in xrange(idx)]
+
+def gen_output_filename(A, C):
+    if A.output:
+        return A.output
+    else:
+        output = os.path.join(
+            C['data']['plots'], 
+            '{0}.png'.format('_'.join([A.plot_type, A.analysis])))
+        return output
+
+def float_params(d, *key_list):
+    """
+    this is not very great way of trying to do what json does
+
+    key_list contains the names of properties as specified in the xit
+    configuration file (e.g. xitconfig) that need to be converted to float
+    """
+    # overwrite old vals with floated ones
+    d.update({k:float(d[k]) for k in key_list if k in d})
+    return d
+            

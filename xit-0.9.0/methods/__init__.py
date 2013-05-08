@@ -13,7 +13,7 @@ for module in [org, basic, fancy, interactions]:
         if inspect.isfunction(f):
             METHODS.update({f.func_name:f})
 
-
+# JUST FOR REFERENCE 
 # rg_c_alpha  = B.rg_c_alpha
 # rg_wl       = B.rg_wl
 # e2ed        = B.e2ed

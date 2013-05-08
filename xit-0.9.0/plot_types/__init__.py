@@ -1,13 +1,23 @@
+import inspect
+
 from utils import timeit
 
-import alx as A
-import bar as B
-import distr as D
-import map_ as M
+import alx
+import bar
+import distr
+import map_
+import grped_bars
 
-# here it controls what kind of bar will the data be parsed to
-alx = A.alx
-simple_bar = B.simple_bar
-distr = D.distr
-pmf   = D.pmf
-map   = timeit(M.map_)
+PLOT_TYPES = {}
+for module in [alx, bar, distr, map_, grped_bars]:
+    for fname in dir(module):
+        f = getattr(module, fname)
+        if inspect.isfunction(f):
+            PLOT_TYPES.update({f.func_name: timeit(f)})
+
+# JUST FOR REFERENCE 
+# alx = A.alx
+# simple_bar = B.simple_bar
+# distr = D.distr
+# pmf   = D.pmf
+# map   = timeit(M.map_)
