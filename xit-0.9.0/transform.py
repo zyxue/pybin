@@ -51,7 +51,7 @@ def put_data(ft, f, schema, h5 ,path, tb_name, cv):
     if ft == 'xvg':
         fobj = objs.Xvg(f)
         tb = h5.createTable(where=path, name=tb_name, 
-                            description=schema, 
+                            description=schema,
                             title=fobj.desc)
         tb.append(fobj.data)
     elif ft == 'xpm':                                       # e.g. hbond map
@@ -104,6 +104,7 @@ def init_hdf5(h5, core_vars):
         paths.append(sorted(
                 [cv[p] for p in cv.keys() if re.match(PATH_KEY_RE, p)],
                 key=lambda x: len(x)))
+
 
     for path in paths:
         for p in path:

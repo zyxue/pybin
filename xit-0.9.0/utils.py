@@ -126,7 +126,7 @@ def get_args(args_to_parse=None):
     anal_parser.add_argument('--nolog', action='store_true', help='disable logging, output to stdout')
     anal_parser.add_argument('--extend', help='for extending tpr, should be time in ps, not # of steps')
     anal_parser.add_argument('-b', default=0, help='gromacs -b')
-    anal_parser.add_argument('--opt_arg', help='this is used for tool specific arguments specified in the .xitconfig file')
+    anal_parser.add_argument('--opt_arg', help='this is used for tool specific arguments specified in the .xitconfig file (e.g. var1, var2, or var3)')
 
     transform_parser = subparsers.add_parser('transform', help=('transform the file formats from analysis step '
                                                                 '(e.g. xvg) to hdf5 format, '
@@ -150,7 +150,8 @@ def get_args(args_to_parse=None):
         add_global_args(p)
 
     for p in [anal_parser, transform_parser, plot_parser]:
-        p.add_argument('-a' , '--analysis', help='self-explained, e.g. rg_c_alpha')
+        from methods import METHODS
+        p.add_argument('-a' , '--analysis', help='self-explained, e.g. {0}'.format(METHODS.keys()))
         p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
 
     args = parser.parse_args(args_to_parse)
@@ -180,10 +181,11 @@ def gen_core_vars_r(vars_, dir_tmpls, id_tmpl='', result=[], **kw):
         # cv: core vars
         cv = {}
         dirnames = {_:dir_tmpls[_].format(**kw) for _ in dir_tmpls}
+        dirnames = OrderedDict(sorted(dirnames.items(), key=lambda i: i[0]))
         cv.update(dirnames)
         cv.update(id_=id_tmpl.format(**kw))
         cv.update(kw)
-        pathnames = sorted(dirnames.values(), key=len)
+        pathnames = dirnames.values()
         for i in xrange(len(pathnames)):
             cv.update({'path{0}'.format(i+1):os.path.join(*pathnames[0:i+1])})
         result.append(cv)
@@ -208,6 +210,8 @@ def get_vars(A, C):
 def get_dir_tmpls(A, C):
     CS = C['systems']
     dir_tmpls = {k:CS[k] for k in CS.keys() if re.match('dir[0-9]+', k)}
+    # sorted dir_tmpls by keys, the number in particular
+    dir_tmpls = OrderedDict(sorted(dir_tmpls.items(), key=lambda t:t[0]))
     return dir_tmpls
 
 # def gen_paths(dirs, dirname='', result=[]):

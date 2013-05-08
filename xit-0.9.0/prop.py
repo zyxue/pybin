@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 """
 everytime when adding a table, remember to add relevant info in
     __tables__
@@ -162,10 +165,10 @@ class rdf(tables.IsDescription):
 
 
 SCHEMA_DICT = {
-    'e2ed'       : e2ed,
-    'e2ed_wl'    : e2ed,
-    'rg_c_alpha' : rg,
-    'rg_wl'      : rg,
+    'e2ed'          : e2ed,
+    'e2ed_wl'       : e2ed,
+    'rg_c_alpha'    : rg,
+    'rg_c_alpha_wl' : rg,
 
     # 'e2ed'           : (e2ed, "e2ed"),   # end-to-end distance data along the time trjectory"
     # 'rg_c_alpha'     : (rg, "rg"),       # Radius of gyration of C alpha along the time trjectory"
@@ -243,7 +246,7 @@ class Property(object):
     def __init__(self, pn):                                 # p: property name
         """values of d contain two parts: the table class & its description"""
         self.name = pn
-        self.schema = SCHEMA_DICT.get(pn, None)
+        self.schema = SCHEMA_DICT[pn]
         if pn in INTERESTED_FIELDS.keys():
             self.ifield = INTERESTED_FIELDS[pn]
 
