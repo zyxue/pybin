@@ -97,14 +97,13 @@ class convert_vars(argparse.Action):
             final.append(subfinal)
         setattr(namespace, self.dest, final)
 
-def add_global_args(p):
-    # f is used to add global_args, it does not work with argparse to put
-    # --vars in right after argparse.ArgumentParser, which is strange
-    p.add_argument('-v', '--vars', nargs='+', action=convert_vars,
-                   help='list of vars, as defined in the .xit file, command line options override .xit')
-    p.add_argument('-g', '--config', default='.xitconfig', help='specify the config option if not default')
-    p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
-    p.add_argument('--loglevel', default='info', help="don't back the file to speed up analysis")
+class verify_xy(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if namespace.plot_type != 'xy':
+            raise ValueError('--xyp should be specified only when doing --plot_type xy')
+        if len(values) != 2:
+            raise ValueError('values of --xyp must be two. e.g. "upup unun"')
+        setattr(namespace, self.dest, values)
 
 @timeit
 def get_args(args_to_parse=None):
@@ -120,38 +119,58 @@ def get_args(args_to_parse=None):
     mgrp.add_argument('--sed_0_mdrun_sh', action='store_true')
     mgrp.add_argument('--qsub_0_mdrun_sh', action='store_true')
 
-    anal_parser = subparsers.add_parser('anal', help='do different sorts of analysis')
+    anal_parser = subparsers.add_parser(
+        'anal', help='do different sorts of analysis')
     anal_parser.add_argument('--numthreads', default=16, help='number of threads')
     anal_parser.add_argument('--test', action='store_true', help='if test, print the cmd without executing it')
     anal_parser.add_argument('--nolog', action='store_true', help='disable logging, output to stdout')
     anal_parser.add_argument('--extend', help='for extending tpr, should be time in ps, not # of steps')
     anal_parser.add_argument('-b', default=0, help='gromacs -b')
-    anal_parser.add_argument('--opt_arg', help='this is used for tool specific arguments specified in the .xitconfig file (e.g. var1, var2, or var3)')
+    anal_parser.add_argument('--opt_arg', help=('this is used for tool specific arguments specified'
+                                                'in the .xitconfig file (e.g. var1, var2, or var3)'))
 
-    transform_parser = subparsers.add_parser('transform', help=('transform the file formats from analysis step '
-                                                                '(e.g. xvg) to hdf5 format, '
-                                                                'if the previous one is in hdf5 already, '
-                                                                'then this step is unecessary.'))
+    transform_parser = subparsers.add_parser(
+        'transform', help=('transform the file formats from analysis step (e.g. xvg) to hdf5 format, '
+                           'if the previous one is in hdf5 already, then this step is unecessary.'))
     transform_parser.add_argument('-t' , '--filetype', default='xvg', help='self-explained, e.g. xvg')
     transform_parser.add_argument('--overwrite', action='store_true', help='overwrite previous data')
     transform_parser.add_argument('--init_hdf5', action='store_true', help='initialize hdf5, creating dirs, etc.')
 
-    plot_parser = subparsers.add_parser('plot', help=('postprocess the results from analysis '
-                                                      'and illustrate it via plotting'))
-    plot_parser.add_argument('--normid', help='var1, etc')
+    plot_parser = subparsers.add_parser(
+        'plot', help='postprocess the results from analysis and illustrate it via plotting')
     plot_parser.add_argument('--plot_type', help='simple_bar, alx, etc')
-    plot_parser.add_argument('--grptoken', default='mena', help='e.g. path2')
-    plot_parser.add_argument('--merge', action='store_true', help='merge all plots in one ax')
-    plot_parser.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
     # plot_parser.add_argument('--scale', action='store_true', help='scale to 1, when map plotting is not obvious')
     plot_parser.add_argument('-o', '--output', help='output file')
+    # shouldn't be used, instead put it in the .xitconfig --2013-05-09
+    # plot_parser.add_argument('--normid', help='var1, etc')
 
-    for p in [prep_parser, anal_parser, transform_parser, plot_parser]:
-        add_global_args(p)
+    plot2p_parser = subparsers.add_parser(
+        'plot2p', help='similar to plot, but handles two properties at the same time')
+    plot2p_parser.add_argument('--plot_type', help='e.g. xy, etc')
+    plot2p_parser.add_argument('-a' , '--analysis', nargs='+', action=verify_xy,
+                               help=('added MULTIPLE properties, which is different '
+                                     'than a single property in plot. e.g. "upup unun"'))
 
+    for p in [plot_parser, plot2p_parser]:
+        p.add_argument('--grptoken', default='mena', help='how to group the original  directories? e.g. path2')
+        p.add_argument('--merge', action='store_true', help='merge all plots in one ax')
+        p.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
+
+    for p in [prep_parser, anal_parser, transform_parser, plot_parser, plot2p_parser]:
+        # forget what the following two lines mean ---2013-05-09
+        # f is used to add global_args, it does not work with argparse to put
+        # --vars in right after argparse.ArgumentParser, which is strange
+        p.add_argument('-v', '--vars', nargs='+', action=convert_vars,
+                       help='list of vars, as defined in the .xit file, command line options override .xit')
+        p.add_argument('-g', '--config', default='.xitconfig', help='specify the config option if not default')
+        p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
+        p.add_argument('--loglevel', default='info', help="don't back the file to speed up analysis")
+
+    from methods import METHODS
     for p in [anal_parser, transform_parser, plot_parser]:
-        from methods import METHODS
         p.add_argument('-a' , '--analysis', help='self-explained, e.g. {0}'.format(METHODS.keys()))
+
+    for p in [anal_parser, transform_parser, plot_parser, plot2p_parser]:
         p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
 
     args = parser.parse_args(args_to_parse)

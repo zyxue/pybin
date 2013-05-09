@@ -47,6 +47,9 @@ def main():
     elif subcmd == 'plot':
         import plot
         plot.plot(A, C, core_vars)
+    elif subcmd == 'plot2p':
+        import plot2p
+        plot2p.plot2p(A, C, core_vars)
 
 if __name__ == '__main__':
     main()

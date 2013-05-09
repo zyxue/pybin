@@ -192,13 +192,13 @@ SCHEMA_DICT = {
 
     # 'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
     'upup': upup,
-    # 'upun': upun
+    # 'upun': upun,
     'unun': unun,
     'unun_wl': unun,
-    # 'upvp': (upvp, 'upvp (i.e. intermolecular hbond) along the time trajectory'),
-    # 'upvn': (upvn, 'upvn along the time trajectory'),
-    # 'unvn': (unvn, 'unvn along the time trajectory'),
-    # 'unvp': (unvp, 'unvp along the time trajectory'),
+    'upvp': upvp,          # intermolecular hbond) along the time trajectory
+    'upvn': upvn,          # upvn along the time trajectory
+    'unvn': unvn,          # unvn along the time trajectory
+    'unvp': unvp,          # unvp along the time trajectory'),
     
     # 'upv':  (upv, 'upv along the time trajectory'),
     # 'unv':  (unv, 'unv along the time trajectory'),
@@ -237,6 +237,12 @@ INTERESTED_FIELDS = {
     'upup'             : 'upup',
     'unun'             : 'unun',
     'unun_wl'          : 'unun',
+
+    'upvp': 'upvp',
+    'upvn': 'upvn',
+    'unvn': 'unvn',
+    'unvp': 'unvp',
+
     'dssp_E'           : 'structure',
     }
 
@@ -253,6 +259,7 @@ class Property(object):
 
     def norm(self, x):
         # x could be sq1, sq2; w, m, etc. depending on mysys
+        # THIS design is ugly and not very useful
         if self.name in ['rg_c_alpha', 'rg_wl']:
             return 1
         elif self.name in ['upup', 'upup_map']:

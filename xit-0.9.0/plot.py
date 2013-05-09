@@ -1,4 +1,3 @@
-import sys
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -18,15 +17,21 @@ class UnrecoganizedPlotTypeError(Exception):
 def plot(A, C, core_vars):
     h5 = utils.get_h5(A, C)
     pt_obj = prop.Property(A.analysis)
-    grps = groupit(A, C, core_vars, h5)
-    logger.info("Groups: {0}".format(grps.keys()))
-
     data = OrderedDict()
+    grps = groupit(core_vars, pt_obj, A, C, h5)
+    logger.info("Groups: {0}".format(grps.keys()))
+    calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5)
+
+    func = plot_types.PLOT_TYPES[A.plot_type]
+    func(data, A, C)
+
+def calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5):
+    """data should be a OrderedDict"""
     for k, gk in enumerate(grps):
         logger.info('processing Group {0}: {1}'.format(k, gk))
         # ar: array
         ar_where = os.path.join('/', gk)
-        ar_name = '{0}_{1}'.format(A.plot_type, A.analysis)
+        ar_name = '{0}_{1}'.format(A.plot_type, pt_obj.name)
         ar_whname = os.path.join(ar_where, ar_name)
         if h5.__contains__(ar_whname):
             if not A.overwrite:
@@ -48,11 +53,10 @@ def plot(A, C, core_vars):
                 # calculated properties, which are store, so fetching them is
                 # still fast
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
+            else:
+                logger.info('"{0}" dtype number array CANNNOT be stored in h5'.format(ar.dtype.name))
             sda = ar
         data[gk] = sda
-
-    func = plot_types.PLOT_TYPES[A.plot_type]
-    func(data, A, C)
 
 def calcit(grp, pt_obj, gk, A, C):
     # the name for plot_types MUST follow those function names in files in
@@ -69,6 +73,8 @@ def calcit(grp, pt_obj, gk, A, C):
         return calc_pmf(grp, pt_obj, A, C)
     elif A.plot_type == 'grped_distr_ave':
         return calc_distr_ave(grp, pt_obj, A, C)
+    # elif A.plot_type == 'xy':
+    #     return calc_xy(grp, pt_obj, A, C)
     else:
         raise IOError('Do not know how to calculate "{0}"'.format(A.plot_type))
     
@@ -129,9 +135,10 @@ def calc_distr(grp, pt_obj, A, C, **kw):
         # grped_distr_ave is a variant of grped_distr
         pt_dd = C['plots'][A.analysis]['grped_distr']
     else:
-        pp_dd = C['plots'][A.analysis][A.plot_type]
+        pt_dd = C['plots'][A.analysis][A.plot_type]
 
-    # VERBOSE BUT EXPLICIT VERSION
+    # VERBOSE BUT EXPLICIT VERSION, which does the same thing as the above
+    # CONCISE VERSION
     # if A.plot_type == 'distr':
     #     pt_dd = C['plots'][A.analysis]['distr']
     # elif A.plot_type in ['grped_distr', 'grped_distr_ave']:
@@ -167,6 +174,8 @@ def calc_distr_ave(grp, pt_obj, A, C, **kw):
     # sys.exit(1)
     # return np.array([distrs, aves])
 
+# def calc_xy(grp, pt_obj, A, C):
+    
 def calc_pmf(grp, pt_obj, A, C):
     dd = C['plot'][A.analysis][A.plot_type]
     if 'bins' not in dd:
@@ -210,7 +219,7 @@ def prob2pmf(p, max_p, e=None):
         return pmf
 
 @utils.timeit
-def groupit(A, C, core_vars, h5):
+def groupit(core_vars, pt_obj, A, C, h5):
     """grouping all the tables by grptoken (group token) specified in the commnand line"""
     logger.info('grouping... by token: {0}'.format(A.grptoken))
     grptoken = A.grptoken
@@ -221,9 +230,9 @@ def groupit(A, C, core_vars, h5):
             grps[grpid] = []
         where = os.path.join('/', utils.get_dpp(cv))
         try:
-            tb = h5.getNode(where, A.analysis)
+            tb = h5.getNode(where, pt_obj.name)
             grps[grpid].append(tb)
         except NoSuchNodeError:
             logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
-                    os.path.join(where, A.analysis)))
+                    os.path.join(where, pt_obj.name)))
     return grps
