@@ -140,7 +140,7 @@ def get_args(args_to_parse=None):
         'plot', help='postprocess the results from analysis and illustrate it via plotting')
     plot_parser.add_argument('--plot_type', help='simple_bar, alx, etc')
     # plot_parser.add_argument('--scale', action='store_true', help='scale to 1, when map plotting is not obvious')
-    plot_parser.add_argument('-o', '--output', help='output file')
+
     # shouldn't be used, instead put it in the .xitconfig --2013-05-09
     # plot_parser.add_argument('--normid', help='var1, etc')
 
@@ -155,6 +155,7 @@ def get_args(args_to_parse=None):
         p.add_argument('--grptoken', default='mena', help='how to group the original  directories? e.g. path2')
         p.add_argument('--merge', action='store_true', help='merge all plots in one ax')
         p.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
+        p.add_argument('-o', '--output', help='output file')
 
     for p in [prep_parser, anal_parser, transform_parser, plot_parser, plot2p_parser]:
         # forget what the following two lines mean ---2013-05-09
@@ -372,9 +373,15 @@ def gen_output_filename(A, C):
     if A.output:
         return A.output
     else:
+        if isinstance(A.analysis, list):
+            anal = '_'.join(A.analysis)
+        elif isinstance(A.analysis, str):
+            anal = A.analysis
+        else:
+            raise ValueError("wired type for A.analysis: {0}".format(type(A.analysis)))
         output = os.path.join(
             C['data']['plots'], 
-            '{0}.png'.format('_'.join([A.plot_type, A.analysis])))
+            '{0}.png'.format('_'.join([A.plot_type, anal])))
         return output
 
 def float_params(d, *key_list):
