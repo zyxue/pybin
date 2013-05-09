@@ -1,3 +1,4 @@
+import sys
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -41,7 +42,12 @@ def plot(A, C, core_vars):
         else:
             logger.info('Calculating subdata...')
             ar = calcit(grps[gk], pt_obj, gk, A, C)
-            h5.createArray(where=ar_where, name=ar_name, object=ar)
+            if ar.dtype.name != 'object':
+                # cannot be handled by tables yet, but it's fine not to store
+                # it because usually object is a combination of other
+                # calculated properties, which are store, so fetching them is
+                # still fast
+                h5.createArray(where=ar_where, name=ar_name, object=ar)
             sda = ar
         data[gk] = sda
 
@@ -57,10 +63,12 @@ def calcit(grp, pt_obj, gk, A, C):
         return calc_alx(grp, pt_obj)
     elif A.plot_type == 'map':
         return calc_map(grp, pt_obj)
-    elif A.plot_type == 'distr':
+    elif A.plot_type in ['distr', 'grped_distr']:
         return calc_distr(grp, pt_obj, A, C)
     elif A.plot_type == 'pmf':
         return calc_pmf(grp, pt_obj, A, C)
+    elif A.plot_type == 'grped_distr_ave':
+        return calc_distr_ave(grp, pt_obj, A, C)
     else:
         raise IOError('Do not know how to calculate "{0}"'.format(A.plot_type))
     
@@ -116,9 +124,23 @@ def calc_distr(grp, pt_obj, A, C, **kw):
         _l.append(tb.read(field=pt_obj.ifield)[:min_len])
     _la = np.array(_l)
 
-    D = C['plot'][A.analysis][A.plot_type]
-    if 'bins' in D:
-        i, j, s = [float(_) for _ in D['bins']]
+    # CONCISE VERSION:
+    if A.plot_type == 'grped_distr_ave':
+        # grped_distr_ave is a variant of grped_distr
+        pt_dd = C['plots'][A.analysis]['grped_distr']
+    else:
+        pp_dd = C['plots'][A.analysis][A.plot_type]
+
+    # VERBOSE BUT EXPLICIT VERSION
+    # if A.plot_type == 'distr':
+    #     pt_dd = C['plots'][A.analysis]['distr']
+    # elif A.plot_type in ['grped_distr', 'grped_distr_ave']:
+    #     pt_dd = C['plots'][A.analysis]['grped_distr']
+    # else:
+    #     pp_dd = C['plots'][A.analysis][plot_type]
+
+    if 'bins' in pt_dd:
+        i, j, s = [float(_) for _ in pt_dd['bins']]
         bins = np.arange(i, j, s)
     else:
         # assume usually 36 bins would be enough
@@ -137,9 +159,17 @@ def calc_distr(grp, pt_obj, A, C, **kw):
     pse = np.array(pse)
     return np.array([bn, psm, pse])
 
+def calc_distr_ave(grp, pt_obj, A, C, **kw):
+    distrs = calc_distr(grp, pt_obj, A, C)
+    aves = calc_simple_bar(grp, pt_obj)
+    return np.array([distrs, aves])
+    # the data structure can be confusing
+    # sys.exit(1)
+    # return np.array([distrs, aves])
+
 def calc_pmf(grp, pt_obj, A, C):
-    D = C['plot'][A.analysis][A.plot_type]
-    if 'bins' not in D:
+    dd = C['plot'][A.analysis][A.plot_type]
+    if 'bins' not in dd:
         raise ValueError('bins not found in {0}, but be specified when plotting pmf'.format(C.name))
     subgrps = utils.split(grp, 4)                         # split into 4 chunks
     da = []

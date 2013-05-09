@@ -1,52 +1,68 @@
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 import utils
-L = utils.L
 
 def distr(data, A, C, **kw):
-    L('start plotting distr...')
+    """data: is an OrderedDict"""
+    logger.info('start plotting distr...')
 
     fig = plt.figure(figsize=(12,9))
-    D = C['plot'][A.analysis][A.plot_type]
+    pt_dd = C['plots'][A.analysis][A.plot_type]
     if A.merge:
         ax = fig.add_subplot(111)
-        for k, gk in enumerate(data.keys()):
+        for c, gk in enumerate(data.keys()):
             da = data[gk]
-            # ax.errorbar(da[0], da[1], yerr=da[2], label=C['legends'][gk])
-            ax.plot(da[0], da[1], color=C['colors'][gk], label=C['legends'][gk])
+            params = get_params(gk, pt_dd)
+            ax.plot(da[0], da[1], **params)
+            # facecolor uses the same color as ax.plot
             ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
-                            where=None, facecolor=C['colors'][gk], alpha=.3)
-        decorate_ax(ax, D)
+                            where=None, facecolor=params['color'], alpha=.3)
+        decorate_ax(ax, pt_dd)
     else:
         col, row = utils.gen_rc(len(data.keys()))
-        L('col: {0}, row; {1}'.format(col, row))
-        for k, gk in enumerate(data.keys()):
-            ax = fig.add_subplot(row, col, k+1)
+        logger.info('col: {0}, row; {1}'.format(col, row))
+        for c, gk in enumerate(data.keys()):
+            ax = fig.add_subplot(row, col, c+1)
             da = data[gk]
-            ax.errorbar(da[0], da[1], yerr=da[2], label=C['legends'][gk])
-            decorate_ax(ax, D)
+            params = get_params(gk, pt_dd)
+            # ax.errorbar(da[0], da[1], yerr=da[2], **params)
+            ax.plot(da[0], da[1], **params)
+            ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
+                            where=None, facecolor=params.get('color'), alpha=.3)
 
-    opf = A.output if A.output else os.path.join(
-        C['data']['plots'], 
-        '{0}.png'.format('_'.join([A.plot_type, A.analysis])))
+            decorate_ax(ax, pt_dd)
 
-    L('saving to {0}'.format(opf))
-    plt.savefig(opf)
+    plt.savefig(utils.gen_output_filename(A, C))
 
-def decorate_ax(ax, D):
+def get_params(gk, pt_dd):
+    params = {}
+    if 'colors' in pt_dd:
+        params['color'] = pt_dd['colors'][gk]
+    if 'legends' in pt_dd:
+        params['label'] = pt_dd['legends'][gk]
+    else:
+        params['label'] = gk
+    return params
+
+def decorate_ax(ax, pt_dd):
     leg = ax.legend(loc='best')
-    if 'legend_linewidth' in D:
-        for l in leg.legendHandles:
-            l.set_linewidth(float(D['legend_linewidth']))
     ax.grid(which="major")
-    if 'xlim' in D: ax.set_xlim([float(i) for i in D['xlim']])
-    if 'ylim' in D: ax.set_ylim([float(i) for i in D['ylim']])
-    if 'xlabel' in D: ax.set_xlabel(D['xlabel'])
-    if 'ylabel' in D: ax.set_ylabel(D['ylabel'], labelpad=10)
-    if 'xscale' in D: ax.set_xscale(D['xscale'])
+    if 'xlim' in pt_dd: 
+        ax.set_xlim(**utils.float_params(pt_dd['xlim'], 'left', 'right'))
+    if 'ylim' in pt_dd:
+        ax.set_ylim(**utils.float_params(pt_dd['ylim'], 'bottom', 'top'))
+    if 'xlabel' in pt_dd: ax.set_xlabel(pt_dd['xlabel'])
+    if 'ylabel' in pt_dd: ax.set_ylabel(pt_dd['ylabel'], labelpad=10)
+    if 'xscale' in pt_dd: ax.set_xscale(pt_dd['xscale'])
+
+    if 'legend_linewidth' in pt_dd:
+        for l in leg.legendHandles:
+            l.set_linewidth(float(pt_dd['legend_linewidth']))
 
 
 def sliceit(l, b, e):
@@ -55,11 +71,11 @@ def sliceit(l, b, e):
     return s_l
 
 def pmf(data, A, C, **kw):
-    L('start plotting pmf...')
+    logger.info('start plotting pmf...')
 
-    D = C['plot'][A.analysis][A.plot_type]
+    pt_dd = C['plot'][A.analysis][A.plot_type]
 
-    fs = (float(i) for i in D['figsize']) if 'figsize' in D else (12,9)
+    fs = (float(i) for i in pt_dd['figsize']) if 'figsize' in pt_dd else (12,9)
     fig = plt.figure(figsize=fs)
 
     if A.merge:
@@ -70,8 +86,8 @@ def pmf(data, A, C, **kw):
             pre_pmfm = da.mean(axis=0)                  # means over x, DIM: (3, y)
             pre_pmfe = utils.sem3(da)                   # sems  over x, DIM: (3, y)
 
-            if 'pmf_cutoff' in D:
-                cf = float(D['pmf_cutoff'])
+            if 'pmf_cutoff' in pt_dd:
+                cf = float(pt_dd['pmf_cutoff'])
                 bs, es = filter_pmf_data(pre_pmfm, cf)       # get slicing indices
             else:
                 bs, es = filter_pmf_data(pre_pmfm)
@@ -102,7 +118,7 @@ def pmf(data, A, C, **kw):
             _lb   = C['legends'][gk]
             _ky, _kye  = ky(_k, _l0, _ke, _l0e)
 
-        # _txtx, _txty = [float(i) for i in D['text_coord']]
+        # _txtx, _txty = [float(i) for i in pt_dd['text_coord']]
         # ax.text(_txtx, _txty, '\n'.join(['k   = {0:.1f} +/- {1:.1f} pN/nm'.format(_k, _ke),
         #                                  'l0  = {0:.1f} +/- {1:.2f} nm'.format(_l0, _l0e),
         #                                  'r^2 = {0:.2f}'.format(_r2),
@@ -112,11 +128,11 @@ def pmf(data, A, C, **kw):
             ax.fill_between(bn, pmfm-pmfe, pmfm+pmfe, 
                             where=None, facecolor=C['colors'][gk], alpha=.3)
             ax.plot(bn, _pfit, '--')
-        decorate_ax(ax, D)
+        decorate_ax(ax, pt_dd)
 
     else:
         col, row = utils.gen_rc(len(data.keys()))
-        L('col: {0}, row; {1}'.format(col, row))
+        logger.info('col: {0}, row; {1}'.format(col, row))
         for k, gk in enumerate(data.keys()):
             ax = fig.add_subplot(row, col, k+1)
             # DIM of da: (x, 3, y), where x: # of replicas; y: # of bins
@@ -124,8 +140,8 @@ def pmf(data, A, C, **kw):
             pre_pmfm = da.mean(axis=0)                  # means over x, DIM: (3, y)
             pre_pmfe = utils.sem3(da)                   # sems  over x, DIM: (3, y)
 
-            if 'pmf_cutoff' in D:
-                cf = float(D['pmf_cutoff'])
+            if 'pmf_cutoff' in pt_dd:
+                cf = float(pt_dd['pmf_cutoff'])
                 bs, es = filter_pmf_data(pre_pmfm, cf)       # get slicing indices
             else:
                 bs, es = filter_pmf_data(pre_pmfm)
@@ -156,7 +172,7 @@ def pmf(data, A, C, **kw):
             _lb   = C['legends'][gk]
             _ky, _kye  = ky(_k, _l0, _ke, _l0e)
 
-            _txtx, _txty = [float(i) for i in D['text_coord']]
+            _txtx, _txty = [float(i) for i in pt_dd['text_coord']]
             ax.text(_txtx, _txty, '\n'.join(['k   = {0:.1f} +/- {1:.1f} pN/nm'.format(_k, _ke),
                                              'l0  = {0:.1f} +/- {1:.2f} nm'.format(_l0, _l0e),
                                              'r^2 = {0:.2f}'.format(_r2),
@@ -166,13 +182,13 @@ def pmf(data, A, C, **kw):
             ax.fill_between(bn, pmfm-pmfe, pmfm+pmfe, 
                             where=None, facecolor='blue', alpha=.3)
             ax.plot(bn, _pfit, '--')
-            decorate_ax(ax, D)
+            decorate_ax(ax, pt_dd)
 
     opf = A.output if A.output else os.path.join(
         C['data']['plots'], 
         '{0}.png'.format('_'.join([A.plot_type, A.analysis])))
 
-    L('saving to {0}'.format(opf))
+    logger.info('saving to {0}'.format(opf))
     plt.savefig(opf)
 
 def filter_pmf(pmf_data, cutoff=2.49):
@@ -263,5 +279,5 @@ def filter_pmf_data(pmf_data, cutoff=2.49):
         b = ds.index(max(ds))
         e = b + 1
         res = [slices[b], slices[e]]
-    L("beg slice: {0}, end slice: {1}".format(*res))
+    logger.info("beg slice: {0}, end slice: {1}".format(*res))
     return res

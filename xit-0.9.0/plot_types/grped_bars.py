@@ -1,22 +1,22 @@
 import re
 import logging
 logger = logging.getLogger(__name__)
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
-from collections import OrderedDict
 
 import utils
 
-def grped_bars(grps, A, C, **kw):
-    dd = C['plots'][A.analysis][A.plot_type]
-    grp_REs = dd['grp_REs']
-    new_grps = OrderedDict({}) # new_grps: meaning further grouping, based on which ploting
+def grped_bars(data, A, C, **kw):
+    pt_dd = C['plots'][A.analysis][A.plot_type]
+    grp_REs = pt_dd['grp_REs']
+    dsets = OrderedDict({}) # dsets: meaning further grouping, based on which ploting
                   # will be done
 
-    # structure of new_grps: dict of dict of dict ...
-    # dataset = {
-    #     'dataset0': {'data': [
+    # structure of dsets: dict of dict of dict ...
+    # dset = {
+    #     'dset0': {'data': [
     #             'groupkey0': ('mean0', 'std0'),
     #             'groupkey1': ('mean1', 'std1'),
     #             ...
@@ -24,7 +24,7 @@ def grped_bars(grps, A, C, **kw):
     #                  'color': 'red',
     #                  ...
     #                  },
-    #     'dataset1': {'data': {
+    #     'dset1': {'data': {
     #             'groupkey0': ('mean0', 'std0'),
     #             'groupkey1': ('mean1', 'std1'),
     #             ...
@@ -36,40 +36,40 @@ def grped_bars(grps, A, C, **kw):
     #     }
         
     for c, RE in enumerate(grp_REs):
-        datasetk = 'dataset{0}'.format(c)                   # k means key
-        _ = new_grps[datasetk] = {}
+        dsetk = 'dset{0}'.format(c)                   # k means key
+        _ = dsets[dsetk] = {}
         _['data'] = OrderedDict()
-        for key in grps.keys():
+        for key in data.keys():
             if re.search(RE, key):
-                _['data'].update({key:grps[key]})
-        if 'colors' in dd:
-            _.update(color=dd['colors'][c])
-        if 'legends' in dd:
-            _.update(legend=dd['legends'][c])
+                _['data'].update({key:data[key]})
+        if 'colors' in pt_dd:
+            _.update(color=pt_dd['colors'][c])
+        if 'legends' in pt_dd:
+            _.update(legend=pt_dd['legends'][c])
 
     bar_width = 1.
-    type_of_bars = len(new_grps)   # i.e. w, m
+    type_of_bars = len(dsets)   # i.e. w, m
     space = 0.35                     # space between neigbouring groups of bars  
 
-    xlocs = np.arange(0, (len(grps) / type_of_bars) * (bar_width * type_of_bars + space),
+    xlocs = np.arange(0, (len(data) / type_of_bars) * (bar_width * type_of_bars + space),
                       bar_width * type_of_bars + space)
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     
     rectss = []                                             # plural of rects
-    for k, datasetk in enumerate(new_grps.keys()):
-        dataset = new_grps[datasetk]
-        means = [_[0] for _ in dataset['data'].values()]
-        stds  = [_[1] for _ in dataset['data'].values()]
-        if 'denorminators' in dd:
-            denorms = [float(i) for i in dd['denorminators']]
+    for k, dsetk in enumerate(dsets.keys()):
+        dset = dsets[dsetk]
+        means = [_[0] for _ in dset['data'].values()]
+        stds  = [_[1] for _ in dset['data'].values()]
+        if 'denorminators' in pt_dd:
+            denorms = [float(i) for i in pt_dd['denorminators']]
             normalize = lambda x: [i/d for (i, d) in zip(x, denorms)]
             means = normalize(means)
             stds  = normalize(stds)
         rects = ax.bar(xlocs+(k * bar_width), means, bar_width, yerr=stds,
-                       color=dataset.get('color'),
-                      label=dataset.get('legend'))
+                       color=dset.get('color'),
+                       label=dset.get('legend'))
         rectss.append(rects)
 
     ax.grid(which="major", axis='y')
@@ -85,17 +85,17 @@ def grped_bars(grps, A, C, **kw):
     for rects in rectss:
         autolabel(rects)
 
-    if 'ylim' in dd:
-        ax.set_ylim(**utils.float_params(dd['ylim'], 'bottom', 'top'))
-    if 'xlabel' in dd: 
-        ax.set_xlabel(dd['xlabel'])
-    if 'ylabel' in dd:
-        ax.set_ylabel(**utils.float_params(dd['ylabel'], 'labelpad'))
-    if 'xticklabels' in dd:
-        ax.set_xticklabels(**dd['xticklabels'])
-    if 'title' in dd:
-        ax.set_title(dd['title'])
-    if 'legends' in dd: 
+    if 'ylim' in pt_dd:
+        ax.set_ylim(**utils.float_params(pt_dd['ylim'], 'bottom', 'top'))
+    if 'xlabel' in pt_dd: 
+        ax.set_xlabel(pt_dd['xlabel'])
+    if 'ylabel' in pt_dd:
+        ax.set_ylabel(**utils.float_params(pt_dd['ylabel'], 'labelpad'))
+    if 'xticklabels' in pt_dd:
+        ax.set_xticklabels(**pt_dd['xticklabels'])
+    if 'title' in pt_dd:
+        ax.set_title(pt_dd['title'])
+    if 'legends' in pt_dd: 
         ax.legend(loc='best')
 
     plt.savefig(utils.gen_output_filename(A, C))

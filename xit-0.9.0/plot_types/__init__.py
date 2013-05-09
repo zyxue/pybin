@@ -2,16 +2,17 @@ import inspect
 
 from utils import timeit
 
-import alx
-import bar
-import distr
-import map_
-import grped_bars
+modules = []
+for mod_name in ['alx', 'bar', 'distr', 'map_',
+                 'grped_bars', 'grped_distr']:
+                 # 'grped_bars', 'grped_distr', 'grped_distr_ave']:
+    # http://docs.python.org/2/library/functions.html#__import__
+    modules.append(__import__(mod_name, globals(), locals(), [], -1))
 
 PLOT_TYPES = {}
-for module in [alx, bar, distr, map_, grped_bars]:
-    for fname in dir(module):
-        f = getattr(module, fname)
+for mod in modules:
+    for fname in dir(mod):
+        f = getattr(mod, fname)
         if inspect.isfunction(f):
             PLOT_TYPES.update({f.func_name: timeit(f)})
 
