@@ -310,6 +310,10 @@ def is_plot_type(f):
     return f
 
 def is_plot2p_type(f):
-    """used as a decorator to label plot_type functions"""
     setattr(f, 'IS_PLOT2P_TYPE', 1)
     return f
+
+# def is_transformable(f):
+#     """if IS_TRANSFORMABLE, then can be transformed to a hdf5 file"""
+#     setattr(f, 'IS_TRANSFORMABLE', 1)
+#     return f

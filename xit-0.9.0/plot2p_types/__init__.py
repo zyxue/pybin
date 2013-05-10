@@ -13,5 +13,4 @@ for mod in modules:
     for fname in dir(mod):
         f = getattr(mod, fname)
         if inspect.isfunction(f) and hasattr(f, 'IS_PLOT2P_TYPE') and f.IS_PLOT2P_TYPE:
-        # if inspect.isfunction(f):
             PLOT2P_TYPES.update({f.func_name: timeit(f)})

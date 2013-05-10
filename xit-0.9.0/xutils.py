@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import utils
-from methods import METHODS
+from methods import TRANSFORMABLE_METHODS, METHODS
 from plot_types import PLOT_TYPES
 from plot2p_types import PLOT2P_TYPES
 
@@ -111,8 +111,11 @@ def get_args(args_to_parse=None):
         p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
         p.add_argument('--loglevel', default='info', help="don't back the file to speed up analysis")
 
-    for p in [anal_parser, transform_parser, plot_parser]:
-        p.add_argument('-a' , '--analysis', help='self-explained, e.g. {0}'.format(METHODS.keys()))
+    for p in [transform_parser, plot_parser]:
+        p.add_argument('-a' , '--analysis', help='{0}'.format(TRANSFORMABLE_METHODS.keys()))
+
+    for p in [anal_parser]:
+        p.add_argument('-a' , '--analysis', help='{0}'.format(METHODS.keys()))
 
     for p in [anal_parser, transform_parser, plot_parser, plot2p_parser]:
         p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
