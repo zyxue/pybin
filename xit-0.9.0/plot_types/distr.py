@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 import utils
 
+@utils.is_plot_type
 def distr(data, A, C, **kw):
     """data: is an OrderedDict"""
     logger.info('start plotting distr...')

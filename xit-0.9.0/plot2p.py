@@ -5,7 +5,7 @@ from collections import OrderedDict
 import prop
 import utils
 import plot
-import plot_types
+import plot2p_types
 
 def plot2p(A, C, core_vars):
     h5 = utils.get_h5(A, C)
@@ -18,5 +18,5 @@ def plot2p(A, C, core_vars):
 
         plot.calc_fetch_or_overwrite(grps, pt_obj, data[pt_obj.name], A, C, h5)
 
-    func = plot_types.PLOT_TYPES[A.plot_type]
+    func = plot2p_types.PLOT2P_TYPES[A.plot_type]
     func(data, A, C)

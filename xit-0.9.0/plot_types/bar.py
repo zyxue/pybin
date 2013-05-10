@@ -7,6 +7,7 @@ from pprint import pformat
 
 import utils
 
+@utils.is_plot_type
 def simple_bar(grps, A, C, **kw):
     dd = C['plots'][A.analysis][A.plot_type]
     logger.debug('\n{0}'.format(pformat((dict(grps)))))

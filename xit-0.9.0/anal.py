@@ -1,9 +1,10 @@
-import re
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import utils
 import methods
-import logging
+
 
 def analyze(A, C, core_vars):
     x = gen_cmds(A, C, core_vars)
@@ -38,7 +39,7 @@ def gen_cmds(A, C, core_vars):
                 os.mkdir(anal_dir)
             kw.update(anal_dir=anal_dir)
 
-        logging.debug('using function: "{0}" from module "{1}"'.format(
+        logger.debug('using function: "{0}" from module "{1}"'.format(
                 anal_func.__name__, anal_func.__module__))
 
         cmd = anal_func(**kw) 

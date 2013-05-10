@@ -7,22 +7,17 @@ import matplotlib.pyplot as plt
 
 import utils
 
-def grp_datasets(data, pt_dd):
-    grp_REs = pt_dd['grp_REs']
-    dsets = OrderedDict()
-    for c, RE in enumerate(grp_REs):
-        dsetk = 'dset{0}'.format(c)                   # dsetk: dataset key 
-        _ = dsets[dsetk] = {}
-        _['data'] = OrderedDict()
-        for key in data.keys():
-            if re.search(RE, key):
-                _['data'].update({key:data[key]})
-        if 'texts' in pt_dd:
-            _.update(text=pt_dd['texts'][c])
-    return dsets
-
+@utils.is_plot_type
 def grped_distr(data, A, C, **kw):
-    """data: is an OrderedDict"""
+    """
+    data structure of data, an OrderedDict
+    data = {
+        'groupkey0': [[array of bn0, , array of psm0, array of pse0], [mean0, std0]],
+        'groupkey1': [[array of bn1, , array of psm1, array of pse1], [mean1, std1]],
+        ...
+        }
+    """
+
     logger.info('start plotting {0} for {1}...'.format(A.plot_type, data.keys()))
     pt_dd = C['plots'][A.analysis]['grped_distr']
     dsets = grp_datasets(data,  pt_dd)
@@ -66,6 +61,43 @@ def grped_distr(data, A, C, **kw):
 
     plt.savefig(utils.gen_output_filename(A, C))
 
+def grp_datasets(data, pt_dd):
+    grp_REs = pt_dd['grp_REs']
+    dsets = OrderedDict()
+    for c, RE in enumerate(grp_REs):
+        dsetk = 'dset{0}'.format(c)                   # dsetk: dataset key 
+        _ = dsets[dsetk] = {}
+        _['data'] = OrderedDict()
+        for key in data.keys():
+            if re.search(RE, key):
+                _['data'].update({key:data[key]})
+        if 'texts' in pt_dd:
+            _.update(text=pt_dd['texts'][c])
+    # structure of dsets: dict of dict of dict ...
+    # dsets = {
+    #     'dset0': {
+    #         'data': [
+    #             'groupkey0': [[array of bn0, , array of psm0, array of pse0], [mean0, std0]],
+    #             'groupkey1': [[array of bn1, , array of psm1, array of pse1], [mean1, std1]],
+    #             ...
+    #             },
+    #         'color': 'red',
+    #         ...
+    #         },
+    #     'dset1': {
+    #         'data': {
+    #             'groupkey0': [[array of bn0, , array of psm0, array of pse0], [mean0, std0]],
+    #             'groupkey1': [[array of bn1, , array of psm1, array of pse1], [mean1, std1]],
+    #             ...
+    #             },
+    #         'color': 'blue',
+    #         ...
+    #         },
+    #     ...
+    #     }
+    return dsets
+
+@utils.is_plot_type
 def grped_distr_ave(data, A, C, **kw):
     """it's a variant of grped_distr by adding mean values in the distribution plot """
     grped_distr(data, A, C, **kw)

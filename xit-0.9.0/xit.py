@@ -11,10 +11,11 @@ import pprint
 from configobj import ConfigObj
 
 import utils
+import xutils
 
 def main():
     print 'INIT: parsing arguments...'
-    A = utils.get_args()
+    A = xutils.get_args()
     print 'INIT: got loglevel: {0}'.format(A.loglevel.upper())
 
     logging.basicConfig(level=getattr(logging, A.loglevel.upper()))

@@ -8,7 +8,7 @@ from tables.exceptions import NoSuchNodeError
 
 import prop
 import utils
-
+import utils
 import plot_types
 
 class UnrecoganizedPlotTypeError(Exception):
@@ -61,7 +61,7 @@ def calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5):
 def calcit(grp, pt_obj, gk, A, C):
     # the name for plot_types MUST follow those function names in files in
     # ./plot_types
-    if A.plot_type in ['simple_bar', 'grped_bars']:
+    if A.plot_type in ['simple_bar', 'grped_bars', 'xy', 'grped_xy']:
         return calc_simple_bar(grp, pt_obj)
     elif A.plot_type == 'alx':
         return calc_alx(grp, pt_obj)
@@ -73,8 +73,6 @@ def calcit(grp, pt_obj, gk, A, C):
         return calc_pmf(grp, pt_obj, A, C)
     elif A.plot_type == 'grped_distr_ave':
         return calc_distr_ave(grp, pt_obj, A, C)
-    # elif A.plot_type == 'xy':
-    #     return calc_xy(grp, pt_obj, A, C)
     else:
         raise IOError('Do not know how to calculate "{0}"'.format(A.plot_type))
     
@@ -170,12 +168,7 @@ def calc_distr_ave(grp, pt_obj, A, C, **kw):
     distrs = calc_distr(grp, pt_obj, A, C)
     aves = calc_simple_bar(grp, pt_obj)
     return np.array([distrs, aves])
-    # the data structure can be confusing
-    # sys.exit(1)
-    # return np.array([distrs, aves])
 
-# def calc_xy(grp, pt_obj, A, C):
-    
 def calc_pmf(grp, pt_obj, A, C):
     dd = C['plot'][A.analysis][A.plot_type]
     if 'bins' not in dd:

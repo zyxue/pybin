@@ -8,10 +8,11 @@ import numpy as np
 
 import utils
 
+@utils.is_plot_type
 def grped_bars(data, A, C, **kw):
     pt_dd = C['plots'][A.analysis][A.plot_type]
     grp_REs = pt_dd['grp_REs']
-    dsets = OrderedDict({}) # dsets: meaning further grouping, based on which ploting
+    dsets = OrderedDict() # dsets: meaning further grouping, based on which ploting
                   # will be done
 
     # structure of dsets: dict of dict of dict ...

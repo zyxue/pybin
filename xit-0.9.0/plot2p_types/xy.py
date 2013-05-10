@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 import utils
 
-@utils.is_plot_type
+@utils.is_plot2p_type
 def xy(data, A, C, **kw):
     """
     data structure of data, an OrderedDict
@@ -50,6 +50,7 @@ def grp_datasets(data, pt_dd):
     grp_REs = pt_dd['grp_REs']
     print grp_REs
 
+@utils.is_plot2p_type
 def grped_xy(data, A, C, **kw):
     pt_dd = C['plots']['_'.join(A.analysis)][A.plot_type]
     grp_datasets(data, pt_dd)
