@@ -195,13 +195,13 @@ SCHEMA_DICT = {
     # 'upun': upun,
     'unun': unun,
     'unun_wl': unun,
-    'upvp': upvp,          # intermolecular hbond) along the time trajectory
-    'upvn': upvn,          # upvn along the time trajectory
-    'unvn': unvn,          # unvn along the time trajectory
-    'unvp': unvp,          # unvp along the time trajectory'),
+    'upvp': upvp,             # intermolecular hbond) along the time trajectory
+    'upvn': upvn,             # upvn along the time trajectory
+    'unvn': unvn,             # unvn along the time trajectory
+    'unvp': unvp,             # unvp along the time trajectory
     
-    # 'upv':  (upv, 'upv along the time trajectory'),
-    # 'unv':  (unv, 'unv along the time trajectory'),
+    'upv':  upv,                              # upv along the time trajectory',
+    'unv':  unv,                              # unv along the time trajectory'
     
     # 'rdf_upup': (rdf, 'rdf along the time trajectory'),
     # 'rdf_upun': (rdf, 'rdf along the time trajectory'),
@@ -242,6 +242,9 @@ INTERESTED_FIELDS = {
     'upvn': 'upvn',
     'unvn': 'unvn',
     'unvp': 'unvp',
+
+    'upv': 'upv',
+    'unv': 'unv',
 
     'dssp_E'           : 'structure',
     }

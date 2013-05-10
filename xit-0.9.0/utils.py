@@ -255,7 +255,7 @@ def runit(cmd_logf_generator, numthread, ftest):
     
     q.join()
 
-def get_dpp(cv):              # get deepest path
+def get_dpp(cv):              # get deepest path, e.g. w300/sq1/00
     # cv a set of core variables for a simple replica
     PATH_KEY_RE = re.compile('path\d+')
     dpk = max([p for p in cv.keys() if re.match(PATH_KEY_RE, p)], 

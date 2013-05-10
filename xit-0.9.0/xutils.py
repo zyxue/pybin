@@ -76,8 +76,11 @@ def get_args(args_to_parse=None):
     transform_parser = subparsers.add_parser(
         'transform', help=('transform the file formats from analysis step (e.g. xvg) to hdf5 format, '
                            'if the previous one is in hdf5 already, then this step is unecessary.'))
-    transform_parser.add_argument('-t' , '--filetype', default='xvg', help='self-explained, e.g. xvg')
-    transform_parser.add_argument('--overwrite', action='store_true', help='overwrite previous data')
+    transform_parser.add_argument('-t' , '--filetype', default='xvg', 
+                                  help=('e.g. xvg, xpm, or dependent, which is property-specific, '
+                                        'e.g. upv depends on upvp and upvn'))
+    transform_parser.add_argument('--overwrite', action='store_true', 
+                                  help='overwrite previous data, used when doing transform or plotting')
     transform_parser.add_argument('--init_hdf5', action='store_true', help='initialize hdf5, creating dirs, etc.')
 
     plot_parser = subparsers.add_parser(
