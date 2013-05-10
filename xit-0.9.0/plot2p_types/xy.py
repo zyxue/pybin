@@ -89,7 +89,7 @@ def grp_datasets(data, pt_dd):
 
 @utils.is_plot2p_type
 def grped_xy(data, A, C, **kw):
-    pt_dd = utils.get_pt_dd(C, '_'.join(A.analysis), A.plot2p_type)
+    pt_dd = utils.get_pt_dd(C, '_'.join(A.analysis), A.plot_type)
     dsets = grp_datasets(data, pt_dd)
     
     fig = plt.figure()
