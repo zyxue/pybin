@@ -66,11 +66,11 @@ def grp_datasets(data, pt_dd):
     dsets = OrderedDict()
     for c, RE in enumerate(grp_REs):
         dsetk = 'dset{0}'.format(c)                   # dsetk: dataset key 
-        _ = dsets[dsetk] = {}
+        _ = dsets[dsetk] = OrderedDict()
         _['data'] = OrderedDict()
         for key in data.keys():
             if re.search(RE, key):
-                _['data'].update({key:data[key]})
+                _['data'][key] = data[key]
         if 'texts' in pt_dd:
             _.update(text=pt_dd['texts'][c])
     # structure of dsets: dict of dict of dict ...

@@ -8,11 +8,9 @@ from tables.exceptions import NoSuchNodeError
 
 import prop
 import utils
-import utils
 import plot_types
 
-class UnrecoganizedPlotTypeError(Exception):
-    pass
+"""Normalization should happen here rather than during plotting!!!"""
 
 def plot(A, C, core_vars):
     h5 = utils.get_h5(A, C)
@@ -41,12 +39,12 @@ def calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5):
                 logger.info('overwriting old subdata with new ones')
                 _ = h5.getNode(ar_whname)
                 _.remove()
-                ar = calcit(grps[gk], pt_obj, gk, A, C)
+                ar = calcit(grps[gk], gk, pt_obj, A, C)
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
                 sda = ar
         else:
             logger.info('Calculating subdata...')
-            ar = calcit(grps[gk], pt_obj, gk, A, C)
+            ar = calcit(grps[gk], gk, pt_obj, A, C)
             if ar.dtype.name != 'object':
                 # cannot be handled by tables yet, but it's fine not to store
                 # it because usually object is a combination of other
@@ -58,11 +56,16 @@ def calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5):
             sda = ar
         data[gk] = sda
 
-def calcit(grp, pt_obj, gk, A, C):
+def calcit(grp, gk, pt_obj, A, C):
+    # the keys C['plots'] can be the name of a property or a particular plot
+    # which involves multiple properties, but only the former will be used here
+    # for pt_dd in calcit
+
+    pt_dd = utils.get_prop_dd(C, pt_obj.name)
     # the name for plot_types MUST follow those function names in files in
     # ./plot_types
     if A.plot_type in ['simple_bar', 'grped_bars', 'xy', 'grped_xy']:
-        return calc_simple_bar(grp, pt_obj)
+        return calc_simple_bar(gk, grp, pt_obj, pt_dd)
     elif A.plot_type == 'alx':
         return calc_alx(grp, pt_obj)
     elif A.plot_type == 'map':
@@ -114,11 +117,16 @@ def block_average(a, n=100):
         return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
                          for i in xrange(1, n+1)]).transpose()
 
-def calc_simple_bar(grp, pt_obj):
+def calc_simple_bar(gk, grp, pt_obj, pt_dd):
     _l = []
     for tb in grp:
         _ = tb.read(field=pt_obj.ifield).mean()
         _l.append(_)
+
+    if 'denorminators' in pt_dd:
+        denorm = float(pt_dd['denorminators'][gk])
+        return np.array([np.mean(_l) / denorm, utils.sem(_l) / denorm])
+
     return np.array([np.mean(_l), utils.sem(_l)])
 
 def calc_distr(grp, pt_obj, A, C, **kw):

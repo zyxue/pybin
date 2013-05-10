@@ -290,6 +290,20 @@ def gen_output_filename(A, C):
             '{0}.png'.format('_'.join([A.plot_type, anal])))
         return output
 
+def get_prop_dd(C, prop_name):
+    """
+    get the configuration for a particular property in the plots section of
+    .xitconfig
+    """
+    if 'plots' in C:
+        if prop_name in C['plots']:
+            return C['plots'][prop_name]
+    return {}
+
+def get_pt_dd(C, prop_name, pt_name):
+    """get the configuration for a particular property or plot in the plots section of .xitconfig"""
+    return get_prop_dd(C, prop_name).get(pt_name, {})
+
 def is_plot_type(f):
     """used as a decorator to label plot_type functions"""
     setattr(f, 'IS_PLOT_TYPE', 1)

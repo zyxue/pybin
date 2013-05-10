@@ -9,7 +9,7 @@ import utils
 
 @utils.is_plot_type
 def simple_bar(grps, A, C, **kw):
-    dd = C['plots'][A.analysis][A.plot_type]
+    dd = utils.get_pt_dd(C, A.analysis, A.plot_type)
     logger.debug('\n{0}'.format(pformat((dict(grps)))))
     bar_width = 1.
     type_of_bars = 1                 # i.e. w, m
@@ -23,16 +23,10 @@ def simple_bar(grps, A, C, **kw):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     means = [i[0] for i in grps.values()]
-    stds  = [i[1]  for i in grps.values()]
+    stds  = [i[1] for i in grps.values()]
 
-    if 'denorminators' in dd:
-        denorms = [float(i) for i in dd['denorminators']]
-        normalize = lambda x: [i/d for (i, d) in zip(x, denorms)]
-        means = normalize(means)
-        stds  = normalize(stds)
-
-    # print xlocs, means, stds
-    ax.bar(xlocs, means, bar_width, yerr=stds, color='white', hatch="\\")
+    ax.bar(xlocs, means, bar_width, yerr=stds,
+           color='white', hatch="\\")
 
     # decorate a bit
     ax.set_xlim((0 - 2 *space), (len(grps.items()) * (bar_width * type_of_bars + space) + space))
@@ -56,10 +50,3 @@ def simple_bar(grps, A, C, **kw):
         ax.legend(dd['legend'], loc='best')
 
     plt.savefig(utils.gen_output_filename(A, C))
-    # if A.output:
-    #     plt.savefig(A.output)
-    # else:
-    #     plt.savefig(os.path.join(
-    #             C['data']['plots'], 
-    #             '{0}.png'.format('_'.join([A.plot_type, A.analysis]))))
-
