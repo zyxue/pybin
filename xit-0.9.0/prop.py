@@ -231,7 +231,7 @@ INTERESTED_FIELDS = {
     'e2ed'             : 'e2ed',
     'e2ed_wl'          : 'e2ed',
     'rg_c_alpha'       : 'rg',
-    'rg_wl'            : 'rg',
+    'rg_c_alpha_wl'    : 'rg',
     'upup'             : 'upup',
     'unun'             : 'unun',
     'unun_wl'          : 'unun',

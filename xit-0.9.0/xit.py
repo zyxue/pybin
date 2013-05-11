@@ -20,6 +20,7 @@ def main():
 
     logging.basicConfig(format='%(levelname)s|%(asctime)s|%(name)s:%(message)s',
                         level=getattr(logging, A.loglevel.upper()))
+
     config = A.config
     if not os.path.exists(config):
         raise IOError("{0} cannot found".format(config))

@@ -255,8 +255,7 @@ def runit(cmd_logf_generator, numthread, ftest):
     
     q.join()
 
-def get_dpp(cv):              # get deepest path, e.g. w300/sq1/00
-    # cv a set of core variables for a simple replica
+def get_dpp(cv):        # get deepest path, e.g. w300/sq1/00
     PATH_KEY_RE = re.compile('path\d+')
     dpk = max([p for p in cv.keys() if re.match(PATH_KEY_RE, p)], 
               key=lambda x: int(x[4:]))
@@ -277,12 +276,13 @@ def get_h5(A, C):
 
 def gen_output_filename(A, C):
     if A.output:
-        return A.output
+        output = A.output
     else:
         prop, pt = get_prop(A), get_pt(A)        # pt: plot_type or plot2p_type
         output = os.path.join(
             C['data']['plots'], '{0}.png'.format('_'.join([pt, prop])))
-        return output
+    logger.info('saving to {0}...'.format(output))
+    return output
 
 def get_prop_dd(C, prop_name):
     """

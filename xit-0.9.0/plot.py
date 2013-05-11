@@ -25,8 +25,8 @@ def plot(A, C, core_vars):
 
 def calc_fetch_or_overwrite(grps, prop_obj, data, A, C, h5):
     """data should be a empty OrderedDict"""
-    for k, gk in enumerate(grps):
-        logger.info('processing Group {0}: {1}'.format(k, gk))
+    for c, gk in enumerate(grps):
+        logger.info('processing Group {0}: {1}'.format(c, gk))
         
         # ar: array
         for _ in ['plot_type', 'plot2p_type']:
@@ -43,12 +43,12 @@ def calc_fetch_or_overwrite(grps, prop_obj, data, A, C, h5):
                 logger.info('overwriting old subdata with new ones')
                 _ = h5.getNode(ar_whname)
                 _.remove()
-                ar = calcit(grps[gk], gk, prop_obj, A, C)
+                ar = calcit(grps[gk], gk, prop_obj, h5, A, C)
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
                 sda = ar
         else:
             logger.info('Calculating subdata...')
-            ar = calcit(grps[gk], gk, prop_obj, A, C)
+            ar = calcit(grps[gk], gk, prop_obj, h5, A, C)
             if ar.dtype.name != 'object':
                 # cannot be handled by tables yet, but it's fine not to store
                 # it because usually object is a combination of other
@@ -60,11 +60,23 @@ def calc_fetch_or_overwrite(grps, prop_obj, data, A, C, h5):
             sda = ar
         data[gk] = sda
 
-def calcit(grp, gk, prop_obj, A, C):
+def fetch_tb(h5, where, prop_name):
+    try:
+        # this is slow, so DON'T call it unless really necessary
+        # ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        # 961/481    0.003    0.000    4.711    0.010 file.py:1061(getNode)
+        # 10085/485    0.022    0.000    4.707    0.010 file.py:1036(_getNode)
+        tb = h5.getNode(where, prop_name)
+        return tb
+    except NoSuchNodeError:
+        logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
+                os.path.join(where, prop_name)))
+
+def calcit(grp, gk, prop_obj, h5, A, C):
     # prop_dd may contain stuffs like denorminators, etc.
 
     prop_dd = utils.get_prop_dd(C, prop_obj.name)
-    args = [gk, grp, prop_obj, prop_dd, A, C]
+    args = [h5, gk, grp, prop_obj, prop_dd, A, C]
     
     # the name of pt MUST follow those function names in files in ./plot_types
     # or .plot2p_types
@@ -84,11 +96,13 @@ def calcit(grp, gk, prop_obj, A, C):
     else:
         raise IOError('Do not know how to calculate "{0}"'.format(pt))
 
-def calc_means(gk, grp, prop_obj, prop_dd, A, C):
+def calc_means(h5, gk, grp, prop_obj, prop_dd, A, C):
     _l = []
-    for tb in grp:
-        _ = tb.read(field=prop_obj.ifield).mean()
-        _l.append(_)
+    for where in grp:
+        tb = fetch_tb(h5, where, prop_obj.name)
+        if tb:
+            _ = tb.read(field=prop_obj.ifield).mean()
+            _l.append(_)
 
     if 'denorminators' in prop_dd:
         denorm = float(prop_dd['denorminators'][gk])
@@ -96,7 +110,7 @@ def calc_means(gk, grp, prop_obj, prop_dd, A, C):
 
     return np.array([np.mean(_l), utils.sem(_l)])
 
-def calc_distr(gk, grp, prop_obj, prop_dd, A, C):
+def calc_distr(h5, gk, grp, prop_obj, prop_dd, A, C):
     min_len = min(tb.read(field='time').shape[0] for tb in grp)
     _l = []
     for tb in grp:
@@ -129,13 +143,13 @@ def calc_distr(gk, grp, prop_obj, prop_dd, A, C):
     pse = np.array(pse)
     return np.array([bn, psm, pse])
 
-def calc_distr_ave(gk, grp, prop_obj, prop_dd, A, C):
-    args = [gk, grp, prop_obj, prop_dd, A, C]
+def calc_distr_ave(h5, gk, grp, prop_obj, prop_dd, A, C):
+    args = [h5, gk, grp, prop_obj, prop_dd, A, C]
     distrs = calc_distr(*args)
     aves = calc_means(*args)
     return np.array([distrs, aves])
 
-def calc_alx(gk, grp, prop_obj, prop_dd, A, C):
+def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
     # x assumed to be FIELD_0_NAME
     tb0 = grp[0]
     xf = tb0._f_getAttr('FIELD_0_NAME') # xf: xfield, and it's assumed to be
@@ -149,10 +163,11 @@ def calc_alx(gk, grp, prop_obj, prop_dd, A, C):
         col2 = tb.read(field=prop_obj.ifield)[:min_len]
         _l.append(col2)
         _a = np.array(_l)
-    _aa = np.array([
-            ref_col / 1000.,                         # ps => ns
-            _a.mean(axis=0),
-            [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
+
+    if 'xdenorm' in prop_dd:
+        ref_col = ref_col / float(prop_dd['xdenorm'])
+    _aa = np.array([ref_col, _a.mean(axis=0),
+                    [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
     res = block_average(_aa)
     return res
 
@@ -221,19 +236,28 @@ def prob2pmf(p, max_p, e=None):
 
 @utils.timeit
 def groupit(core_vars, prop_obj, A, C, h5):
-    """grouping all the tables by grptoken (group token) specified in the commnand line"""
+    """
+    grouping all the tables by grptoken (group token) specified in the commnand
+    line
+    """
     logger.info('grouping... by token: {0}'.format(A.grptoken))
     grptoken = A.grptoken
     grps = OrderedDict()                                    # grped data
+
     for cv in core_vars:
         grpid = cv[grptoken]
         if grpid not in grps:
             grps[grpid] = []
         where = os.path.join('/', utils.get_dpp(cv))
-        try:
-            tb = h5.getNode(where, prop_obj.name)
-            grps[grpid].append(tb)
-        except NoSuchNodeError:
-            logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
-                    os.path.join(where, prop_obj.name)))
+        grps[grpid].append(where)
+        # try:
+        #     # this is slow:
+        #     # ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        #     # 961/481    0.003    0.000    4.711    0.010 file.py:1061(getNode)
+        #     # 10085/485    0.022    0.000    4.707    0.010 file.py:1036(_getNode)
+        #     tb = h5.getNode(where, prop_obj.name)
+        #     grps[grpid].append(tb)
+        # except NoSuchNodeError:
+        #     logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
+        #             os.path.join(where, prop_obj.name)))
     return grps

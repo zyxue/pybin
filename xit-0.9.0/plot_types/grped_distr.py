@@ -64,7 +64,21 @@ def grped_distr(data, A, C, **kw):
                 ax.plot([m,m], [0,1], color='black')
                 ax.fill_betweenx([0,1], [m-e, m-e], [m+e, m+e],
                                  where=None, facecolor='black', alpha=.3)
-        
+
+            if 'vline' in pt_dd:
+                vl = pt_dd['vline']
+                x = float(vl['x'])
+                if 'y' in vl:
+                    yb, ye = [float(i) for i in vl['y']]
+                else:
+                    yb, ye = ax.get_ylim()
+                ax.plot([x, x], [yb, ye], **vl.get('params', {}))
+
+
+            if A.property == 'rg_c_alpha_wl' and dsetk == 'dataset0' and A.plot_type == 'alx':
+                logger.info('do something special to this ax')
+
+
         decorate_ax(ax, pt_dd, ncol, nrow, c)
 
     plt.savefig(utils.gen_output_filename(A, C))
