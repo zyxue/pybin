@@ -9,14 +9,14 @@ import plot2p_types
 
 def plot2p(A, C, core_vars):
     h5 = utils.get_h5(A, C)
-    pt_objs = [prop.Property(i) for i in A.analysis]
+    prop_objs = [prop.Property(i) for i in A.properties]
     data = OrderedDict()
-    for pt_obj in pt_objs:
-        data[pt_obj.name] = OrderedDict()
-        grps = plot.groupit(core_vars, pt_obj, A, C, h5)
+    for prop_obj in prop_objs:
+        data[prop_obj.name] = OrderedDict()
+        grps = plot.groupit(core_vars, prop_obj, A, C, h5)
         logger.info("Groups: {0}".format(grps.keys()))
 
-        plot.calc_fetch_or_overwrite(grps, pt_obj, data[pt_obj.name], A, C, h5)
+        plot.calc_fetch_or_overwrite(grps, prop_obj, data[prop_obj.name], A, C, h5)
 
-    func = plot2p_types.PLOT2P_TYPES[A.plot_type]
+    func = plot2p_types.PLOT2P_TYPES[A.plot2p_type]
     func(data, A, C)

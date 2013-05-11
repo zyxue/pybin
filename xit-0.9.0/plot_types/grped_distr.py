@@ -19,7 +19,14 @@ def grped_distr(data, A, C, **kw):
     """
 
     logger.info('start plotting {0} for {1}...'.format(A.plot_type, data.keys()))
-    pt_dd = C['plots'][A.analysis]['grped_distr']
+
+    # This is not elegant
+    if A.plot_type in ['grped_distr', 'grped_distr_ave']:
+        _ = 'grped_distr'
+    elif A.plot_type in ['grped_alx']:
+        _ = 'grped_alx'
+    pt_dd = utils.get_pt_dd(C, A.property, _)
+
     dsets = grp_datasets(data,  pt_dd)
 
     fig = plt.figure(figsize=(12,9))
@@ -33,11 +40,12 @@ def grped_distr(data, A, C, **kw):
         ax = fig.add_subplot(nrow, ncol, c+1)
         dset = dsets[dsetk]
         if 'text' in dset:
-            ax.text(s=dset['text'], **utils.float_params(pt_dd['text'], 'x', 'y'))
+            ax.text(s=dset['text'],
+                    **utils.float_params(pt_dd['text'], 'x', 'y'))
         for kkey in dset['data']:                                 # ind: individual
             da = dset['data'][kkey]
             params = get_params(kkey, pt_dd)
-            if A.plot_type ==  'grped_distr':
+            if A.plot_type in ['grped_distr', 'grped_alx']:
                 ax.plot(da[0], da[1], **params)
                 # facecolor uses the same color as ax.plot
                 ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
@@ -56,7 +64,7 @@ def grped_distr(data, A, C, **kw):
                 ax.plot([m,m], [0,1], color='black')
                 ax.fill_betweenx([0,1], [m-e, m-e], [m+e, m+e],
                                  where=None, facecolor='black', alpha=.3)
-
+        
         decorate_ax(ax, pt_dd, ncol, nrow, c)
 
     plt.savefig(utils.gen_output_filename(A, C))

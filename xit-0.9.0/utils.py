@@ -279,30 +279,72 @@ def gen_output_filename(A, C):
     if A.output:
         return A.output
     else:
-        if isinstance(A.analysis, list):
-            anal = '_'.join(A.analysis)
-        elif isinstance(A.analysis, str):
-            anal = A.analysis
-        else:
-            raise ValueError("wired type for A.analysis: {0}".format(type(A.analysis)))
+        prop, pt = get_prop(A), get_pt(A)        # pt: plot_type or plot2p_type
         output = os.path.join(
-            C['data']['plots'], 
-            '{0}.png'.format('_'.join([A.plot_type, anal])))
+            C['data']['plots'], '{0}.png'.format('_'.join([pt, prop])))
         return output
 
 def get_prop_dd(C, prop_name):
     """
-    get the configuration for a particular property in the plots section of
-    .xitconfig
+    get the configuration for a particular property (prop) in the plot section
+    of .xitconfig
     """
-    if 'plots' in C:
-        if prop_name in C['plots']:
-            return C['plots'][prop_name]
-    return {}
+    r = C.get('plot')
+    if not r:
+        logger.info('[plot] NOT found in {0}'.format(C.filename))
+        return {}
+    rr = r.get(prop_name)
+    if not rr:
+        logger.info('[[{0}]] NOT found in [plot] in {1}'.format(prop_name, C.filename))
+        return {}
+    return rr
 
 def get_pt_dd(C, prop_name, pt_name):
-    """get the configuration for a particular property or plot in the plots section of .xitconfig"""
-    return get_prop_dd(C, prop_name).get(pt_name, {})
+    """get the configuration for plot type or plot2p type (pt) in the plots
+    section of .xitconfig"""
+    r = get_prop_dd(C, prop_name)
+    if r:
+        rr = r.get(pt_name)
+        if rr:
+            return rr
+        else:
+            logger.info('[[[{0}]]] NOT found in [[{1}]]'.format(pt_name, prop_name))
+
+    logger.info('starting looking into [plot2p] for [[[{0}]]]...'.format(pt_name))
+    # assumed there will be not name overlap in plot and plot2p sections since
+    # in the former, only one property is expected while in the later case, two
+    # are.
+    s = C.get('plot2p')
+    if not s:
+        logger.info('[plot2p] NOT found in {0}'.format(C.filename))
+        return {}
+    ss = s.get(prop_name)
+    if not ss:
+        logger.info('[[{0}]] NOT found in [plot2p] in {1}'.format(prop_name, C.filename))
+        return {}
+    sss = ss.get(pt_name)
+    if not sss:
+        logger.info('[[[{0}]]] NOT found in [[{1}]]'.format(        
+                pt_name, prop_name))
+        return {}
+    return sss
+
+def get_prop(A):
+    """get the name of property or properties following the specific rule"""
+    if hasattr(A, 'property'):
+        prop = A.property
+    elif hasattr(A, 'properties'):
+        prop = '_'.join(A.properties)
+    return prop
+
+def get_pt(A):
+    """get the name of A.plot_type or A.plot2p_type"""
+    # comparing this function get_prop, it's ok to use for loop here because
+    # there is no necessity to further process the value return by getattr or .
+    for _ in ['plot_type', 'plot2p_type']:
+        if hasattr(A, _):
+            pt = getattr(A, _)
+            return pt
 
 def is_plot_type(f):
     """used as a decorator to label plot_type functions"""

@@ -10,7 +10,7 @@ import utils
 
 @utils.is_plot_type
 def grped_bars(data, A, C, **kw):
-    pt_dd = C['plots'][A.analysis][A.plot_type]
+    pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)
     grp_REs = pt_dd['grp_REs']
     dsets = OrderedDict() # dsets: meaning further grouping, based on which ploting
                   # will be done

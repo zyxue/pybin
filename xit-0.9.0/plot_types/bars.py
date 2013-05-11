@@ -8,8 +8,8 @@ from pprint import pformat
 import utils
 
 @utils.is_plot_type
-def simple_bar(grps, A, C, **kw):
-    dd = utils.get_pt_dd(C, A.analysis, A.plot_type)
+def bars(grps, A, C, **kw):
+    dd = utils.get_pt_dd(C, A.property, A.plot_type)
     logger.debug('\n{0}'.format(pformat((dict(grps)))))
     bar_width = 1.
     type_of_bars = 1                 # i.e. w, m

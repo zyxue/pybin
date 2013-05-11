@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import utils
-from methods import TRANSFORMABLE_METHODS, METHODS
+from analysis_methods import PROPERTIES, ANALYSIS_METHODS
 from plot_types import PLOT_TYPES
 from plot2p_types import PLOT2P_TYPES
 
@@ -85,7 +85,7 @@ def get_args(args_to_parse=None):
 
     plot_parser = subparsers.add_parser(
         'plot', help='postprocess the results from analysis and illustrate it via plotting')
-    plot_parser.add_argument('--plot_type', help='e.g {0}'.format(PLOT_TYPES.keys()))
+    plot_parser.add_argument('--plot_type', choices=PLOT_TYPES.keys(), help='e.g {0}'.format(PLOT_TYPES.keys()))
     # plot_parser.add_argument('--scale', action='store_true', help='scale to 1, when map plotting is not obvious')
 
     # shouldn't be used, instead put it in the .xitconfig --2013-05-09
@@ -93,8 +93,8 @@ def get_args(args_to_parse=None):
 
     plot2p_parser = subparsers.add_parser(
         'plot2p', help='similar to plot, but handles two properties at the same time')
-    plot2p_parser.add_argument('--plot_type', help='{0}'.format(PLOT2P_TYPES.keys()))
-    plot2p_parser.add_argument('-a' , '--analysis', nargs='+',
+    plot2p_parser.add_argument('--plot2p_type', choices=PLOT2P_TYPES.keys(), help='{0}'.format(PLOT2P_TYPES.keys()))
+    plot2p_parser.add_argument('-p' , '--properties', nargs='+',
                                help=('added MULTIPLE properties, which is different '
                                      'than a single property in plot. e.g. "upup unun"'))
 
@@ -114,11 +114,11 @@ def get_args(args_to_parse=None):
         p.add_argument('--nobackup', action='store_true', help="don't back the file to speed up analysis")
         p.add_argument('--loglevel', default='info', help="don't back the file to speed up analysis")
 
-    for p in [transform_parser, plot_parser]:
-        p.add_argument('-a' , '--analysis', help='{0}'.format(TRANSFORMABLE_METHODS.keys()))
-
     for p in [anal_parser]:
-        p.add_argument('-a' , '--analysis', help='{0}'.format(METHODS.keys()))
+        p.add_argument('-a' , '--analysis', required=True, help='{0}'.format(ANALYSIS_METHODS.keys()))
+
+    for p in [transform_parser, plot_parser]:
+        p.add_argument('-p' , '--property', required=True, help='{0}'.format(PROPERTIES.keys()))
 
     for p in [anal_parser, transform_parser, plot_parser, plot2p_parser]:
         p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
