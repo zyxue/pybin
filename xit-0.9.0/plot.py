@@ -1,63 +1,84 @@
 import os
 import logging
-L = logging.info
+logger = logging.getLogger(__name__)
 from collections import OrderedDict
 
 import numpy as np
+from tables.exceptions import NoSuchNodeError
 
 import prop
 import utils
+import plot_types
 
-import plot_types as ptp
-
-class UnrecoganizedPlotTypeError(Exception):
-    pass
+"""Normalization should happen here rather than during plotting!!!"""
 
 def plot(A, C, core_vars):
     h5 = utils.get_h5(A, C)
     pt_obj = prop.Property(A.analysis)
-    grps = groupit(A, C, core_vars, h5)
-    L("Groups: {0}".format(grps.keys()))
-
     data = OrderedDict()
+    grps = groupit(core_vars, pt_obj, A, C, h5)
+    logger.info("Groups: {0}".format(grps.keys()))
+    calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5)
+
+    func = plot_types.PLOT_TYPES[A.plot_type]
+    func(data, A, C)
+
+def calc_fetch_or_overwrite(grps, pt_obj, data, A, C, h5):
+    """data should be a OrderedDict"""
     for k, gk in enumerate(grps):
-        L('processing Group {0}: {1}'.format(k, gk))
+        logger.info('processing Group {0}: {1}'.format(k, gk))
         # ar: array
         ar_where = os.path.join('/', gk)
-        ar_name = '{0}_{1}'.format(A.plot_type, A.analysis)
+        ar_name = '{0}_{1}'.format(A.plot_type, pt_obj.name)
         ar_whname = os.path.join(ar_where, ar_name)
         if h5.__contains__(ar_whname):
             if not A.overwrite:
-                L('fetching subdata from precalculated result')
+                logger.info('fetching subdata from precalculated result')
                 sda = h5.getNode(ar_whname).read()     # sda: subdata
             else:
-                L('overwriting old subdata with new')
+                logger.info('overwriting old subdata with new ones')
                 _ = h5.getNode(ar_whname)
                 _.remove()
-                ar = calcit(grps[gk], pt_obj, gk, A, C)
+                ar = calcit(grps[gk], gk, pt_obj, A, C)
                 h5.createArray(where=ar_where, name=ar_name, object=ar)
                 sda = ar
         else:
-            L('Calculating subdata...')
-            ar = calcit(grps[gk], pt_obj, gk, A, C)
-            h5.createArray(where=ar_where, name=ar_name, object=ar)
+            logger.info('Calculating subdata...')
+            ar = calcit(grps[gk], gk, pt_obj, A, C)
+            if ar.dtype.name != 'object':
+                # cannot be handled by tables yet, but it's fine not to store
+                # it because usually object is a combination of other
+                # calculated properties, which are store, so fetching them is
+                # still fast
+                h5.createArray(where=ar_where, name=ar_name, object=ar)
+            else:
+                logger.info('"{0}" dtype number array CANNNOT be stored in h5'.format(ar.dtype.name))
             sda = ar
         data[gk] = sda
 
-    getattr(ptp, A.plot_type)(data, A, C)
+def calcit(grp, gk, pt_obj, A, C):
+    # the keys C['plots'] can be the name of a property or a particular plot
+    # which involves multiple properties, but only the former will be used here
+    # for pt_dd in calcit
 
-def calcit(grp, pt_obj, gk, A, C):
-    if A.plot_type == 'simple_bar':
-        return calc_simple_bar(grp, pt_obj)
+    pt_dd = utils.get_prop_dd(C, pt_obj.name)
+    # the name for plot_types MUST follow those function names in files in
+    # ./plot_types
+    if A.plot_type in ['simple_bar', 'grped_bars', 'xy', 'grped_xy']:
+        return calc_simple_bar(gk, grp, pt_obj, pt_dd)
     elif A.plot_type == 'alx':
         return calc_alx(grp, pt_obj)
     elif A.plot_type == 'map':
         return calc_map(grp, pt_obj)
-    elif A.plot_type == 'distr':
+    elif A.plot_type in ['distr', 'grped_distr']:
         return calc_distr(grp, pt_obj, A, C)
     elif A.plot_type == 'pmf':
         return calc_pmf(grp, pt_obj, A, C)
-
+    elif A.plot_type == 'grped_distr_ave':
+        return calc_distr_ave(grp, pt_obj, A, C)
+    else:
+        raise IOError('Do not know how to calculate "{0}"'.format(A.plot_type))
+    
 def calc_map(grp, pt_obj):
     _l = []
     for tb in grp:                              # it could be array
@@ -67,14 +88,15 @@ def calc_map(grp, pt_obj):
     return np.array(_l).mean(axis=0)
 
 def calc_alx(grp, pt_obj):
+    min_len = min(tb.read(field='time').shape[0] for tb in grp)
     _l = []
-    ref_col = grp[0].read(field='time')
+    ref_col = grp[0].read(field='time')[:min_len]
     for tb in grp:
-        col1 = tb.read(field='time')
+        col1 = tb.read(field='time')[:min_len]
         assert (col1 == ref_col).all() == True
-        col2 = tb.read(field=pt_obj.ifield)
+        col2 = tb.read(field=pt_obj.ifield)[:min_len]
         _l.append(col2)
-    _a = np.array(_l)
+        _a = np.array(_l)
     _aa = np.array([
             ref_col / 1000,                         # ps => ns
             _a.mean(axis=0),
@@ -95,22 +117,43 @@ def block_average(a, n=100):
         return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
                          for i in xrange(1, n+1)]).transpose()
 
-def calc_simple_bar(grp, pt_obj):
+def calc_simple_bar(gk, grp, pt_obj, pt_dd):
     _l = []
     for tb in grp:
         _ = tb.read(field=pt_obj.ifield).mean()
         _l.append(_)
+
+    if 'denorminators' in pt_dd:
+        denorm = float(pt_dd['denorminators'][gk])
+        return np.array([np.mean(_l) / denorm, utils.sem(_l) / denorm])
+
     return np.array([np.mean(_l), utils.sem(_l)])
 
 def calc_distr(grp, pt_obj, A, C, **kw):
+    min_len = min(tb.read(field='time').shape[0] for tb in grp)
     _l = []
     for tb in grp:
-        _l.append(tb.read(field=pt_obj.ifield))
+        _l.append(tb.read(field=pt_obj.ifield)[:min_len])
     _la = np.array(_l)
 
-    D = C['plot'][A.analysis][A.plot_type]
-    if 'bins' in D:
-        i, j, s = [float(_) for _ in D['bins']]
+    # CONCISE VERSION:
+    if A.plot_type == 'grped_distr_ave':
+        # grped_distr_ave is a variant of grped_distr
+        pt_dd = C['plots'][A.analysis]['grped_distr']
+    else:
+        pt_dd = C['plots'][A.analysis][A.plot_type]
+
+    # VERBOSE BUT EXPLICIT VERSION, which does the same thing as the above
+    # CONCISE VERSION
+    # if A.plot_type == 'distr':
+    #     pt_dd = C['plots'][A.analysis]['distr']
+    # elif A.plot_type in ['grped_distr', 'grped_distr_ave']:
+    #     pt_dd = C['plots'][A.analysis]['grped_distr']
+    # else:
+    #     pp_dd = C['plots'][A.analysis][plot_type]
+
+    if 'bins' in pt_dd:
+        i, j, s = [float(_) for _ in pt_dd['bins']]
         bins = np.arange(i, j, s)
     else:
         # assume usually 36 bins would be enough
@@ -129,9 +172,14 @@ def calc_distr(grp, pt_obj, A, C, **kw):
     pse = np.array(pse)
     return np.array([bn, psm, pse])
 
+def calc_distr_ave(grp, pt_obj, A, C, **kw):
+    distrs = calc_distr(grp, pt_obj, A, C)
+    aves = calc_simple_bar(grp, pt_obj)
+    return np.array([distrs, aves])
+
 def calc_pmf(grp, pt_obj, A, C):
-    D = C['plot'][A.analysis][A.plot_type]
-    if 'bins' not in D:
+    dd = C['plot'][A.analysis][A.plot_type]
+    if 'bins' not in dd:
         raise ValueError('bins not found in {0}, but be specified when plotting pmf'.format(C.name))
     subgrps = utils.split(grp, 4)                         # split into 4 chunks
     da = []
@@ -172,9 +220,9 @@ def prob2pmf(p, max_p, e=None):
         return pmf
 
 @utils.timeit
-def groupit(A, C, core_vars, h5):
+def groupit(core_vars, pt_obj, A, C, h5):
     """grouping all the tables by grptoken (group token) specified in the commnand line"""
-    L('grouping... by token: {0}'.format(A.grptoken))
+    logger.info('grouping... by token: {0}'.format(A.grptoken))
     grptoken = A.grptoken
     grps = OrderedDict()                                    # grped data
     for cv in core_vars:
@@ -182,6 +230,10 @@ def groupit(A, C, core_vars, h5):
         if grpid not in grps:
             grps[grpid] = []
         where = os.path.join('/', utils.get_dpp(cv))
-        tb = h5.getNode(where, A.analysis)
-        grps[grpid].append(tb)
+        try:
+            tb = h5.getNode(where, pt_obj.name)
+            grps[grpid].append(tb)
+        except NoSuchNodeError:
+            logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
+                    os.path.join(where, pt_obj.name)))
     return grps

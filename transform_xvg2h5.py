@@ -25,7 +25,7 @@ def main():
         raise IOError("{0} cannot found".format(conf))
 
     conf_dict = ConfigObj(conf)
-    SEQS, CDTS, TMPS, NUMS = argparse_action.get_sctn(args, conf_dict['systems'])
+    SEQS, CDTS, TMPS, NUMS = argparse_action.get_sctn(args, conf_dict['system'])
 
     h5filename = conf_dict['data']['h5filename']
     title      = conf_dict['data']['title']

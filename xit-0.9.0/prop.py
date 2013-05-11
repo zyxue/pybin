@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 """
 everytime when adding a table, remember to add relevant info in
     __tables__
@@ -162,10 +165,10 @@ class rdf(tables.IsDescription):
 
 
 SCHEMA_DICT = {
-    'e2ed'       : e2ed,
-    'e2ed_wl'    : e2ed,
-    'rg_c_alpha' : rg,
-    'rg_wl'      : rg,
+    'e2ed'          : e2ed,
+    'e2ed_wl'       : e2ed,
+    'rg_c_alpha'    : rg,
+    'rg_c_alpha_wl' : rg,
 
     # 'e2ed'           : (e2ed, "e2ed"),   # end-to-end distance data along the time trjectory"
     # 'rg_c_alpha'     : (rg, "rg"),       # Radius of gyration of C alpha along the time trjectory"
@@ -177,28 +180,28 @@ SCHEMA_DICT = {
     # 'pmf_e2ed': (pmf, 'potential_of_mean_force'),
     # 'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
     
-    # 'dssp_E': (dssp, 'dssp_E (b-sheet)'),
-    # 'dssp_H': (dssp, 'dssp_H (alpha-helix)'),
-    # 'dssp_T': (dssp, 'dssp_T (hydrogen bonded turn)'),
-    # 'dssp_G': (dssp, 'dssp_G (3-helix)'),
-    # 'dssp_I': (dssp, 'dssp_I (5-helix)'),
-    # 'dssp_B': (dssp, 'dssp_B (residue in isolated beta-bridge)'),
-    # 'dssp_C': (dssp, 'dssp_C (coil)'),
-    # 'dssp_S': (dssp, 'dssp_S (Bend)'),
-    # 'dssp_X': (dssp, 'dssp_X (Bend)'),
+    'dssp_E': dssp,                  # dssp_E (b-sheet)
+    'dssp_H': dssp,                  # dssp_H (alpha-helix)
+    'dssp_T': dssp,                  # dssp_T (hydrogen bonded turn)
+    'dssp_G': dssp,                  # dssp_G (3-helix)
+    'dssp_I': dssp,                  # dssp_I (5-helix)
+    'dssp_B': dssp,                  # dssp_B (residue in isolated beta-bridge)
+    'dssp_C': dssp,                  # dssp_C (coil)
+    'dssp_S': dssp,                  # dssp_S (Bend)
+    'dssp_X': dssp,                  # dssp_X (Bend)
 
     # 'rama': (rama, "dihedral angle distribution for each frame along the time trjectory"),
     'upup': upup,
-    # 'upun': upun
+    # 'upun': upun,
     'unun': unun,
     'unun_wl': unun,
-    # 'upvp': (upvp, 'upvp (i.e. intermolecular hbond) along the time trajectory'),
-    # 'upvn': (upvn, 'upvn along the time trajectory'),
-    # 'unvn': (unvn, 'unvn along the time trajectory'),
-    # 'unvp': (unvp, 'unvp along the time trajectory'),
+    'upvp': upvp,             # intermolecular hbond) along the time trajectory
+    'upvn': upvn,             # upvn along the time trajectory
+    'unvn': unvn,             # unvn along the time trajectory
+    'unvp': unvp,             # unvp along the time trajectory
     
-    # 'upv':  (upv, 'upv along the time trajectory'),
-    # 'unv':  (unv, 'unv along the time trajectory'),
+    'upv':  upv,                              # upv along the time trajectory',
+    'unv':  unv,                              # unv along the time trajectory'
     
     # 'rdf_upup': (rdf, 'rdf along the time trajectory'),
     # 'rdf_upun': (rdf, 'rdf along the time trajectory'),
@@ -234,6 +237,16 @@ INTERESTED_FIELDS = {
     'upup'             : 'upup',
     'unun'             : 'unun',
     'unun_wl'          : 'unun',
+
+    'upvp': 'upvp',
+    'upvn': 'upvn',
+    'unvn': 'unvn',
+    'unvp': 'unvp',
+
+    'upv': 'upv',
+    'unv': 'unv',
+
+    'dssp_E'           : 'structure',
     }
 
 from mysys import read_mysys
@@ -243,12 +256,13 @@ class Property(object):
     def __init__(self, pn):                                 # p: property name
         """values of d contain two parts: the table class & its description"""
         self.name = pn
-        self.schema = SCHEMA_DICT.get(pn, None)
+        self.schema = SCHEMA_DICT[pn]
         if pn in INTERESTED_FIELDS.keys():
             self.ifield = INTERESTED_FIELDS[pn]
 
     def norm(self, x):
         # x could be sq1, sq2; w, m, etc. depending on mysys
+        # THIS design is ugly and not very useful
         if self.name in ['rg_c_alpha', 'rg_wl']:
             return 1
         elif self.name in ['upup', 'upup_map']:

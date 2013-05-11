@@ -41,17 +41,17 @@
 # SOLVENT-SPECIFIC:
 
 # cid name col  solgro solitp maxsol box solname natom
-& w water     r       tip4p_216.gro tip4p.itp 3700 5.8 SOL 4
-& m methanol  b	      meo_1728.gro  meo.itp   3300 7.3 MEO 6
-& e ethanol   g	      eth_1000.gro  eth.itp   2200 7.3 ETH 9
-& p propanol  m	      pol_512.gro   pol.itp   2000 7.8 POL 12
-& b butanol   c	      but_512.gro   but.itp   2000 8.0 BUT 15
-& n pentanol  #FF9900 pen_512.gro   pen.itp   1800 8.2 PEN 18
-& x hexanol   #FFDE00 hex_512.gro   hex.itp   1700 8.5 HEX 21
-& h hepanol   #097054 hep_512.gro   hep.itp   1400 8.3 HEP 24
-& c octanol   #666666 oco_512.gro   oco.itp	900  8.0 OCO 27
-& o octane    c	      oct_512.gro   oct.itp   600  6.8 OCT 26
-& f tfe	      -	      tfe_512.gro   tfe.itp	900  6	 TFE 9
+& w water     r       tip4p_216.gro tip4p.itp 3700 5.8  SOL 4
+& m methanol  b	      meo_1728.gro  meo.itp   3300 7.3  MEO 6
+& e ethanol   g	      eth_1000.gro  eth.itp   2200 7.0  ETH 9
+& p propanol  m	      pol_512.gro   pol.itp   2000 7.4  POL 12
+& b butanol   c	      but_512.gro   but.itp   2000 7.95 BUT 15
+& n pentanol  #FF9900 pen_512.gro   pen.itp   1800 8.1  PEN 18
+& x hexanol   #FFDE00 hex_512.gro   hex.itp   1480 8.0  HEX 21
+& h hepanol   #097054 hep_512.gro   hep.itp   1300 8.05 HEP 24
+& c octanol   #666666 oco_512.gro   oco.itp   990  7.75 OCO 27
+& o octane    c	      oct_512.gro   oct.itp   600  6.7  OCT 26
+& f tfe	      -	      tfe_512.gro   tfe.itp	900  6  TFE 9
 & v vacuo     k	      None          None      0 0 None 0
 
 # & o octane    c oct_512.gro   oct.itp   350  5.8 OCT
@@ -67,6 +67,7 @@
 
 # SYSTEM-SPECIFIC
 
+# DECREPATED, it's PROBABLY calculated INCORRECTLY 
 #    tid	unvn	unvp	upvn	upvp	unv	upv
 # $ sq1w	0.00	300.57	0.00	67.51	300.57	67.51  
 # $ sq1m	295.20	112.24	160.57	41.25	407.45	201.83 
@@ -83,7 +84,6 @@
                                                         
 # # nm_unvp (cannot find a proper way of normalization yet 2011-08-05)
 
-
 # very new 2012-11-06
 # tid	unvn	unvp	upvn	upvp	unv	upv
 $ sq1w	0	422.38	0     	64.19	422.38	64.19 
@@ -99,6 +99,7 @@ $ sq5m	290.90	135.23	242.04	44.27	426.13	286.31
 $ sq6w	0	381.11	0     	72.05	381.11	72.05 
 $ sq6m	367.90	151.47	196.50	44.97	519.36	241.47
 
+# DECREPATED, it's PROBABLY calculated INCORRECTLY 
 ###############################################################################
 # A newer version, very different from the previous, especially for unvn, unvp
 # -zyxue 2012-05-24, the reason is probably due to cutoff changes (unvn: 0.53
@@ -107,72 +108,18 @@ $ sq6m	367.90	151.47	196.50	44.97	519.36	241.47
 # #         unvn     unvp     upvn     upvp      unv      upv 
 # $ sq1w     0.00   430.54     0.00    67.76   430.54    67.76
 # $ sq1m   434.09   178.23   142.37    44.48   612.32   186.85
-# $ sq1e	 1	  1	   1	     1	     1	      1	
-# $ sq1p	 1	  1	   1	     1	     1	      1	
-# $ sq1b	 1	  1	   1	     1	     1	      1	
-# $ sq1n	 1	  1	   1	     1	     1	      1	
-# $ sq1x	 1	  1	   1	     1	     1	      1	
-# $ sq1h	 1	  1	   1	     1	     1	      1	
-# $ sq1c	 1	  1	   1	     1	     1	      1	
-# $ sq1o	 1	  1	   1	     1	     1	      1	
-# $ sq1v	 1	  1	   1	     1	     1	      1	
 
 # $ sq2w     0.00   365.03     0.00    74.60   365.03    74.60
 # $ sq2m   356.98   154.68   172.26    51.46   511.66   223.72
-# $ sq2e	 1	  1	   1	     1	     1	      1	
-# $ sq2p	 1	  1	   1	     1	     1	      1	
-# $ sq2b	 1	  1	   1	     1	     1	      1	
-# $ sq2n	 1	  1	   1	     1	     1	      1	
-# $ sq2x	 1	  1	   1	     1	     1	      1	
-# $ sq2h	 1	  1	   1	     1	     1	      1	
-# $ sq2c	 1	  1	   1	     1	     1	      1	
-# $ sq2o	 1	  1	   1	     1	     1	      1	
-# $ sq2v	 1	  1	   1	     1	     1	      1	
 
 # $ sq3w     0.00   473.72     0.00    64.41   473.72    64.41
 # $ sq3m   491.16   196.62   140.71    41.95   687.77   182.66
-# $ sq3e	 1	  1	   1	     1	     1	      1	
-# $ sq3p	 1	  1	   1	     1	     1	      1	
-# $ sq3b	 1	  1	   1	     1	     1	      1	
-# $ sq3n	 1	  1	   1	     1	     1	      1	
-# $ sq3x	 1	  1	   1	     1	     1	      1	
-# $ sq3h	 1	  1	   1	     1	     1	      1	
-# $ sq3c	 1	  1	   1	     1	     1	      1	
-# $ sq3o	 1	  1	   1	     1	     1	      1	
-# $ sq3v	 1	  1	   1	     1	     1	      1	
 
 # $ sq4w     0.00   370.13     0.00    73.43   370.13    73.43
 # $ sq4m   355.42   155.45   163.17    50.28   510.88   213.45
-# $ sq4e	 1	  1	   1	     1	     1	      1	
-# $ sq4p	 1	  1	   1	     1	     1	      1	
-# $ sq4b	 1	  1	   1	     1	     1	      1	
-# $ sq4n	 1	  1	   1	     1	     1	      1	
-# $ sq4x	 1	  1	   1	     1	     1	      1	
-# $ sq4h	 1	  1	   1	     1	     1	      1	
-# $ sq4c	 1	  1	   1	     1	     1	      1	
-# $ sq4o	 1	  1	   1	     1	     1	      1	
-# $ sq4v	 1	  1	   1	     1	     1	      1	
 
 # $ sq5w     0.00   282.69     0.00    78.96   282.69    78.96
 # $ sq5m   288.67   134.23   213.63    55.99   422.89   269.62
-# $ sq5e	 1	  1	   1	     1	     1	      1	
-# $ sq5p	 1	  1	   1	     1	     1	      1	
-# $ sq5b	 1	  1	   1	     1	     1	      1	
-# $ sq5n	 1	  1	   1	     1	     1	      1	
-# $ sq5x	 1	  1	   1	     1	     1	      1	
-# $ sq5h	 1	  1	   1	     1	     1	      1	
-# $ sq5c	 1	  1	   1	     1	     1	      1	
-# $ sq5o	 1	  1	   1	     1	     1	      1	
-# $ sq5v	 1	  1	   1	     1	     1	      1	
 
 # $ sq6w     0.00   393.05     0.00    75.55   393.05    75.55
 # $ sq6m   381.71   163.32   166.45    51.21   545.03   217.66
-# $ sq6e	 1	  1	   1	     1	     1	      1	
-# $ sq6p	 1	  1	   1	     1	     1	      1	
-# $ sq6b	 1	  1	   1	     1	     1	      1	
-# $ sq6n	 1	  1	   1	     1	     1	      1	
-# $ sq6x	 1	  1	   1	     1	     1	      1	
-# $ sq6h	 1	  1	   1	     1	     1	      1	
-# $ sq6c	 1	  1	   1	     1	     1	      1	
-# $ sq6o	 1	  1	   1	     1	     1	      1	
-# $ sq6v	 1	  1	   1	     1	     1	      1	

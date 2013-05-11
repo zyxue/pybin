@@ -1,10 +1,10 @@
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import utils
-L = utils.L
 
 def alx(data, A, C, **kw):
     print 'start plotting alx...'
@@ -23,7 +23,7 @@ def alx(data, A, C, **kw):
         decorate_ax(ax, D)
     else:
         col, row = utils.gen_rc(len(data.keys()))
-        L('col: {0}, row; {1}'.format(col, row))
+        logger.info('col: {0}, row; {1}'.format(col, row))
         for k, gk in enumerate(data.keys()):
             ax = fig.add_subplot(row, col, k+1)
             da = data[gk]
@@ -37,7 +37,7 @@ def alx(data, A, C, **kw):
         C['data']['plots'], 
         '{0}.png'.format('_'.join([A.plot_type, A.analysis])))
 
-    L('saving to {0}'.format(opf))
+    logger.info('saving to {0}'.format(opf))
     plt.savefig(opf)
 
 def decorate_ax(ax, D):
