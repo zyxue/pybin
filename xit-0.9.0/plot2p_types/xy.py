@@ -25,8 +25,8 @@ def xy(data, A, C, **kw):
         }
     """
 
-    pt_dd = utils.get_pt_dd(C, '_'.join(A.analysis), A.plot_type)
-    xp, yp = A.analysis                                     # e.g. upup, unun
+    pt_dd = utils.get_pt_dd(C, '_'.join(A.properties), A.plot2p_type)
+    xp, yp = A.properties                                   # e.g. upup, unun
     xdata, ydata = data[xp], data[yp]
 
     # x, y means and errors
@@ -89,14 +89,18 @@ def grp_datasets(data, pt_dd):
 
 @utils.is_plot2p_type
 def grped_xy(data, A, C, **kw):
-    pt_dd = utils.get_pt_dd(C, '_'.join(A.analysis), A.plot_type)
+    pt_dd = utils.get_pt_dd(C, '_'.join(A.properties), A.plot2p_type)
     dsets = grp_datasets(data, pt_dd)
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for dk in dsets.keys():
         dset = dsets[dk]
-        xp, yp = A.analysis
+        xp, yp = A.properties
+
+        if sorted([xp, yp]) == ['unv', 'upv']:                # this is plot specific
+            ax.plot([0,1], [0,1], '--')
+
         xda, yda = dset[xp], dset[yp]                       # da: data
 
         # denormx = [float(i) for i in pt_dd.get('denormx', [1] * len(xdata.keys()))]

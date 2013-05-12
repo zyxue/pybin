@@ -13,7 +13,7 @@ def distr(data, A, C, **kw):
     logger.info('start plotting distr...')
 
     fig = plt.figure(figsize=(12,9))
-    pt_dd = C['plots'][A.analysis][A.plot_type]
+    pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)
     if A.merge:
         ax = fig.add_subplot(111)
         for c, gk in enumerate(data.keys()):
@@ -22,7 +22,7 @@ def distr(data, A, C, **kw):
             ax.plot(da[0], da[1], **params)
             # facecolor uses the same color as ax.plot
             ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
-                            where=None, facecolor=params['color'], alpha=.3)
+                            where=None, facecolor=params.get('color'), alpha=.3)
         decorate_ax(ax, pt_dd)
     else:
         col, row = utils.gen_rc(len(data.keys()))
@@ -74,7 +74,7 @@ def sliceit(l, b, e):
 def pmf(data, A, C, **kw):
     logger.info('start plotting pmf...')
 
-    pt_dd = C['plot'][A.analysis][A.plot_type]
+    pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)
 
     fs = (float(i) for i in pt_dd['figsize']) if 'figsize' in pt_dd else (12,9)
     fig = plt.figure(figsize=fs)

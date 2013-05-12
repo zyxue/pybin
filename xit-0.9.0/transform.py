@@ -23,11 +23,11 @@ def transform(A, C, core_vars):
     for cv in core_vars:
         id_, dpp = cv['id_'], os.path.join('/', utils.get_dpp(cv))
         # ad: anal dir, out of names
-        adir = os.path.join(anal_dir, 'r_{0}'.format(A.analysis))
+        adir = os.path.join(anal_dir, 'r_{0}'.format(A.property))
         # af: anal file
-        afile = os.path.join(adir, '{0}_{1}.{2}'.format(id_, A.analysis, A.filetype))
+        afile = os.path.join(adir, '{0}_{1}.{2}'.format(id_, A.property, A.filetype))
 
-        tb_name = A.analysis
+        tb_name = A.property
         tb_path = os.path.join(dpp, tb_name)
         if h5.__contains__(tb_path):
             tb = h5.getNode(tb_path)
@@ -37,14 +37,14 @@ def transform(A, C, core_vars):
                 # overwrite with new data
                 tb.remove()
                 tb = put_data(A.filetype, afile, 
-                              prop.Property(A.analysis).schema,
+                              prop.Property(A.property).schema,
                               h5, dpp, tb_name, cv, A, C)
                 if tb:
                     logger.info("{0} is overwritten with new data".format(tb_path))
         else:
             # tb_or_ar: table or array, or None
             tb_or_ar = put_data(A.filetype, afile, 
-                                prop.Property(A.analysis).schema,
+                                prop.Property(A.property).schema,
                                 h5, dpp, tb_name, cv, A, C)
             if tb_or_ar:
                 logger.info("{0} IS TRANSFORMED to {1}".format(afile, tb_path))
@@ -77,19 +77,20 @@ def put_data(ft, f, schema, h5, dpp, tb_name, cv, A, C):
     # if the code here starts to be executed, then it means filetype is
     # dependent, and it's dealt with case by case because usually the handling
     # is quite specific
-    if A.analysis == 'upv':
+    if A.property == 'upv':
         stuff = dpt_sum_alx(h5, dpp, 'time', 'upvp', 'upvn')
         tb = h5.createTable(where=dpp, name=tb_name, description=schema)
-        tb.append(stuff)
+        # if without astype(), numbers would become huge, i.e. overflow
+        tb.append(stuff.astype('uint32'))
         return tb
-    elif A.analysis == 'unv':
+    elif A.property == 'unv':
         stuff = dpt_sum_alx(h5, dpp, 'time', 'unvp', 'unvn')
         tb = h5.createTable(where=dpp, name=tb_name, description=schema)
-        tb.append(stuff)
+        tb.append(stuff.astype('uint32'))
         return tb
     else:
         raise ValueError(
-            "Don't know how to transform property '{0}' of filetype 'dependent'".format(A.analysis))
+            "Don't know how to transform property '{0}' of filetype 'dependent'".format(A.property))
 
     import sys
     sys.exit
@@ -105,8 +106,7 @@ def dpt_sum_alx(h5, dpp, xfield_name, *args):
             s = h5.getNode(dpp, arg).read(field=arg)
             sum_ = sum_ + s
     res = np.array([xdata, sum_])
-    res.transpose()
-    return res
+    return res.transpose()
 
 def gen_hbond_map(xpm, ndx, grof):
     xpm = objs.XPM(xpm)

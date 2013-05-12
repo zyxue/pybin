@@ -19,7 +19,14 @@ def grped_distr(data, A, C, **kw):
     """
 
     logger.info('start plotting {0} for {1}...'.format(A.plot_type, data.keys()))
-    pt_dd = C['plots'][A.analysis]['grped_distr']
+
+    # This is trying to avoid duplication in .xitconfig, but not very elegant
+    if A.plot_type in ['grped_distr', 'grped_distr_ave']:
+        _ = 'grped_distr'
+    elif A.plot_type in ['grped_alx']:
+        _ = 'grped_alx'
+    pt_dd = utils.get_pt_dd(C, A.property, _)
+
     dsets = grp_datasets(data,  pt_dd)
 
     fig = plt.figure(figsize=(12,9))
@@ -33,11 +40,12 @@ def grped_distr(data, A, C, **kw):
         ax = fig.add_subplot(nrow, ncol, c+1)
         dset = dsets[dsetk]
         if 'text' in dset:
-            ax.text(s=dset['text'], **utils.float_params(pt_dd['text'], 'x', 'y'))
+            ax.text(s=dset['text'],
+                    **utils.float_params(pt_dd['text'], 'x', 'y'))
         for kkey in dset['data']:                                 # ind: individual
             da = dset['data'][kkey]
             params = get_params(kkey, pt_dd)
-            if A.plot_type ==  'grped_distr':
+            if A.plot_type in ['grped_distr', 'grped_alx']:
                 ax.plot(da[0], da[1], **params)
                 # facecolor uses the same color as ax.plot
                 ax.fill_between(da[0], da[1]-da[2], da[1]+da[2], 
@@ -57,7 +65,28 @@ def grped_distr(data, A, C, **kw):
                 ax.fill_betweenx([0,1], [m-e, m-e], [m+e, m+e],
                                  where=None, facecolor='black', alpha=.3)
 
+        if 'vline' in pt_dd:
+            vl = pt_dd['vline']
+            x = float(vl['x'])
+            if 'y' in vl:
+                yb, ye = [float(i) for i in vl['y']]
+            else:
+                yb, ye = ax.get_ylim()
+            ax.plot([x, x], [yb, ye], **vl.get('params', {}))
+
         decorate_ax(ax, pt_dd, ncol, nrow, c)
+
+        # specific case
+        if (A.property == 'rg_c_alpha_wl' 
+            and dsetk == 'dset0' 
+            and A.plot_type == 'grped_alx'
+            and sorted(dset['data'].keys()) == ['m300/sq1', 'w300/sq1']):
+            print "DO something special"
+            ax.set_xlim([0, 500])
+            ax.set_xticklabels([str(i) for i in xrange(0,600, 100)])
+            for tick in ax.xaxis.get_major_ticks():                                                      
+                tick.label1On = False                                                                    
+                tick.label2On = True               # move the ticks to the top 
 
     plt.savefig(utils.gen_output_filename(A, C))
 
@@ -124,6 +153,7 @@ def decorate_ax(ax, pt_dd, ncol, nrow, c):
 
     if c < (ncol * nrow - ncol):
         ax.set_xticklabels([])
+        # ax.get_xaxis().set_visible(False)                   # this hide the whole axis
     else:
         if 'xlabel' in pt_dd: 
             ax.set_xlabel(**pt_dd['xlabel'])

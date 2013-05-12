@@ -174,9 +174,7 @@ SCHEMA_DICT = {
     # 'rg_c_alpha'     : (rg, "rg"),       # Radius of gyration of C alpha along the time trjectory"
     # 'rg_backbone'    : (rg, "rg"),       # Radius of gyration of backbone along the time trjectory"),
 
-    #                                      # usually used to determine the cutoff
-    #                                      # for collecting data"),
-    # 'seqspacing'     : (seqspacing, ''), #sequence_spacing'
+    'seqspacing'     : seqspacing,                          # sequence spacing'
     # 'pmf_e2ed': (pmf, 'potential_of_mean_force'),
     # 'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
     
@@ -218,12 +216,12 @@ SCHEMA_DICT = {
     # 'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
     # 'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
     
-    # 'rdf_c1vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c2vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c3vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c1vp': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c2vp': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c3vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_c1vn': rdf,
+    'rdf_c2vn': rdf,
+    'rdf_c3vn': rdf,
+    'rdf_c1vp': rdf,
+    'rdf_c2vp': rdf,
+    'rdf_c3vp': rdf,
     
     # 'conf_entropy': (entropy, 'entropy with increasing sampling'),
     
@@ -233,7 +231,7 @@ INTERESTED_FIELDS = {
     'e2ed'             : 'e2ed',
     'e2ed_wl'          : 'e2ed',
     'rg_c_alpha'       : 'rg',
-    'rg_wl'            : 'rg',
+    'rg_c_alpha_wl'    : 'rg',
     'upup'             : 'upup',
     'unun'             : 'unun',
     'unun_wl'          : 'unun',
@@ -247,6 +245,16 @@ INTERESTED_FIELDS = {
     'unv': 'unv',
 
     'dssp_E'           : 'structure',
+    'seqspacing'       : 'ave_d',
+
+    'rdf_c1vn': 'rdf',
+    'rdf_c2vn': 'rdf',
+    'rdf_c3vn': 'rdf',
+    'rdf_c1vp': 'rdf',
+    'rdf_c2vp': 'rdf',
+    'rdf_c3vp': 'rdf',
+
+
     }
 
 from mysys import read_mysys

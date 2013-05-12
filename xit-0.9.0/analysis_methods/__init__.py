@@ -1,27 +1,27 @@
 import inspect
 
-from methods import org
-from methods import fancy
-from methods import basic
-from methods import interactions
+from analysis_methods import org
+from analysis_methods import fancy
+from analysis_methods import basic
+from analysis_methods import interactions
 
 # uses a different way to collect methods than __init__ in plot_types, just to
 # see why is better in long-term. The later one must be better for frequently
 # added modules
 
 # collecting all the functions available
-TRANSFORMABLE_METHODS = {}
+PROPERTIES = {}
 for module in [basic, fancy, interactions]:
     for fname in dir(module):
         f = getattr(module, fname)
         if inspect.isfunction(f):
-            TRANSFORMABLE_METHODS.update({f.func_name:f})
+            PROPERTIES.update({f.func_name:f})
 
-METHODS = TRANSFORMABLE_METHODS.copy()
+ANALYSIS_METHODS = PROPERTIES.copy()
 for fname in dir(org):
     f = getattr(org, fname)
     if inspect.isfunction(f):
-        METHODS.update({f.func_name:f})
+        ANALYSIS_METHODS.update({f.func_name:f})
     
 
 # JUST FOR REFERENCE 
