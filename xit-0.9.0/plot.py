@@ -60,18 +60,6 @@ def calc_fetch_or_overwrite(grps, prop_obj, data, A, C, h5):
             sda = ar
         data[gk] = sda
 
-def fetch_tb(h5, where, prop_name):
-    try:
-        # this is slow, so DON'T call it unless really necessary
-        # ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        # 961/481    0.003    0.000    4.711    0.010 file.py:1061(getNode)
-        # 10085/485    0.022    0.000    4.707    0.010 file.py:1036(_getNode)
-        tb = h5.getNode(where, prop_name)
-        return tb
-    except NoSuchNodeError:
-        logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
-                os.path.join(where, prop_name)))
-
 def calcit(grp, gk, prop_obj, h5, A, C):
     # prop_dd may contain stuffs like denorminators, etc.
 
@@ -97,12 +85,11 @@ def calcit(grp, gk, prop_obj, h5, A, C):
         raise IOError('Do not know how to calculate "{0}"'.format(pt))
 
 def calc_means(h5, gk, grp, prop_obj, prop_dd, A, C):
+    grp_tb = fetch_grp_tb(h5, grp, prop_obj.name)
     _l = []
-    for where in grp:
-        tb = fetch_tb(h5, where, prop_obj.name)
-        if tb:
-            _ = tb.read(field=prop_obj.ifield).mean()
-            _l.append(_)
+    for tb in grp_tb:
+        _ = tb.read(field=prop_obj.ifield).mean()
+        _l.append(_)
 
     if 'denorminators' in prop_dd:
         denorm = float(prop_dd['denorminators'][gk])
@@ -111,9 +98,10 @@ def calc_means(h5, gk, grp, prop_obj, prop_dd, A, C):
     return np.array([np.mean(_l), utils.sem(_l)])
 
 def calc_distr(h5, gk, grp, prop_obj, prop_dd, A, C):
-    min_len = min(tb.read(field='time').shape[0] for tb in grp)
+    grp_tb = fetch_grp_tb(h5, grp, prop_obj.name)
+    min_len = min(tb.read(field='time').shape[0] for tb in grp_tb)
     _l = []
-    for tb in grp:
+    for tb in grp_tb:
         _l.append(tb.read(field=prop_obj.ifield)[:min_len])
     _la = np.array(_l)
 
@@ -143,21 +131,21 @@ def calc_distr(h5, gk, grp, prop_obj, prop_dd, A, C):
     pse = np.array(pse)
     return np.array([bn, psm, pse])
 
-def calc_distr_ave(h5, gk, grp, prop_obj, prop_dd, A, C):
-    args = [h5, gk, grp, prop_obj, prop_dd, A, C]
+def calc_distr_ave(*args):
     distrs = calc_distr(*args)
     aves = calc_means(*args)
     return np.array([distrs, aves])
 
 def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
+    grp_tb = fetch_grp_tb(h5, grp, prop_obj.name)
     # x assumed to be FIELD_0_NAME
-    tb0 = grp[0]
+    tb0 = grp_tb[0]
     xf = tb0._f_getAttr('FIELD_0_NAME') # xf: xfield, and it's assumed to be
-                                        # the same in all tabls in the grp
-    min_len = min(tb.read(field=xf).shape[0] for tb in grp)
+                                        # the same in all tabls in the grp_tb
+    min_len = min(tb.read(field=xf).shape[0] for tb in grp_tb)
     _l = []
-    ref_col = grp[0].read(field=xf)[:min_len]
-    for tb in grp:
+    ref_col = grp_tb[0].read(field=xf)[:min_len]
+    for tb in grp_tb:
         col1 = tb.read(field=xf)[:min_len]
         assert (col1 == ref_col).all() == True
         col2 = tb.read(field=prop_obj.ifield)[:min_len]
@@ -170,19 +158,6 @@ def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
                     [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
     res = block_average(_aa)
     return res
-
-def block_average(a, n=100):
-    """a is a mutliple dimension array, n is the max number of data points desired"""
-    if a.shape[1] < n:
-        return a
-    else:
-        bs = int(a.shape[1] / n)                            # bs: block size
-        print a.shape[1]
-        if bs * n < a.shape[1] - 1:                         # -1 is math detail
-            bs = bs + 1
-        print 'block size: {0}, # of blocks: {1}'.format(bs, n)
-        return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
-                         for i in xrange(1, n+1)]).transpose()
 
 def calc_map(grp, prop_obj):
     _l = []
@@ -233,6 +208,41 @@ def prob2pmf(p, max_p, e=None):
         return pmf, pmf_e
     else:
         return pmf
+
+
+def fetch_grp_tb(h5, grp, prop_name):
+    """fetch tbs bashed on where values in grp"""
+    grp_tb = []
+    for where in grp:
+        tb = fetch_tb(h5, where, prop_name)
+        if tb:
+            grp_tb.append(tb)
+    return grp_tb
+
+def fetch_tb(h5, where, prop_name):
+    try:
+        # this is slow, so DON'T call it unless really necessary
+        # ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        # 961/481    0.003    0.000    4.711    0.010 file.py:1061(getNode)
+        # 10085/485    0.022    0.000    4.707    0.010 file.py:1036(_getNode)
+        tb = h5.getNode(where, prop_name)
+        return tb
+    except NoSuchNodeError:
+        logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
+                os.path.join(where, prop_name)))
+
+def block_average(a, n=100):
+    """a is a mutliple dimension array, n is the max number of data points desired"""
+    if a.shape[1] < n:
+        return a
+    else:
+        bs = int(a.shape[1] / n)                            # bs: block size
+        print a.shape[1]
+        if bs * n < a.shape[1] - 1:                         # -1 is math detail
+            bs = bs + 1
+        print 'block size: {0}, # of blocks: {1}'.format(bs, n)
+        return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
+                         for i in xrange(1, n+1)]).transpose()
 
 @utils.timeit
 def groupit(core_vars, prop_obj, A, C, h5):

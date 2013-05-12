@@ -11,7 +11,6 @@ import utils
 def distr(data, A, C, **kw):
     """data: is an OrderedDict"""
     logger.info('start plotting distr...')
-    # print data
 
     fig = plt.figure(figsize=(12,9))
     pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)

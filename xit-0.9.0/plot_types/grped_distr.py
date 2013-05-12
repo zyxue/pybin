@@ -65,21 +65,28 @@ def grped_distr(data, A, C, **kw):
                 ax.fill_betweenx([0,1], [m-e, m-e], [m+e, m+e],
                                  where=None, facecolor='black', alpha=.3)
 
-            if 'vline' in pt_dd:
-                vl = pt_dd['vline']
-                x = float(vl['x'])
-                if 'y' in vl:
-                    yb, ye = [float(i) for i in vl['y']]
-                else:
-                    yb, ye = ax.get_ylim()
-                ax.plot([x, x], [yb, ye], **vl.get('params', {}))
-
-
-            if A.property == 'rg_c_alpha_wl' and dsetk == 'dataset0' and A.plot_type == 'alx':
-                logger.info('do something special to this ax')
-
+        if 'vline' in pt_dd:
+            vl = pt_dd['vline']
+            x = float(vl['x'])
+            if 'y' in vl:
+                yb, ye = [float(i) for i in vl['y']]
+            else:
+                yb, ye = ax.get_ylim()
+            ax.plot([x, x], [yb, ye], **vl.get('params', {}))
 
         decorate_ax(ax, pt_dd, ncol, nrow, c)
+
+        # specific case
+        if (A.property == 'rg_c_alpha_wl' 
+            and dsetk == 'dset0' 
+            and A.plot_type == 'grped_alx'
+            and sorted(dset['data'].keys()) == ['m300/sq1', 'w300/sq1']):
+            print "DO something special"
+            ax.set_xlim([0, 500])
+            ax.set_xticklabels([str(i) for i in xrange(0,600, 100)])
+            for tick in ax.xaxis.get_major_ticks():                                                      
+                tick.label1On = False                                                                    
+                tick.label2On = True               # move the ticks to the top 
 
     plt.savefig(utils.gen_output_filename(A, C))
 
@@ -146,6 +153,7 @@ def decorate_ax(ax, pt_dd, ncol, nrow, c):
 
     if c < (ncol * nrow - ncol):
         ax.set_xticklabels([])
+        # ax.get_xaxis().set_visible(False)                   # this hide the whole axis
     else:
         if 'xlabel' in pt_dd: 
             ax.set_xlabel(**pt_dd['xlabel'])
