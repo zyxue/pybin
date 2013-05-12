@@ -3,7 +3,7 @@ import inspect
 from utils import timeit
 
 modules = []
-for mod_name in ['xy']:
+for mod_name in ['xy', 'mp_alx']:
     # 'grped_bars', 'grped_distr', 'grped_distr_ave']:
     # http://docs.python.org/2/library/functions.html#__import__
     modules.append(__import__(mod_name, globals(), locals(), [], -1))

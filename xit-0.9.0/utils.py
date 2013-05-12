@@ -281,7 +281,7 @@ def gen_output_filename(A, C):
         prop, pt = get_prop(A), get_pt(A)        # pt: plot_type or plot2p_type
         output = os.path.join(
             C['data']['plots'], '{0}.png'.format('_'.join([pt, prop])))
-    logger.info('saving to {0}...'.format(output))
+    logger.info('saving to {0} ...'.format(output))
     return output
 
 def get_prop_dd(C, prop_name):
@@ -297,6 +297,7 @@ def get_prop_dd(C, prop_name):
     if not rr:
         logger.info('[[{0}]] NOT found in [plot] in {1}'.format(prop_name, C.filename))
         return {}
+    logger.info('found [[{0}]] in [plot] in {1}'.format(prop_name, C.filename))
     return rr
 
 def get_pt_dd(C, prop_name, pt_name):
@@ -306,6 +307,7 @@ def get_pt_dd(C, prop_name, pt_name):
     if r:
         rr = r.get(pt_name)
         if rr:
+            logger.info('found [[[{0}]]] in [[{1}]]'.format(pt_name, prop_name))
             return rr
         else:
             logger.info('[[[{0}]]] NOT found in [[{1}]]'.format(pt_name, prop_name))
@@ -324,9 +326,9 @@ def get_pt_dd(C, prop_name, pt_name):
         return {}
     sss = ss.get(pt_name)
     if not sss:
-        logger.info('[[[{0}]]] NOT found in [[{1}]]'.format(        
-                pt_name, prop_name))
+        logger.info('[[[{0}]]] NOT found in [[{1}]]'.format(pt_name, prop_name))
         return {}
+    logger.info('found [[[{0}]]] in [[{1}]]'.format(pt_name, prop_name))
     return sss
 
 def get_prop(A):

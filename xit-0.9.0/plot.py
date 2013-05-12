@@ -71,7 +71,7 @@ def calcit(grp, gk, prop_obj, h5, A, C):
     pt = utils.get_pt(A) 
     if pt in ['bars', 'grped_bars', 'xy', 'grped_xy']:
         return calc_means(*args)
-    elif pt in ['alx', 'grped_alx']:
+    elif pt in ['alx', 'grped_alx', 'mp_alx']:
         return calc_alx(*args)
     elif pt in ['distr', 'grped_distr']:
         return calc_distr(*args)

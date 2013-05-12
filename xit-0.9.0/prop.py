@@ -216,12 +216,12 @@ SCHEMA_DICT = {
     # 'rdf_un2vp': (rdf, 'rdf along the time trajectory'),
     # 'rdf_un3vp': (rdf, 'rdf along the time trajectory'),
     
-    # 'rdf_c1vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c2vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c3vn': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c1vp': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c2vp': (rdf, 'rdf along the time trajectory'),
-    # 'rdf_c3vp': (rdf, 'rdf along the time trajectory'),
+    'rdf_c1vn': rdf,
+    'rdf_c2vn': rdf,
+    'rdf_c3vn': rdf,
+    'rdf_c1vp': rdf,
+    'rdf_c2vp': rdf,
+    'rdf_c3vp': rdf,
     
     # 'conf_entropy': (entropy, 'entropy with increasing sampling'),
     
@@ -246,6 +246,15 @@ INTERESTED_FIELDS = {
 
     'dssp_E'           : 'structure',
     'seqspacing'       : 'ave_d',
+
+    'rdf_c1vn': 'rdf',
+    'rdf_c2vn': 'rdf',
+    'rdf_c3vn': 'rdf',
+    'rdf_c1vp': 'rdf',
+    'rdf_c2vp': 'rdf',
+    'rdf_c3vp': 'rdf',
+
+
     }
 
 from mysys import read_mysys

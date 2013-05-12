@@ -99,7 +99,7 @@ def get_args(args_to_parse=None):
                                      'than a single property in plot. e.g. "upup unun"'))
 
     for p in [plot_parser, plot2p_parser]:
-        p.add_argument('--grptoken', default='mena', help='how to group the original  directories? e.g. path2')
+        p.add_argument('--grptoken', required=True, help='how to group the original  directories? e.g. path2')
         p.add_argument('--merge', action='store_true', help='merge all plots in one ax')
         p.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
         p.add_argument('-o', '--output', help='output file')

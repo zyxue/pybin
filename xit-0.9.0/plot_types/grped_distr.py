@@ -20,7 +20,7 @@ def grped_distr(data, A, C, **kw):
 
     logger.info('start plotting {0} for {1}...'.format(A.plot_type, data.keys()))
 
-    # This is not elegant
+    # This is trying to avoid duplication in .xitconfig, but not very elegant
     if A.plot_type in ['grped_distr', 'grped_distr_ave']:
         _ = 'grped_distr'
     elif A.plot_type in ['grped_alx']:
