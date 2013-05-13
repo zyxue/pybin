@@ -6,6 +6,8 @@ from collections import OrderedDict
 import numpy as np
 from tables.exceptions import NoSuchNodeError
 
+from scipy import stats
+
 import prop
 import utils
 import plot_types
@@ -154,9 +156,11 @@ def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
 
     if 'xdenorm' in prop_dd:
         ref_col = ref_col / float(prop_dd['xdenorm'])
-    _aa = np.array([ref_col, _a.mean(axis=0),
-                    [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
+    # _aa = np.array([ref_col, _a.mean(axis=0),
+    #                 [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
+    _aa = np.array([ref_col, _a.mean(axis=0), stats.sem(_a, axis=0)])
     res = block_average(_aa)
+    print res
     return res
 
 def calc_map(grp, prop_obj):
@@ -231,18 +235,30 @@ def fetch_tb(h5, where, prop_name):
         logger.info('Dude, NODE "{0}" DOES NOT EXIST in the table!'.format(
                 os.path.join(where, prop_name)))
 
-def block_average(a, n=100):
+def block_average(ar, n=100):
     """a is a mutliple dimension array, n is the max number of data points desired"""
-    if a.shape[1] < n:
-        return a
-    else:
-        bs = int(a.shape[1] / n)                            # bs: block size
-        print a.shape[1]
-        if bs * n < a.shape[1] - 1:                         # -1 is math detail
-            bs = bs + 1
-        print 'block size: {0}, # of blocks: {1}'.format(bs, n)
-        return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
-                         for i in xrange(1, n+1)]).transpose()
+    logger.info('intended # of blocks: {0}'.format(n))
+    logger.info('array shape {0}'.format(ar.shape))
+
+    if ar.shape[1] < n:
+        logger.info(('array length ({0}) less than the intended number blocks ({1}), '
+                     'no block average executed').format(ar.shape[1], n))
+        return ar
+
+    bs = ar.shape[1] / n                    # floor division; bs: block size
+    if bs * n < ar.shape[1] - 1:            # -1 is math detail
+        bs = bs + 1
+    new_n = ar.shape[1] / bs
+    if new_n * bs < ar.shape[1]:
+        new_n = new_n + 1
+    logger.info('DETERMINED: block size: {0}; real number of blocks: {1}'.format(bs, new_n))
+
+    res = []
+    for i in xrange(new_n):
+        bcol = bs * i                           # bcol: beginning column number
+        ecol = bs * (i + 1)                     # ecol: ending column number 
+        res.append(ar[:, bcol:ecol].mean(axis=1))
+    return np.array(res).transpose()
 
 @utils.timeit
 def groupit(core_vars, prop_obj, A, C, h5):

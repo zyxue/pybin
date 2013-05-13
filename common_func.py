@@ -112,4 +112,3 @@ def backup_file(f):
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     logging.info("objects in this module is supposed to be imported rather than run directly")
-

@@ -17,9 +17,7 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         x = x/1000. if options.nm else x
         ax.errorbar(x, y, yerr=e, label=label)
     else:
-        print 'block_averaging...'
         x, y = block_average(xvg2array(inf))
-        print 'block_averaged'
 
         # print x, y
         # print x.shape, y.shape        
@@ -74,6 +72,7 @@ def main(options):
     fig = plt.figure(figsize=(24, 11))
     xs, ys, keys, axes = {}, {}, [], []
     for k, inf in enumerate(infs):
+        print "working on {0}".format(inf)
         if k % overlap == 0:
             ax = fig.add_subplot(row, col, k / overlap + 1)
 

@@ -118,7 +118,7 @@ def get_args(args_to_parse=None):
         p.add_argument('-a' , '--analysis', required=True, help='{0}'.format(ANALYSIS_METHODS.keys()))
 
     for p in [transform_parser, plot_parser]:
-        p.add_argument('-p' , '--property', required=True, help='{0}'.format(PROPERTIES.keys()))
+        p.add_argument('-p' , '--property', help='{0}'.format(PROPERTIES.keys()))
 
     for p in [anal_parser, transform_parser, plot_parser, plot2p_parser]:
         p.add_argument('--hdf5', help='specify the .h5 file to use if not configured in .xitconfig')
