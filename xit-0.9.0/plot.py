@@ -150,7 +150,7 @@ def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
         assert (col1 == ref_col).all() == True
         col2 = tb.read(field=prop_obj.ifield)[:min_len]
         _l.append(col2)
-        _a = np.array(_l)
+    _a = np.array(_l)
 
     if 'xdenorm' in prop_dd:
         ref_col = ref_col / float(prop_dd['xdenorm'])
