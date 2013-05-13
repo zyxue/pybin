@@ -80,7 +80,7 @@ def main():
             sys.stdout.write(msg_cpt)
             sys.stdout.write(msg_tpr)
 
-        if t_cpt <= t_tpr:
+        if t_cpt < t_tpr:
             sys.stdout.write('1')
         else:
             sys.stdout.write('0')
