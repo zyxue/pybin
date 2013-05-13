@@ -30,7 +30,7 @@ def gen_cmds(A, C, core_vars):
 # UPDATE: SHOULD BE PUT IN THE .XITCONFIG AND READ BY THE INDIVIDUAL FUNCTION 2013-05-07
 ###########here you add analysis specific arguments as in .xitconfig###########
 
-        anal_func = analysis_methods.METHODS[A.analysis]
+        anal_func = analysis_methods.ANALYSIS_METHODS[A.analysis]
 
         if anal_func.__module__ != analysis_methods.org.__name__:
             # analysis_methods.org.__name__: 'analysis_methods.org'

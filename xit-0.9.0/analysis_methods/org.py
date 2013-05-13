@@ -4,6 +4,8 @@ import glob
 import subprocess
 import StringIO
 
+import utils
+
 def check_inputdir(**kw):
     d = kw['inputdir']
     if not os.path.exists(d):
@@ -25,7 +27,7 @@ printf "Ordered_Sys\n"         | trjconv  -f {orderxtcf}   -s {tprf} -n {ndxf} -
 """.format(na=na, **kw)
 
 def g_select(**kw):
-    dd = kw['C']['g_select']
+    dd = utils.get_anal_dd(kw['C'], 'g_select')
     repo_ndx_fn = dd['repo_ndx_fn_fmt'].format(**kw)
     repo_ndx = os.path.join(kw['root'], 
                             kw['C']['data']['repository'],

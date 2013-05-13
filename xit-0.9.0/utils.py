@@ -284,6 +284,9 @@ def gen_output_filename(A, C):
     logger.info('saving to {0} ...'.format(output))
     return output
 
+def get_anal_dd(C, anal_name):
+    return C.get('anal', {}).get(anal_name)
+
 def get_prop_dd(C, prop_name):
     """
     get the configuration for a particular property (prop) in the plot section
