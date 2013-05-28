@@ -1,6 +1,6 @@
 def unvn(**kw):
-    # TESTED, in the "uv" case, g_mindist_excl1 and g_mindist produce the same result
-    cmd = '''printf "UN\nVN\n" | g_mindist_excl1 \
+    # TESTED, in the "uv" case, myg_mindist_excl1 and g_mindist produce the same result
+    cmd = '''printf "UN\nVN\n" | myg_mindist_excl1 \
 -f {orderxtcf} \
 -s {tprf} \
 -n {ndxf} \
@@ -23,7 +23,7 @@ printf "Protein_no_end\nOrdered_Solvent\n" | g_hbond \
     return cmd
 
 def upvn(**kw):
-    cmd = '''printf "UP\nVN\n" | g_mindist_excl1 \
+    cmd = '''printf "UP\nVN\n" | myg_mindist_excl1 \
 -f {orderxtcf} \
 -s {tprf} \
 -n {ndxf} \
@@ -34,7 +34,7 @@ def upvn(**kw):
     return cmd
 
 def unvp(**kw):
-    cmd = '''printf "UN\nVP\n" | g_mindist_excl1 \
+    cmd = '''printf "UN\nVP\n" | myg_mindist_excl1 \
 -f {orderxtcf} \
 -s {tprf} \
 -n {ndxf} \
@@ -60,7 +60,7 @@ printf "Protein_no_end\nProtein_no_end\n" | g_hbond \
 
 def unun(**kw):
     return '''
-printf "UN\nUN\n" | g_mindist_excl1 \
+printf "UN\nUN\n" | myg_mindist_excl1 \
 -f {orderxtcf} \
 -s {grof} \
 -n {ndxf} \
@@ -91,7 +91,7 @@ printf "Protein_no_end\nProtein_no_end\n" | g_hbond \
 
 def unun_wl(**kw):
     return '''
-printf "UN\nUN\n" | g_mindist_excl1 \
+printf "UN\nUN\n" | myg_mindist_excl1 \
 -f {orderxtcf} \
 -s {grof} \
 -n {ndxf} \

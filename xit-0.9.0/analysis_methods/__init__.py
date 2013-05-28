@@ -4,6 +4,7 @@ from analysis_methods import org
 from analysis_methods import fancy
 from analysis_methods import basic
 from analysis_methods import interactions
+from analysis_methods import rdf
 
 # uses a different way to collect methods than __init__ in plot_types, just to
 # see why is better in long-term. The later one must be better for frequently
@@ -11,7 +12,7 @@ from analysis_methods import interactions
 
 # collecting all the functions available
 PROPERTIES = {}
-for module in [basic, fancy, interactions]:
+for module in [basic, fancy, interactions, rdf]:
     for fname in dir(module):
         f = getattr(module, fname)
         if inspect.isfunction(f):

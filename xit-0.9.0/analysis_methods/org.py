@@ -14,7 +14,7 @@ def check_inputdir(**kw):
     return s
 
 def trjorder(**kw):
-    dd = kw['C']['trjorder']
+    dd = utils.get_anal_dd(kw['C'], 'trjorder')
     fn = '_{0}'.format(os.path.basename(kw['orderxtcf']))
     kw['tmporderf'] = os.path.join(kw['inputdir'], fn)
     na_key = dd['nak_fmt'].format(**kw)
@@ -48,7 +48,7 @@ def g_select(**kw):
 -select '{gss}'""".format(repo_ndx=repo_ndx, gss=gss, **kw)
 
 def symlink_ndx(**kw):
-    dd = kw['C']['g_select']
+    dd = utils.get_anal_dd(kw['C'], 'g_select')
     ndx_fn = dd['repo_ndx_fn_fmt'].format(**kw)
     repo_ndx = os.path.join(kw['root'], 
                             kw['C']['data']['repository'], 
@@ -56,12 +56,14 @@ def symlink_ndx(**kw):
     return "ln -s -f -v {repo_ndx} {ndxf}".format(repo_ndx=repo_ndx, **kw)
 
 def extend_tpr(**kw):
+    dd = utils.get_anal_dd(kw['C'], 'extend_tpr')
     T = kw['tprf']
     tm = get_tpr_time(T)
     nr = os.path.basename(T).rsplit('.tpr')[0]              # nr: name root
     renamed = '{0}_{1}ns.tpr'.format(nr, tm)
-    kw.update(oldtprf=os.path.join(os.path.dirname(T), renamed))
-    return 'mv -v {tprf} {oldtprf}; tpbconv -s {oldtprf} -extend {extend} -o {tprf}'.format(**kw)
+    oldtprf= os.path.join(os.path.dirname(T), renamed)
+    return 'mv -v {tprf} {oldtprf}; tpbconv -s {oldtprf} -extend {extend} -o {tprf}'.format(
+        oldtprf=oldtprf, extend=dd['extend'], **kw)
 
 def trjcat_plus(**kw):
     # tmpl = 'sq[1-9]h[0-3][0-9]_md.part[0-9][0-9][0-9][0-9].xtc'
@@ -87,6 +89,15 @@ def trjconv_grof(**kw):                  # used to extract the last frame
 -ur tric \
 -dump 0 \
 -o {grof}".format(**kw)
+
+def trjconv_proxtcf(**kw):
+    return "printf 'Protein\nProtein\n' | trjconv \
+-f {xtcf} \
+-s {tprf} \
+-pbc mol \
+-center \
+-b {b} \
+-o {proxtcf}".format(**kw)
 
 def trjconv_progrof(**kw):
     return """printf 'Protein\nProtein\n' | trjconv \
