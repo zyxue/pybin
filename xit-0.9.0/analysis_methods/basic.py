@@ -17,39 +17,19 @@ def rg_c_alpha(**kw):
 -b {theb} \
 -o {theo}'.format(thextcf=thextcf, theb=theb, theo=theo, **kw)
 
-# def rg_wl(**kw):
-#     """
-#     whole length rg, usually for checking convergence
-#     """
-#     return 'printf 'C-alpha' | g_gyrate \
-# -f {orderxtcf} \
-# -s {tprf} \
-# -b 0 \
-# -o {anal_dir}/{id_}_rg_wl.xvg'.format(**kw)
-
-def dssp_proxtcf(**kw):
-    theb = kw['b']
-    if theb > 0:
-        thesc = '{anal_dir}/{id_}_dssp.xvg'.format(**kw)
-    else:
-        thesc = '{anal_dir}/{id_}_dssp_wl.xvg'.format(**kw)
-    return 'printf "Protein" | mydo_dssp \
--f {proxtcf} \
--s {progrof} \
--b {theb} \
--sc {thesc}'.format(theb=theb, thesc=thesc, **kw)
-
 def dssp(**kw):
+    thextcf = kw['proxtcf'] if kw['use_pro'] else kw['orderxtcf']
+    thegrof = kw['progrof'] if kw['use_pro'] else kw['ordergrof']
     theb = kw['b']
     if theb > 0:
         thesc = '{anal_dir}/{id_}_dssp.xvg'.format(**kw)
     else:
         thesc = '{anal_dir}/{id_}_dssp_wl.xvg'.format(**kw)
     return 'printf "Protein" | mydo_dssp \
--f {orderxtcf} \
--s {ordergrof} \
+-f {thextcf} \
+-s {thegrof} \
 -b {theb} \
--sc {thesc}'.format(theb=theb, thesc=thesc, **kw)
+-sc {thesc}'.format(thextcf=thextcf, thegrof=thegrof, theb=theb, thesc=thesc, **kw)
 
 def e2ed(**kw):
     """end to end distance"""
