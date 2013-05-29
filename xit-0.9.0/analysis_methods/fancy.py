@@ -2,17 +2,18 @@ import os
 import utils
 
 def seqspacing(**kw):
-    dd = kw['C']['seqspacing']
+    dd = utils.get_anal_dd(kw['C'], 'seqspacing')
     plk = dd['plk_fmt'].format(**kw)
     pl  = dd['pl'][plk]
-    """2011-11-30: sequence_spacing.py, Andreas Vitalis, Xiaoling Wang and Rohi V.Pappu 2008 JMB"""
-    # return "seqspacing.py --pf {pf} -f {proxtcf} -s {progrof} -b {b} -e {e} -l {peptide_length} -o {anadir}/{pf}_seqspacing.xvg".format(**kwargs)
+    thextcf = kw['proxtcf'] if kw['use_pro'] else kw['orderxtcf']
+    thegrof = kw['progrof'] if kw['use_pro'] else kw['ordergrof']
     return "seqspacing.py \
--f {orderxtcf} \
--s {ordergrof} \
+-f {thextcf} \
+-s {thegrof} \
 -b {b} \
 --pl {peptide_length} \
--o {anal_dir}/{id_}_seqspacing.xvg".format(peptide_length=pl, **kw)
+-o {anal_dir}/{id_}_seqspacing.xvg".format(thextcf=thextcf, thegrof=thegrof, 
+                                           peptide_length=pl, **kw)
 
 def conf_entropy(**kw):
     dd = utils.get_prop_dd(kw['C'], 'conf_entropy')

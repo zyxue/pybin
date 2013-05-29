@@ -59,15 +59,17 @@ printf "Protein_no_end\nProtein_no_end\n" | g_hbond \
     return cmd
 
 def unun(**kw):
+    thextcf = kw['proxtcf'] if kw['use_pro'] else kw['orderxtcf']
+    thegrof = kw['progrof'] if kw['use_pro'] else kw['ordergrof']
     return '''
 printf "UN\nUN\n" | myg_mindist_excl1 \
--f {orderxtcf} \
--s {grof} \
+-f {thextcf} \
+-s {thegrof} \
 -n {ndxf} \
 -b {b} \
 -d 0.55 \
 -on {anal_dir}/{id_}_unun.xvg \
--od {anal_dir}/{id_}_mindist.xvg'''.format(**kw)
+-od {anal_dir}/{id_}_mindist.xvg'''.format(thextcf=thextcf, thegrof=thegrof, **kw)
 
 def upup_map(**kw):
     """
