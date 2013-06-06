@@ -381,6 +381,16 @@ def get_col(c):
     """convert to correct color values"""
     return '#{0}'.format(c) if re.match('[A-F0-9]{6}', c) else c
 
+def get_param(pt_dd_val, k):
+    """find the exactly matched val or do regex search, or return None"""
+    v = pt_dd_val.get(k)
+    if not v:
+        for _ in pt_dd_val:
+            if re.search(_, k):
+                v = pt_dd_val[_]
+                break
+    return v
+
 # def is_transformable(f):
 #     """if IS_TRANSFORMABLE, then can be transformed to a hdf5 file"""
 #     setattr(f, 'IS_TRANSFORMABLE', 1)
