@@ -44,14 +44,13 @@ for etime in {{{b0}..{e}..{dt}}}; do
     printf "Protein\\nProtein\\n" | g_covar -f {orderxtcf} -s {tprf} -b {b} -e ${{etime}} -mwa -o ${{covar_dir}}/eigenval_e${{etime}}.xvg -v ${{covar_dir}}/eigenvec_e${{etime}}.trr -av ${{covar_dir}}/average_e${{etime}}.pdb -l ${{covar_dir}}/covar_e${{etime}}.log
     echo ${{etime}} $(g_anaeig -v ${{covar_dir}}/eigenvec_e${{etime}}.trr -entropy 2>&1 | grep "Schlitter formula is" | awk '{{print $9}}') >> ${{outputxvg}}
 
-   rm -v ${{covar_dir}}/eigenval_e${{etime}}.xvg
-   rm -v ${{covar_dir}}/eigenvec_e${{etime}}.trr
-   rm -v ${{covar_dir}}/average_e${{etime}}.pdb
-   rm -v ${{covar_dir}}/covar_e${{etime}}.log  
-   rm -vrf ${{covar_dir}}
+   # rm -v ${{covar_dir}}/eigenval_e${{etime}}.xvg
+   # rm -v ${{covar_dir}}/eigenvec_e${{etime}}.trr
+   # rm -v ${{covar_dir}}/average_e${{etime}}.pdb
+   # rm -v ${{covar_dir}}/covar_e${{etime}}.log  
+   # rm -vrf ${{covar_dir}}
 done
-# comment the following line when in production run
-# echo "returncode: 0"
+
 # remove tmp_dir to minmize # of files
-# rm -rfv ${{tmp_dir}}
+rm -rfv ${{tmp_dir}}
 """.format(**kw)
