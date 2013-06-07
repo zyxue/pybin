@@ -283,9 +283,13 @@ def gen_output_filename(A, C):
     if A.output:
         return A.output
     fmt = A.output_format if A.output_format else 'png'
-    prop, pt = get_prop(A), get_pt(A)            # pt: plot_type or plot2p_type
+    prop, pt = get_prop(A), get_pt(A)           # pt: plot_type or plot2p_typen
+
+    plots_dir = C['data']['plots']
+    if not os.path.exists(plots_dir):
+        os.mkdir(plots_dir)
     output = os.path.join(
-        C['data']['plots'], '{0}.{1}'.format('_'.join([pt, prop]), fmt))
+        plots_dir, '{0}.{1}'.format('_'.join([pt, prop]), fmt))
     logger.info('saving to {0} ...'.format(output))
     return output
 
@@ -376,6 +380,16 @@ def is_plot2p_type(f):
 def get_col(c):
     """convert to correct color values"""
     return '#{0}'.format(c) if re.match('[A-F0-9]{6}', c) else c
+
+def get_param(pt_dd_val, k):
+    """find the exactly matched val or do regex search, or return None"""
+    v = pt_dd_val.get(k)
+    if not v:
+        for _ in pt_dd_val:
+            if re.search(_, k):
+                v = pt_dd_val[_]
+                break
+    return v
 
 # def is_transformable(f):
 #     """if IS_TRANSFORMABLE, then can be transformed to a hdf5 file"""

@@ -41,9 +41,9 @@ def distr(data, A, C, **kw):
 def get_params(gk, pt_dd):
     params = {}
     if 'colors' in pt_dd:
-        params['color'] = pt_dd['colors'][gk]
+        params['color'] = utils.get_col(utils.get_param(pt_dd['colors'], gk))
     if 'legends' in pt_dd:
-        params['label'] = pt_dd['legends'][gk]
+        params['label'] = utils.get_param(pt_dd['legends'], gk)
     else:
         params['label'] = gk
     return params
