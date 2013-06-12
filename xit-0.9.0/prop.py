@@ -170,12 +170,12 @@ SCHEMA_DICT = {
     'rg_c_alpha'    : rg,
     'rg_c_alpha_wl' : rg,
 
-    # 'e2ed'           : (e2ed, "e2ed"),   # end-to-end distance data along the time trjectory"
-    # 'rg_c_alpha'     : (rg, "rg"),       # Radius of gyration of C alpha along the time trjectory"
-    # 'rg_backbone'    : (rg, "rg"),       # Radius of gyration of backbone along the time trjectory"),
+    # 'e2ed'           : (e2ed, "e2ed"),   # end-to-end distance data along the time trjectory
+    # 'rg_c_alpha'     : (rg, "rg"),       # Radius of gyration of C alpha along the time trjectory
+    # 'rg_backbone'    : (rg, "rg"),       # Radius of gyration of backbone along the time trjectory
 
-    'seqspacing'     : seqspacing,                          # sequence spacing'
-    # 'pmf_e2ed': (pmf, 'potential_of_mean_force'),
+    'seqspacing'     : seqspacing,                          # sequence spacing
+    'pmf_e2ed'       : pmf,                        # potential_of_mean_force along e2ed
     # 'omega_percent': (omega_percent, 'percentage of cis trans peptide bonds'),
     
     'dssp_E': dssp,                  # dssp_E (b-sheet)
@@ -244,7 +244,17 @@ INTERESTED_FIELDS = {
     'upv': 'upv',
     'unv': 'unv',
 
-    'dssp_E'           : 'structure',
+    'dssp_E': 'structure',
+    'dssp_E': 'structure',
+    'dssp_H': 'structure',
+    'dssp_T': 'structure',
+    'dssp_G': 'structure',
+    'dssp_I': 'structure',
+    'dssp_B': 'structure',
+    'dssp_C': 'structure',
+    'dssp_S': 'structure',
+    'dssp_X': 'structure',
+
     'seqspacing'       : 'ave_d',
 
     'rdf_c1vn': 'rdf',

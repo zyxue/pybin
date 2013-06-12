@@ -4,7 +4,6 @@ import time
 import shutil
 import logging
 logger = logging.getLogger(__name__)
-
 import subprocess
 import Queue
 from threading import Thread
@@ -80,6 +79,8 @@ def sem(vals):
 
 def sem3(ar):
     # equivalent to stats.sem(ar, axis=0) for 3D array
+    # return ar.std(axis=0) / (ar.shape[0] - 1)
+
     A = np.zeros(ar.shape[1:])
     for i in range(ar.shape[1]): 
         for j in range(ar.shape[2]): 
@@ -99,15 +100,19 @@ def gen_rc(n):
         else:
             return c, r
 
-def split(l, n):
+def split(l, group_size):
     """split a list into n chunks"""
+    n = group_size
     if len(l) <= n:
+        logger.info(
+            'the length of l ({0}) is less than the size of groups ({1}), so split not executed and returned l'.format(
+                len(l), n))
         return l
     else:
-        idx = len(l) / n
-        if idx * n < len(l):
-            idx += 1                           # asure to include the remainder
-        return [l[i:idx * (i+1)] for i in xrange(idx)]
+        k = len(l) / n
+        if k * n < len(l):
+            k += 1                             # asure to include the remainder
+        return [l[(i * n): ((i+1) * n)] for i in xrange(k)]
 
 def float_params(d, *key_list):
     """
@@ -276,16 +281,28 @@ def get_h5(A, C):
 
 def gen_output_filename(A, C):
     if A.output:
-        output = A.output
-    else:
-        prop, pt = get_prop(A), get_pt(A)        # pt: plot_type or plot2p_type
-        output = os.path.join(
-            C['data']['plots'], '{0}.png'.format('_'.join([pt, prop])))
+        return A.output
+    fmt = A.output_format if A.output_format else 'png'
+    prop, pt = get_prop(A), get_pt(A)           # pt: plot_type or plot2p_typen
+
+    plots_dir = C['data']['plots']
+    if not os.path.exists(plots_dir):
+        os.mkdir(plots_dir)
+    output = os.path.join(
+        plots_dir, '{0}.{1}'.format('_'.join([pt, prop]), fmt))
     logger.info('saving to {0} ...'.format(output))
     return output
 
 def get_anal_dd(C, anal_name):
-    return C.get('anal', {}).get(anal_name)
+    r = C.get('anal')
+    if not r:
+        logger.info('[anal] NOT found in {0}'.format(C.filename))
+        return {}
+    rr = r.get(anal_name)
+    if not rr:
+        logger.info('[[{0}]] NOT found in [anal]'.format(anal_name)) 
+        return {}
+    return rr
 
 def get_prop_dd(C, prop_name):
     """
@@ -359,6 +376,20 @@ def is_plot_type(f):
 def is_plot2p_type(f):
     setattr(f, 'IS_PLOT2P_TYPE', 1)
     return f
+
+def get_col(c):
+    """convert to correct color values"""
+    return '#{0}'.format(c) if re.match('[A-F0-9]{6}', c) else c
+
+def get_param(pt_dd_val, k):
+    """find the exactly matched val or do regex search, or return None"""
+    v = pt_dd_val.get(k)
+    if not v:
+        for _ in pt_dd_val:
+            if re.search(_, k):
+                v = pt_dd_val[_]
+                break
+    return v
 
 # def is_transformable(f):
 #     """if IS_TRANSFORMABLE, then can be transformed to a hdf5 file"""

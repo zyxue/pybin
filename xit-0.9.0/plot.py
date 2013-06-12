@@ -6,7 +6,7 @@ from collections import OrderedDict
 import numpy as np
 from tables.exceptions import NoSuchNodeError
 
-from scipy import stats
+# from scipy import stats
 
 import prop
 import utils
@@ -82,7 +82,7 @@ def calcit(grp, gk, prop_obj, h5, A, C):
     elif pt == 'map':
         return calc_map(grp, prop_obj)
     elif pt == 'pmf':
-        return calc_pmf(grp, prop_obj, A, C)
+        return calc_pmf(*args)
     else:
         raise IOError('Do not know how to calculate "{0}"'.format(pt))
 
@@ -147,20 +147,29 @@ def calc_alx(h5, gk, grp, prop_obj, prop_dd, A, C):
     min_len = min(tb.read(field=xf).shape[0] for tb in grp_tb)
     _l = []
     ref_col = grp_tb[0].read(field=xf)[:min_len]
+
     for tb in grp_tb:
         col1 = tb.read(field=xf)[:min_len]
         assert (col1 == ref_col).all() == True
         col2 = tb.read(field=prop_obj.ifield)[:min_len]
         _l.append(col2)
     _a = np.array(_l)
+    y = _a.mean(axis=0)
+    ye = np.array([utils.sem(_a[:,i]) for i in xrange(len(_a[0]))])
+    # ye = stats.sem(_a, axis=0)
 
     if 'xdenorm' in prop_dd:
         ref_col = ref_col / float(prop_dd['xdenorm'])
-    # _aa = np.array([ref_col, _a.mean(axis=0),
-    #                 [utils.sem(_a[:,i]) for i in xrange(len(_a[0]))]])
-    _aa = np.array([ref_col, _a.mean(axis=0), stats.sem(_a, axis=0)])
-    res = block_average(_aa)
-    print res
+    if 'ydenorm' in prop_dd:
+        ydnm = float(prop_dd['ydenorm'])
+        y, ye = y / ydnm, ye / ydnm
+
+    _aa = np.array([ref_col, y, ye])
+    prop_dd = utils.get_prop_dd(C, prop_obj.name)
+
+    # nb_blave: number of blocks for block averaging
+    n = int(prop_dd.get('nb_blave', 100))
+    res = block_average(_aa, n)
     return res
 
 def calc_map(grp, prop_obj):
@@ -171,15 +180,17 @@ def calc_map(grp, prop_obj):
     # norm  = prop_obj.norm('sq1') # dirty
     return np.array(_l).mean(axis=0)
 
-def calc_pmf(grp, prop_obj, A, C):
-    dd = C['plot'][A.property][A.plot_type]
-    if 'bins' not in dd:
+def calc_pmf(h5, gk, grp, prop_obj, prop_dd, A, C):
+    pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)
+    if 'bins' not in pt_dd:
         raise ValueError('bins not found in {0}, but be specified when plotting pmf'.format(C.name))
-    subgrps = utils.split(grp, 4)                         # split into 4 chunks
+    subgrps = utils.split(grp, 10)                       # 10 is the group_size
     da = []
     for sp in subgrps:
-        bn, psm, pse = calc_distr(sp, prop_obj, A, C)
+        bn, psm, pse = calc_distr(h5, '', sp, prop_obj, prop_dd, A, C)
         pmf, pmf_e = prob2pmf(psm, max(psm), pse)
+        for b, i in zip(bn, pmf):
+            print b, i
         sub_da = np.array([bn, pmf, pmf_e])
         da.append(sub_da)
     return np.array(da)
@@ -241,8 +252,8 @@ def block_average(ar, n=100):
     logger.info('array shape {0}'.format(ar.shape))
 
     if ar.shape[1] < n:
-        logger.info(('array length ({0}) less than the intended number blocks ({1}), '
-                     'no block average executed').format(ar.shape[1], n))
+        logger.info(('array length ({0}) less than the intended # of blocks ({1}), '
+                     'no block averaging executed').format(ar.shape[1], n))
         return ar
 
     bs = ar.shape[1] / n                    # floor division; bs: block size
@@ -251,7 +262,7 @@ def block_average(ar, n=100):
     new_n = ar.shape[1] / bs
     if new_n * bs < ar.shape[1]:
         new_n = new_n + 1
-    logger.info('DETERMINED: block size: {0}; real number of blocks: {1}'.format(bs, new_n))
+    logger.info('DETERMINED: block size: {0}; real # of blocks: {1}'.format(bs, new_n))
 
     res = []
     for i in xrange(new_n):

@@ -6,11 +6,11 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt
 import numpy as np
 
-import utils
+import utils as U
 
-@utils.is_plot_type
+@U.is_plot_type
 def grped_bars(data, A, C, **kw):
-    pt_dd = utils.get_pt_dd(C, A.property, A.plot_type)
+    pt_dd = U.get_pt_dd(C, A.property, A.plot_type)
     grp_REs = pt_dd['grp_REs']
     dsets = OrderedDict() # dsets: meaning further grouping, based on which ploting
                   # will be done
@@ -44,7 +44,7 @@ def grped_bars(data, A, C, **kw):
             if re.search(RE, key):
                 _['data'].update({key:data[key]})
         if 'colors' in pt_dd:
-            _.update(color=pt_dd['colors'][c])
+            _.update(color=U.get_col(pt_dd['colors'][c]))
         if 'legends' in pt_dd:
             _.update(legend=pt_dd['legends'][c])
 
@@ -87,11 +87,11 @@ def grped_bars(data, A, C, **kw):
         autolabel(rects)
 
     if 'ylim' in pt_dd:
-        ax.set_ylim(**utils.float_params(pt_dd['ylim'], 'bottom', 'top'))
+        ax.set_ylim(**U.float_params(pt_dd['ylim'], 'bottom', 'top'))
     if 'xlabel' in pt_dd: 
         ax.set_xlabel(pt_dd['xlabel'])
     if 'ylabel' in pt_dd:
-        ax.set_ylabel(**utils.float_params(pt_dd['ylabel'], 'labelpad'))
+        ax.set_ylabel(**U.float_params(pt_dd['ylabel'], 'labelpad'))
     if 'xticklabels' in pt_dd:
         ax.set_xticklabels(**pt_dd['xticklabels'])
     if 'title' in pt_dd:
@@ -99,4 +99,4 @@ def grped_bars(data, A, C, **kw):
     if 'legends' in pt_dd: 
         ax.legend(loc='best')
 
-    plt.savefig(utils.gen_output_filename(A, C))
+    plt.savefig(U.gen_output_filename(A, C))
