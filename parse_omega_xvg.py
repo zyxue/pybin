@@ -7,6 +7,9 @@ import re
 
 import numpy as np
 
+PROP1 = 'omega_x_pro_percent'
+PROP2 = 'omega_x_y_percent'     # y != pro
+
 def main(xvgf):
     XP_RE = '[ACDEFGHIKLMNPQRSTVWY]P[0-9]+'
     omega_list, data = process_xvg(xvgf)
@@ -56,22 +59,30 @@ def process_xvg(xvgf):
 
 def write_to_file(xvgf, cis_x_pro, cis_x_y):
     dirname = os.path.dirname(xvgf)
-    dir_ = os.path.join(dirname, 'r_omega_percent')
-    if not os.path.exists(dir_):
-        os.mkdir(dir_)
+    dir_x_pro = os.path.join(dirname, 'r_{0}'.format(PROP1))
+    dir_x_y = os.path.join(dirname, 'r_{0}'.format(PROP2))
+
+    for _ in [dir_x_pro, dir_x_y]:
+        if not os.path.exists(_):
+            os.mkdir(_)
         
     basename = os.path.basename(xvgf)
-    outputfile = os.path.join(dir_, basename.replace('omega', 'omega_percent'))
-    with open(outputfile, 'w') as opf:
-        opf.writelines('# {0:<20s}{1:<20s}{2:<20s}{3:<20s}{4:<20s}\n'.format(
-                'replica_id', 
-                'trans_x_pro', 'cis_x_pro',
-                'trans_x_y', 'cis_x_y'))
+    opf_x_pro = os.path.join(dir_x_pro, basename.replace('omega', PROP1))
+    opf_x_y = os.path.join(dir_x_y, basename.replace('omega', PROP2))
+    with open(opf_x_pro, 'w') as opf:
+        opf.writelines('# {0:<20s}{1:<20s}{2:<20s}\n'.format(
+                'replica_id', 'trans_x_pro', 'cis_x_pro'))
                 
-        opf.writelines('  {0:<20s}{1:<20.5f}{2:<20.5f}{3:<20.5f}{4:<20.5f}\n'.format(
-                xvgf,           # use it as a title
-                1-cis_x_pro, cis_x_pro,
-                1-cis_x_y, cis_x_y))
+        # use it as a title
+        opf.writelines('  {0:<20s}{1:<20.5f}{2:<20.5f}\n'.format(
+                xvgf, 1-cis_x_pro, cis_x_pro))
+
+    with open(opf_x_y, 'w') as opf:
+        opf.writelines('# {0:<20s}{1:<20s}{2:<20s}\n'.format(
+                'replica_id', 'trans_x_y', 'cis_x_y'))
+                
+        opf.writelines('  {0:<20s}{1:<20.5f}{2:<20.5f}\n'.format(
+                xvgf, 1-cis_x_y, cis_x_y))
 
 if __name__ == "__main__":
     infiles = sys.argv[1:]
