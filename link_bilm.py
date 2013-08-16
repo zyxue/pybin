@@ -25,13 +25,14 @@ def link(path, funlink=False):
     # path: e.g. xx/yy/pkg/include, pkg/include
     path = os.path.abspath(path)
     bn = os.path.basename(path)                             # bn: basename
+    cwd = os.getcwd()
     if bn == 'bin':
         target_dir = os.path.join(home, 'zx_local/bin')
         os.chdir(target_dir)
         for f in os.listdir(path):            # f just contains a filename
             relf = os.path.relpath(os.path.join(path, f))
             link_or_unlink(relf, f, funlink)
-        os.chdir(home)
+        os.chdir(cwd)
 
     elif bn == 'include':
         target_dir = os.path.join(home, 'zx_local/include')
@@ -40,7 +41,7 @@ def link(path, funlink=False):
             if f.endswith('.h'):
                 relf = os.path.relpath(os.path.join(path, f))
                 link_or_unlink(relf, f, funlink)
-        os.chdir(home)
+        os.chdir(cwd)
 
     elif bn == 'lib':
         target_dir = os.path.join(home, 'zx_local/lib')
@@ -49,7 +50,7 @@ def link(path, funlink=False):
             if f.startswith('lib'):
                 relf = os.path.relpath(os.path.join(path, f))
                 link_or_unlink(relf, f, funlink)
-        os.chdir(home)
+        os.chdir(cwd)
 
     elif bn == 'man': 
         target_dir = os.path.join(home, 'zx_local/man')
@@ -62,7 +63,7 @@ def link(path, funlink=False):
                 relf = os.path.relpath(os.path.join(path, m, f))
                 link_or_unlink(relf, f, funlink)
             os.chdir('..')
-        os.chdir(home)
+        os.chdir(cwd)
     else:
         print 'unrecognized path: {0}, exit..'.format(path)
 
