@@ -16,7 +16,11 @@ for _ in src:
 
 for k in DD.keys():
     print '{0:5s}:'.format(k.upper()),
-    for j in range(*DD[k]):
-        print '{0:2s}'.format(chr(j)),
+    ran = range(*DD[k])
+    for _ in ran:
+        print '{0:<3d}'.format(_),
+    print '\n{0:5s} '.format(''), # trying to align with k.upper()
+    for _ in ran:
+        print '{0:3s}'.format(chr(_)),
     print 
 
