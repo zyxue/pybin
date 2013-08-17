@@ -19,6 +19,10 @@
 # xpdf               ! visualizing pdf
 # dilo               ! web browser (may not be very useful)
 
+
+# echo "use 'killx' to kill vnc"
+# echo "killx is aliased to `ps x | grep 'xterm\|twm\|xinit\|Xvfb' | awk '{print $1}' | xargs kill -9'"
+
 running()  { sleep 1; ps -p "$1" >&/dev/null ; }
 
 if [ -n "${DISPLAY}" ]; then

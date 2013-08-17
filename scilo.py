@@ -21,6 +21,8 @@ def parse_cmd():
                         help='"local to host is specified')
     parser.add_argument('-f', '--from', dest='from_', required=True, nargs="+",
                         help='From what file')
+    parser.add_argument('-L', dest='L', action='store_true',
+                        help='check rsync')
     parser.add_argument('-t', '--to', type=str, dest='to_', required=True,
                         help='To what file')
     parser.add_argument('--host', type=str, dest='host', default='s', 
@@ -63,6 +65,9 @@ def main():
             cmd.insert(2, ARGS.to_)
     if ARGS.recursive:
         cmd.append('-r')
+    if ARGS.L:
+        cmd.append('-L')
+
     subprocess.call(cmd)
 
 if __name__ == '__main__':

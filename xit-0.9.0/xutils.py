@@ -65,11 +65,14 @@ def get_args(args_to_parse=None):
 
     anal_parser = subparsers.add_parser(
         'anal', help='do different sorts of analysis')
-    anal_parser.add_argument('--numthreads', default=16, help='number of threads')
+    anal_parser.add_argument('--numthreads', type=int, default=16, help='number of threads')
     anal_parser.add_argument('--test', action='store_true', help='if test, print the cmd without executing it')
     anal_parser.add_argument('--nolog', action='store_true', help='disable logging, output to stdout')
-    anal_parser.add_argument('--extend', help='for extending tpr, should be time in ps, not # of steps')
     anal_parser.add_argument('-b', default=0, help='gromacs -b')
+    anal_parser.add_argument('-e', default=None, help='gromacs -e')
+    anal_parser.add_argument('--use_pro', action='store_true', 
+                             help=("use proxtcf instead of orderxtcf for quick analysis, "
+                                   "especially when the later hasn't been generated"))
     anal_parser.add_argument('--opt_arg', help=('this is used for tool specific arguments specified'
                                                 'in the .xitconfig file (e.g. var1, var2, or var3)'))
 
@@ -103,6 +106,7 @@ def get_args(args_to_parse=None):
         p.add_argument('--merge', action='store_true', help='merge all plots in one ax')
         p.add_argument('--overwrite', action='store_true', help='overwrite previous postprocess data')
         p.add_argument('-o', '--output', help='output file')
+        p.add_argument('--output_format', choices=['png', 'pdf'], help='png (default), pdf')
 
     for p in [prep_parser, anal_parser, transform_parser, plot_parser, plot2p_parser]:
         # forget what the following two lines mean ---2013-05-09

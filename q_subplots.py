@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import re
+import logging
+logging.basicConfig(format='%(levelname)s|%(asctime)s|%(name)s:%(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,12 +20,9 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
         x = x/1000. if options.nm else x
         ax.errorbar(x, y, yerr=e, label=label)
     else:
-        x, y = block_average(xvg2array(inf))
-
-        # print x, y
-        # print x.shape, y.shape        
-        # import sys
-        # sys.exit()
+        x, y = block_average(xvg2array(inf), n=1000)
+        # x, y = xvg2array(inf)
+        print x.shape, y.shape
 
         x = x/1000. if options.nm else x
 
@@ -37,18 +37,30 @@ def ax_plot(inf, ax, legend, color, marker, berrorbar=False):
             # p = ax.plot(x, y, "o-", label=label) 
     return x, y
 
-def block_average(a, n=100):
-    """copied from xit-0.9.0/plot.py"""
-    if a.shape[1] < n:
-        return a
-    else:
-        bs = int(a.shape[1] / n)                            # bs: block size
-        print a.shape[1]
-        if bs * n < a.shape[1] - 1:                         # -1 is math detail
-            bs = bs + 1
-        print 'block size: {0}, # of blocks: {1}'.format(bs, n)
-        return np.array([a[:,bs*(i-1):bs*i].mean(axis=1) 
-                         for i in xrange(1, n+1)]).transpose()
+def block_average(ar, n=100):
+    """a is a mutliple dimension array, n is the max number of data points desired"""
+    logger.info('intended # of blocks: {0}'.format(n))
+    logger.info('array shape {0}'.format(ar.shape))
+
+    if ar.shape[1] < n:
+        logger.info(('array length ({0}) less than the intended # of blocks ({1}), '
+                     'no block averaging executed').format(ar.shape[1], n))
+        return ar
+
+    bs = ar.shape[1] / n                    # floor division; bs: block size
+    if bs * n < ar.shape[1] - 1:            # -1 is math detail
+        bs = bs + 1
+    new_n = ar.shape[1] / bs
+    if new_n * bs < ar.shape[1]:
+        new_n = new_n + 1
+    logger.info('DETERMINED: block size: {0}; real # of blocks: {1}'.format(bs, new_n))
+
+    res = []
+    for i in xrange(new_n):
+        bcol = bs * i                           # bcol: beginning column number
+        ecol = bs * (i + 1)                     # ecol: ending column number 
+        res.append(ar[:, bcol:ecol].mean(axis=1))
+    return np.array(res).transpose()
 
 def main(options):
     infs = options.fs
@@ -72,7 +84,7 @@ def main(options):
     fig = plt.figure(figsize=(24, 11))
     xs, ys, keys, axes = {}, {}, [], []
     for k, inf in enumerate(infs):
-        print "working on {0}".format(inf)
+        logger.info("working on {0}".format(inf))
         if k % overlap == 0:
             ax = fig.add_subplot(row, col, k / overlap + 1)
 
