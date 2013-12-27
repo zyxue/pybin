@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Calculate the backbone dihedral angles of a pdb file"""
+
 import sys
 import argparse
 import Queue
