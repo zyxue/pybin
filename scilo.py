@@ -47,6 +47,9 @@ def main():
         'i': 'zyxue@orcinus.westgrid.ca:',
         't': 'zyxue@tera.research.sickkids.ca:',
         't2': 'zyxue@t2.research.sickkids.ca:',
+
+        # at bcgsc
+        'genesis': 'zxue@genesis.bcgsc.ca:',
         }
 
     ARGS = parse_cmd()
