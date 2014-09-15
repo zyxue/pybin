@@ -60,7 +60,7 @@ def main():
         for i in ARGS.from_:
             lfl.extend(glob.glob(i))
         cmd = (['rsync'] + lfl + 
-               [host + ARGS.to_, '--stats', '-h', '-t', '--progress'])
+               [host + ARGS.to_, '--stats', '-h', '-t', '--progress', '-a'])
     else:
         cmd = ['rsync', host + ''.join(ARGS.from_),
                '--stats', '-h', '-t', '--progress']
