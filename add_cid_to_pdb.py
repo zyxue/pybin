@@ -75,6 +75,9 @@ def parse_cmd():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', dest='infile', required=True,
                         help="specify the input pdb file")
+    parser.add_argument('-o', dest='outputfile', default=None,
+                        help="specify the outputfile pdb file, if not specified, use the default naming")
+
     parser.add_argument('-n', dest='natoms', required=True,
                         help="specify the number of atoms in a single chain molecule, only applies to homo aggregate")
     parser.add_argument('--exresname', dest='exresname', nargs="+", default=[],
@@ -86,7 +89,10 @@ def parse_cmd():
 def main():
     args = parse_cmd()
     infile = args.infile
-    outputfile = infile[:-4] + '_with_cid.pdb'
+    if args.outputfile is None:
+        outputfile = infile[:-4] + '_with_cid.pdb'
+    else:
+        outputfile = args.outputfile
     cf.backup_file(outputfile)
     natoms = int(args.natoms)
     exresname = args.exresname

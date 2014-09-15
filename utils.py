@@ -33,5 +33,3 @@ def timeit(f):
         print "time spent:", et-bt
         return r
     return new_f
-
-

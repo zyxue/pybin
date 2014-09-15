@@ -5,9 +5,12 @@ from MDAnalysis import Universe
 
 """This script currently only applies to sr1 sr2 sr3"""
 
-PHI_SEL = '(resname ACE and name C) or (resname GLY or resname VAL or resname PRO and (name N or name CA or name C))'
-PSI_SEL = '(resname GLY or resname VAL or resname PRO and (name N or name CA or name C or name NT)) or (resname NH2 and name N)'
+PHI_SEL = ('(resname ACE and name C) or '
+           '(resname GLY or resname VAL or resname PRO and '
+           '(name N or name CA or name C))')
 
+PSI_SEL = ('(resname GLY or resname VAL or resname PRO and (name N or name CA or name C or name NT)) or '
+           '(resname NH2 and name N)')
 
 def main(struct):
     u = Universe(struct)
