@@ -30,6 +30,6 @@ def timeit(f):
         bt = time.time()
         r = f(*args, **kwargs)
         et = time.time()        
-        print "time spent:", et-bt
+        print "time spent on {0}: {1:.2f}s".format(f.func_name, et - bt)
         return r
     return new_f

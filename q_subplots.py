@@ -117,7 +117,8 @@ def main(options):
     q_acc.show_or_save(options.of)
 
 if __name__ == '__main__':
-    import time; b=time.time()
+    import time
+    b=time.time()
     options = q_acc.parse_cmd()
     main(options)
     e = time.time()

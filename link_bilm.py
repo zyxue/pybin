@@ -5,6 +5,7 @@ import sys
 import argparse
 
 home = os.getenv('HOME')
+zx_local_dir = os.getenv('ZX_LOCAL_DIR')
 
 def link_or_unlink(relf, f, funlink=False):
     if funlink:
@@ -27,7 +28,7 @@ def link(path, funlink=False):
     bn = os.path.basename(path)                             # bn: basename
     cwd = os.getcwd()
     if bn == 'bin':
-        target_dir = os.path.join(home, 'zx_local/bin')
+        target_dir = os.path.join(home, zx_local_dir, 'bin')
         os.chdir(target_dir)
         for f in os.listdir(path):            # f just contains a filename
             relf = os.path.relpath(os.path.join(path, f))
@@ -35,7 +36,7 @@ def link(path, funlink=False):
         os.chdir(cwd)
 
     elif bn == 'include':
-        target_dir = os.path.join(home, 'zx_local/include')
+        target_dir = os.path.join(home, zx_local_dir, 'include')
         os.chdir(target_dir)
         for f in os.listdir(path):
             if f.endswith('.h'):
@@ -43,8 +44,8 @@ def link(path, funlink=False):
                 link_or_unlink(relf, f, funlink)
         os.chdir(cwd)
 
-    elif bn == 'lib':
-        target_dir = os.path.join(home, 'zx_local/lib')
+    elif bn in ['lib', 'lib64']:
+        target_dir = os.path.join(home, zx_local_dir, bn)
         os.chdir(target_dir)
         for f in os.listdir(path):            # f just contains a filename
             if f.startswith('lib'):
@@ -53,7 +54,7 @@ def link(path, funlink=False):
         os.chdir(cwd)
 
     elif bn == 'man': 
-        target_dir = os.path.join(home, 'zx_local/man')
+        target_dir = os.path.join(home, zx_local_dir, 'man')
         os.chdir(target_dir)
         for m in os.listdir(path):            # e.g. man1, man2, mann
             if not os.path.exists(m):
@@ -92,10 +93,12 @@ if __name__ == "__main__":
 
     bin_dir = os.path.join(pkg_dir, 'bin')
     lib_dir = os.path.join(pkg_dir, 'lib')
+    lib64_dir = os.path.join(pkg_dir, 'lib64')
     inc_dir = os.path.join(pkg_dir, 'include')
     man_dir = os.path.join(pkg_dir, 'man')
 
-    flags = [(i, os.path.exists(i)) for i in [bin_dir, lib_dir, inc_dir, man_dir]]
+    flags = [(i, os.path.exists(i)) for i in [
+        bin_dir, lib_dir, lib64_dir, inc_dir, man_dir]]
     for f in flags:
         print '####', f[0], f[1]
         if f[1]:
